@@ -2,6 +2,7 @@ package com.bidstream.api.category;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -64,10 +65,45 @@ class CategoryControllerIT {
 
   @Test
   void unknownRoute_returnsNotFoundEnvelope() throws Exception {
+    registerUser("notfound@example.com");
+    String token = login("notfound@example.com");
+
     mockMvc
-        .perform(get("/api/v1/does-not-exist"))
+        .perform(get("/api/v1/does-not-exist").header("Authorization", "Bearer " + token))
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.error.code").value("not_found"))
         .andExpect(jsonPath("$.traceId").isNotEmpty());
+  }
+
+  private void registerUser(String email) throws Exception {
+    mockMvc
+        .perform(
+            post("/api/v1/auth/register")
+                .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                .content(
+                    """
+                    {"email":"%s","password":"password1234","displayName":"Test"}
+                    """
+                        .formatted(email)))
+        .andExpect(status().isCreated());
+  }
+
+  private String login(String email) throws Exception {
+    MvcResult result =
+        mockMvc
+            .perform(
+                post("/api/v1/auth/login")
+                    .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                    .content(
+                        """
+                        {"email":"%s","password":"password1234"}
+                        """
+                            .formatted(email)))
+            .andExpect(status().isOk())
+            .andReturn();
+    return objectMapper
+        .readTree(result.getResponse().getContentAsString())
+        .get("accessToken")
+        .asText();
   }
 }
