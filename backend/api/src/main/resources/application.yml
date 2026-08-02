@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: bidstream
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/bidstream}
+    username: ${SPRING_DATASOURCE_USERNAME:bidstream}
+    password: ${SPRING_DATASOURCE_PASSWORD:bidstream}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  data:
+    redis:
+      host: ${SPRING_REDIS_HOST:localhost}
+      port: ${SPRING_REDIS_PORT:6379}
+  rabbitmq:
+    host: ${SPRING_RABBITMQ_HOST:localhost}
+    port: ${SPRING_RABBITMQ_PORT:5672}
+    username: ${SPRING_RABBITMQ_USERNAME:bidstream}
+    password: ${SPRING_RABBITMQ_PASSWORD:bidstream}
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+bidstream:
+  version: 0.1.0
+
+logging:
+  pattern:
+    level: "%5p [traceId=%X{traceId}]"

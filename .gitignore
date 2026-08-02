@@ -1,0 +1,46 @@
+# Environment
+.env
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+.DS_Store
+
+# Gradle
+backend/.gradle/
+backend/build/
+backend/**/build/
+backend/**/out/
+
+# Java
+*.class
+*.jar
+*.war
+hs_err_pid*
+
+# Flutter
+mobile/.dart_tool/
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+mobile/.packages
+mobile/build/
+mobile/.pub-cache/
+mobile/.pub/
+mobile/**/Generated.xcconfig
+mobile/**/flutter_export_environment.sh
+mobile/**/ephemeral/
+mobile/**/.symlinks/
+mobile/**/Pods/
+mobile/**/xcuserdata/
+mobile/**/.last_build_id
+
+# Test / coverage
+backend/**/jacoco/
+*.log
+
+# Project docs / AI tooling
+.claude/
+CONCEPTOS.md
+plans/
