@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/cache/offline_banner.dart';
 import '../../../core/l10n/locale_provider.dart';
+import '../presentation/bid_history_chart.dart';
 import '../providers/bid_provider.dart';
 import '../providers/lot_detail_provider.dart';
 import 'bid_bottom_sheet.dart';
@@ -49,26 +50,38 @@ class LotDetailScreen extends ConsumerWidget {
             Text(lot.title, style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 8),
             if (lot.images.isNotEmpty) ...[
-              SizedBox(
-                height: 120,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: lot.images.length,
-                  separatorBuilder: (_, _) => const SizedBox(width: 8),
-                  itemBuilder: (context, index) {
-                    final image = lot.images[index];
-                    final url = image.thumbnailUrl ?? image.url;
-                    return ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: url == null
-                          ? const SizedBox(
-                              width: 120,
-                              height: 120,
-                              child: ColoredBox(color: Colors.black12),
-                            )
-                          : Image.network(url, width: 120, height: 120, fit: BoxFit.cover),
-                    );
-                  },
+              Hero(
+                tag: 'lot-cover-${lot.id}',
+                child: SizedBox(
+                  height: 120,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: lot.images.length,
+                    separatorBuilder: (_, _) => const SizedBox(width: 8),
+                    itemBuilder: (context, index) {
+                      final image = lot.images[index];
+                      final url = image.thumbnailUrl ?? image.url;
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: url == null
+                            ? const SizedBox(
+                                width: 120,
+                                height: 120,
+                                child: ColoredBox(color: Colors.black12),
+                              )
+                            : Image.network(url, width: 120, height: 120, fit: BoxFit.cover),
+                      );
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+            if (lot.status.startsWith('CLOSED') && lot.bidCount > 0) ...[
+              BidHistoryChart(
+                amounts: List.generate(
+                  lot.bidCount.clamp(0, 500),
+                  (index) => lot.currentPrice,
                 ),
               ),
               const SizedBox(height: 16),

@@ -256,7 +256,23 @@ class _LotTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cover = lot.images.isNotEmpty ? lot.images.first : null;
     return ListTile(
+      leading: cover != null
+          ? Hero(
+              tag: 'lot-cover-${lot.id}',
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  cover.thumbnailUrl ?? cover.url ?? '',
+                  width: 56,
+                  height: 56,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, _, _) => const Icon(Icons.image),
+                ),
+              ),
+            )
+          : null,
       title: Text(lot.title),
       subtitle: Text('${lot.currentPrice} · ${lot.status}'),
       trailing: lot.watched ? const Icon(Icons.bookmark) : null,

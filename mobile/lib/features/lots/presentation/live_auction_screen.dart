@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/l10n/locale_provider.dart';
 import '../../../core/realtime/stomp_client.dart';
+import '../presentation/countdown_arc.dart';
 import '../providers/live_auction_provider.dart';
 import '../providers/lot_detail_provider.dart';
 
@@ -130,8 +131,11 @@ class _LiveAuctionScreenState extends ConsumerState<LiveAuctionScreen> {
                     ),
                     padding: const EdgeInsets.all(12),
                     child: TweenAnimationBuilder<double>(
-                      tween: Tween<double>(begin: _displayPrice, end: double.tryParse(live.currentPrice) ?? _displayPrice),
-                      duration: const Duration(milliseconds: 500),
+                      tween: Tween<double>(
+                        begin: _displayPrice,
+                        end: double.tryParse(live.currentPrice.replaceAll(',', '')) ?? _displayPrice,
+                      ),
+                      duration: const Duration(milliseconds: 400),
                       builder: (context, value, _) {
                         return Text(
                           '\$${value.toStringAsFixed(2)}',
@@ -141,8 +145,13 @@ class _LiveAuctionScreenState extends ConsumerState<LiveAuctionScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text('${l10n.liveCountdown}: ${_formatDuration(_remaining)}'),
-                  Text('${l10n.lotCurrentPrice}: ${l10n.bidCount(live.bidCount)}'),
+                  CountdownArc(
+                    remaining: _remaining,
+                    total: const Duration(minutes: 30),
+                    label: _formatDuration(_remaining),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(l10n.bidCount(live.bidCount)),
                 ],
               ),
             ),
