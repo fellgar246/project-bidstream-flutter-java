@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Import;
 
 @SpringBootApplication(
     exclude = {
-      org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration.class,
       org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration.class
     })
 @Import({ApplicationConfig.class, InfrastructureConfig.class})

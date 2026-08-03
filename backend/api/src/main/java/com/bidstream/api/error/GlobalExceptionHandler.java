@@ -4,6 +4,11 @@ import com.bidstream.domain.auth.AlreadySellerException;
 import com.bidstream.domain.auth.DuplicateEmailException;
 import com.bidstream.domain.auth.InvalidCredentialsException;
 import com.bidstream.domain.auth.TokenReuseException;
+import com.bidstream.domain.bid.BidConflictException;
+import com.bidstream.domain.bid.BidNotLiveException;
+import com.bidstream.domain.bid.BidSelfException;
+import com.bidstream.domain.bid.BidTooLowException;
+import com.bidstream.domain.bid.LockTimeoutException;
 import com.bidstream.domain.lot.FileTooLargeException;
 import com.bidstream.domain.lot.ForbiddenLotAccessException;
 import com.bidstream.domain.lot.ImageLimitReachedException;
@@ -101,6 +106,38 @@ public class GlobalExceptionHandler {
     String traceId = traceId();
     return response(
         HttpStatus.BAD_REQUEST, "unsupported_media_type", ex.getMessage(), Map.of(), traceId, ex);
+  }
+
+  @ExceptionHandler(BidTooLowException.class)
+  public ResponseEntity<ErrorResponse> handleBidTooLow(BidTooLowException ex) {
+    String traceId = traceId();
+    Map<String, String> details = new LinkedHashMap<>(ex.details());
+    return response(HttpStatus.CONFLICT, "bid_too_low", ex.getMessage(), details, traceId, ex);
+  }
+
+  @ExceptionHandler(BidNotLiveException.class)
+  public ResponseEntity<ErrorResponse> handleBidNotLive(BidNotLiveException ex) {
+    String traceId = traceId();
+    return response(HttpStatus.CONFLICT, "bid_not_live", ex.getMessage(), Map.of(), traceId, ex);
+  }
+
+  @ExceptionHandler(BidSelfException.class)
+  public ResponseEntity<ErrorResponse> handleBidSelf(BidSelfException ex) {
+    String traceId = traceId();
+    return response(HttpStatus.CONFLICT, "bid_self", ex.getMessage(), Map.of(), traceId, ex);
+  }
+
+  @ExceptionHandler(BidConflictException.class)
+  public ResponseEntity<ErrorResponse> handleBidConflict(BidConflictException ex) {
+    String traceId = traceId();
+    return response(HttpStatus.CONFLICT, "bid_conflict", ex.getMessage(), Map.of(), traceId, ex);
+  }
+
+  @ExceptionHandler(LockTimeoutException.class)
+  public ResponseEntity<ErrorResponse> handleLockTimeout(LockTimeoutException ex) {
+    String traceId = traceId();
+    return response(
+        HttpStatus.SERVICE_UNAVAILABLE, "lock_timeout", ex.getMessage(), Map.of(), traceId, ex);
   }
 
   @ExceptionHandler(FileTooLargeException.class)
