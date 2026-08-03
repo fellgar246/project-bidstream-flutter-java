@@ -14,4 +14,6 @@ public interface WatchJpaRepository extends JpaRepository<WatchEntity, Long> {
   List<WatchEntity> findByUser_IdOrderByCreatedAtDesc(long userId, Pageable pageable);
 
   long countByUser_Id(long userId);
+
+  List<WatchEntity> findByLot_Id(long lotId);
 }
