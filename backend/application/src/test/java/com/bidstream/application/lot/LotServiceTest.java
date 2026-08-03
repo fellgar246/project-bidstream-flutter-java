@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.bidstream.domain.lot.ForbiddenLotAccessException;
+import com.bidstream.domain.lot.ImageRequiredException;
 import com.bidstream.domain.lot.InvalidTransitionException;
 import com.bidstream.domain.lot.Lot;
 import com.bidstream.domain.lot.LotRepository;
@@ -93,6 +94,25 @@ class LotServiceTest {
     lotService.cancelLot(99L, EnumSet.of(Role.ADMIN), 1L);
 
     verify(lotRepository).save(any());
+  }
+
+  @Test
+  void rb12_scheduleWithoutReadyImages_throwsImageRequired() {
+    LotsProperties properties = new LotsProperties();
+    properties.setRequireImagesForSchedule(true);
+    lotService = new LotService(lotRepository, watchRepository, properties, CLOCK);
+
+    Lot lot = draftLot(1L, 10L);
+    when(lotRepository.findById(1L)).thenReturn(Optional.of(lot));
+    when(lotRepository.hasReadyImages(1L)).thenReturn(false);
+    Instant start = NOW.plusSeconds(600);
+    Instant end = start.plusSeconds(3600);
+
+    assertThatThrownBy(
+            () -> lotService.scheduleLot(10L, Set.of(Role.SELLER), 1L, start, end))
+        .isInstanceOf(ImageRequiredException.class);
+
+    verify(lotRepository, never()).save(any());
   }
 
   @Test

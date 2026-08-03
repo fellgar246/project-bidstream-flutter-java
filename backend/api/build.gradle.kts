@@ -33,6 +33,8 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:postgresql")
+    testImplementation("org.testcontainers:testcontainers")
+    testImplementation("io.minio:minio:8.5.12")
     testImplementation("com.tngtech.archunit:archunit-junit5:1.3.0")
 }
 

@@ -3,7 +3,6 @@ package com.bidstream.application.lot;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -52,8 +51,7 @@ class PresignServiceTest {
     StorageProperties properties = new StorageProperties();
     properties.setPresignExpirySeconds(300);
     presignService =
-        new PresignService(
-            lotRepository, lotImageRepository, objectStorage, properties, CLOCK);
+        new PresignService(lotRepository, lotImageRepository, objectStorage, properties, CLOCK);
   }
 
   @Test
@@ -147,7 +145,8 @@ class PresignServiceTest {
                   image.updatedAt());
             });
     when(objectStorage.presignPut(any(), eq("image/jpeg"), eq(300)))
-        .thenReturn(new ObjectStoragePort.PresignedUpload("https://minio/upload", "lots/1/x.jpg", 300));
+        .thenReturn(
+            new ObjectStoragePort.PresignedUpload("https://minio/upload", "lots/1/x.jpg", 300));
 
     PresignService.PresignResult result =
         presignService.presign(10L, Set.of(Role.SELLER), 1L, "photo.jpg", "image/jpeg", 1024L);
@@ -164,6 +163,37 @@ class PresignServiceTest {
 
   private static Lot draftLot(long lotId, long sellerId) {
     return lotWithStatus(lotId, sellerId, LotStatus.DRAFT);
+  }
+
+  @Test
+  void presign_allowsScheduledLot() {
+    Lot lot = lotWithStatus(1L, 10L, LotStatus.SCHEDULED);
+    when(lotRepository.findById(1L)).thenReturn(Optional.of(lot));
+    when(lotImageRepository.countByLotId(1L)).thenReturn(0);
+    when(lotImageRepository.findMaxPosition(1L)).thenReturn(-1);
+    when(lotImageRepository.save(any(LotImage.class)))
+        .thenAnswer(
+            invocation -> {
+              LotImage image = invocation.getArgument(0);
+              return new LotImage(
+                  7L,
+                  image.lotId(),
+                  image.storageKey(),
+                  image.thumbnailKey(),
+                  image.position(),
+                  image.contentType(),
+                  image.sizeBytes(),
+                  image.status(),
+                  image.createdAt(),
+                  image.updatedAt());
+            });
+    when(objectStorage.presignPut(any(), eq("image/png"), eq(300)))
+        .thenReturn(new ObjectStoragePort.PresignedUpload("url", "key", 300));
+
+    PresignService.PresignResult result =
+        presignService.presign(10L, Set.of(Role.SELLER), 1L, "photo.png", "image/png", 512L);
+
+    assertThat(result.imageId()).isEqualTo(7L);
   }
 
   private static Lot lotWithStatus(long lotId, long sellerId, LotStatus status) {

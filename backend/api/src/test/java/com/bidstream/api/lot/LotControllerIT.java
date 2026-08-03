@@ -93,6 +93,7 @@ class LotControllerIT {
   void ca034_scheduleWithInvalidWindow_returnsValidationError() throws Exception {
     String token = registerSeller("seller-sched@test.com");
     long lotId = createLot(token);
+    insertReadyImage(lotId);
     Instant start = Instant.now().plus(10, ChronoUnit.MINUTES);
     Instant end = start.minus(1, ChronoUnit.MINUTES);
 
@@ -276,6 +277,20 @@ class LotControllerIT {
 
   private void setLotStatus(long lotId, String status) {
     jdbcTemplate.update("UPDATE lots SET status = ? WHERE id = ?", status, lotId);
+  }
+
+  private void insertReadyImage(long lotId) {
+    Instant now = Instant.now();
+    jdbcTemplate.update(
+        """
+        INSERT INTO lot_images (lot_id, storage_key, position, content_type, size_bytes, status,
+          created_at, updated_at)
+        VALUES (?, ?, 0, 'image/jpeg', 1024, 'READY', ?, ?)
+        """,
+        lotId,
+        "lots/" + lotId + "/ready.jpg",
+        java.sql.Timestamp.from(now),
+        java.sql.Timestamp.from(now));
   }
 
   private void insertLiveLot(long sellerId, String title, Instant end, long currentPriceCents) {

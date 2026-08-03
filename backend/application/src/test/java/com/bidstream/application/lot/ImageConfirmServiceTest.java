@@ -58,8 +58,7 @@ class ImageConfirmServiceTest {
     when(lotImageRepository.findByIdAndLotId(5L, 1L)).thenReturn(Optional.of(pending));
     when(objectStorage.headObject(pending.storageKey())).thenReturn(Optional.empty());
 
-    assertThatThrownBy(
-            () -> imageConfirmService.confirm(10L, Set.of(Role.SELLER), 1L, 5L))
+    assertThatThrownBy(() -> imageConfirmService.confirm(10L, Set.of(Role.SELLER), 1L, 5L))
         .isInstanceOf(UploadNotFoundException.class);
 
     verify(lotImageRepository, never()).save(any());
@@ -74,8 +73,7 @@ class ImageConfirmServiceTest {
     when(objectStorage.headObject(pending.storageKey()))
         .thenReturn(Optional.of(new ObjectStoragePort.ObjectMetadata(9999L, "image/jpeg")));
 
-    assertThatThrownBy(
-            () -> imageConfirmService.confirm(10L, Set.of(Role.SELLER), 1L, 5L))
+    assertThatThrownBy(() -> imageConfirmService.confirm(10L, Set.of(Role.SELLER), 1L, 5L))
         .isInstanceOf(UploadMismatchException.class);
 
     verify(objectStorage).deleteObject(pending.storageKey());
