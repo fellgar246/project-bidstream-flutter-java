@@ -4,10 +4,16 @@ import com.bidstream.domain.auth.AlreadySellerException;
 import com.bidstream.domain.auth.DuplicateEmailException;
 import com.bidstream.domain.auth.InvalidCredentialsException;
 import com.bidstream.domain.auth.TokenReuseException;
+import com.bidstream.domain.lot.FileTooLargeException;
 import com.bidstream.domain.lot.ForbiddenLotAccessException;
+import com.bidstream.domain.lot.ImageLimitReachedException;
 import com.bidstream.domain.lot.ImageRequiredException;
+import com.bidstream.domain.lot.InvalidImageOrderException;
 import com.bidstream.domain.lot.InvalidTransitionException;
 import com.bidstream.domain.lot.LotValidationException;
+import com.bidstream.domain.lot.UnsupportedMediaTypeException;
+import com.bidstream.domain.lot.UploadMismatchException;
+import com.bidstream.domain.lot.UploadNotFoundException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -87,6 +93,49 @@ public class GlobalExceptionHandler {
     String traceId = traceId();
     return response(
         HttpStatus.BAD_REQUEST, "validation_error", ex.getMessage(), ex.details(), traceId, ex);
+  }
+
+  @ExceptionHandler(UnsupportedMediaTypeException.class)
+  public ResponseEntity<ErrorResponse> handleUnsupportedMediaType(
+      UnsupportedMediaTypeException ex) {
+    String traceId = traceId();
+    return response(
+        HttpStatus.BAD_REQUEST, "unsupported_media_type", ex.getMessage(), Map.of(), traceId, ex);
+  }
+
+  @ExceptionHandler(FileTooLargeException.class)
+  public ResponseEntity<ErrorResponse> handleFileTooLarge(FileTooLargeException ex) {
+    String traceId = traceId();
+    return response(
+        HttpStatus.BAD_REQUEST, "file_too_large", ex.getMessage(), Map.of(), traceId, ex);
+  }
+
+  @ExceptionHandler(ImageLimitReachedException.class)
+  public ResponseEntity<ErrorResponse> handleImageLimit(ImageLimitReachedException ex) {
+    String traceId = traceId();
+    return response(
+        HttpStatus.CONFLICT, "image_limit_reached", ex.getMessage(), Map.of(), traceId, ex);
+  }
+
+  @ExceptionHandler(UploadNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleUploadNotFound(UploadNotFoundException ex) {
+    String traceId = traceId();
+    return response(
+        HttpStatus.CONFLICT, "upload_not_found", ex.getMessage(), Map.of(), traceId, ex);
+  }
+
+  @ExceptionHandler(UploadMismatchException.class)
+  public ResponseEntity<ErrorResponse> handleUploadMismatch(UploadMismatchException ex) {
+    String traceId = traceId();
+    return response(
+        HttpStatus.BAD_REQUEST, "upload_mismatch", ex.getMessage(), Map.of(), traceId, ex);
+  }
+
+  @ExceptionHandler(InvalidImageOrderException.class)
+  public ResponseEntity<ErrorResponse> handleInvalidImageOrder(InvalidImageOrderException ex) {
+    String traceId = traceId();
+    return response(
+        HttpStatus.BAD_REQUEST, "validation_error", ex.getMessage(), Map.of(), traceId, ex);
   }
 
   @ExceptionHandler(ImageRequiredException.class)

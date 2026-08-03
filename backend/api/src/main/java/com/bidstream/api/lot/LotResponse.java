@@ -18,7 +18,7 @@ public record LotResponse(
     String scheduledStartAt,
     String scheduledEndAt,
     String actualEndAt,
-    List<Object> images,
+    List<LotImageSummary> images,
     boolean watched,
     boolean canEdit,
     boolean canBid) {}

@@ -1,6 +1,7 @@
 package com.bidstream.application.lot;
 
 import com.bidstream.domain.lot.LotImage;
+import com.bidstream.domain.lot.UploadMismatchException;
 import com.bidstream.domain.user.Role;
 import java.util.Set;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,7 +17,7 @@ public class ConfirmImageUseCase {
     this.imageConfirmService = imageConfirmService;
   }
 
-  @Transactional
+  @Transactional(noRollbackFor = UploadMismatchException.class)
   @PreAuthorize("hasRole('SELLER')")
   public LotImage execute(long userId, Set<Role> roles, long lotId, long imageId) {
     return imageConfirmService.confirm(userId, roles, lotId, imageId);
