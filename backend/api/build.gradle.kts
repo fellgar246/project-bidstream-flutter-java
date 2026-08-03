@@ -30,10 +30,12 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-starter-jdbc")
+    testImplementation("org.springframework.boot:spring-boot-starter-data-redis")
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:postgresql")
     testImplementation("org.testcontainers:testcontainers")
+    testImplementation("com.redis:testcontainers-redis:2.2.2")
     testImplementation("io.minio:minio:8.5.12")
     testImplementation("com.tngtech.archunit:archunit-junit5:1.3.0")
 }
