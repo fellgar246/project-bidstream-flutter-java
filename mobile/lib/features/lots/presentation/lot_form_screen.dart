@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/l10n/app_strings.dart';
+import '../../../core/l10n/locale_provider.dart';
 import '../providers/lot_form_provider.dart';
 
 class LotFormScreen extends ConsumerStatefulWidget {
@@ -47,27 +47,28 @@ class _LotFormScreenState extends ConsumerState<LotFormScreen> {
   @override
   Widget build(BuildContext context) {
     final formState = ref.watch(lotFormProvider);
+    final l10n = context.l10n;
 
     return Scaffold(
-      appBar: AppBar(title: const Text(AppStrings.lotFormTitle)),
+      appBar: AppBar(title: Text(l10n.lotFormTitle)),
       body: ListView(
         padding: const EdgeInsets.all(24),
         children: [
           TextField(
             controller: _titleController,
-            decoration: const InputDecoration(labelText: AppStrings.lotTitleLabel),
+            decoration: InputDecoration(labelText: l10n.lotTitleLabel),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _descriptionController,
-            decoration: const InputDecoration(labelText: AppStrings.lotDescriptionLabel),
+            decoration: InputDecoration(labelText: l10n.lotDescriptionLabel),
             maxLines: 3,
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _startingPriceController,
             decoration: InputDecoration(
-              labelText: AppStrings.lotStartingPriceLabel,
+              labelText: l10n.lotStartingPriceLabel,
               errorText: formState.fieldErrors['startingPrice'],
             ),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -76,7 +77,7 @@ class _LotFormScreenState extends ConsumerState<LotFormScreen> {
           TextField(
             controller: _minIncrementController,
             decoration: InputDecoration(
-              labelText: AppStrings.lotMinIncrementLabel,
+              labelText: l10n.lotMinIncrementLabel,
               errorText: formState.fieldErrors['minIncrement'],
             ),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -84,7 +85,7 @@ class _LotFormScreenState extends ConsumerState<LotFormScreen> {
           const SizedBox(height: 12),
           TextField(
             controller: _reservePriceController,
-            decoration: const InputDecoration(labelText: AppStrings.lotReservePriceLabel),
+            decoration: InputDecoration(labelText: l10n.lotReservePriceLabel),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
           ),
           const SizedBox(height: 24),
@@ -96,7 +97,7 @@ class _LotFormScreenState extends ConsumerState<LotFormScreen> {
                     height: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Text(AppStrings.lotCreateAction),
+                : Text(l10n.lotCreateAction),
           ),
         ],
       ),

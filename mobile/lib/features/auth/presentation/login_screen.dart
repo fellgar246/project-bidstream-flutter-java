@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/auth/auth_controller.dart';
-import '../../../core/l10n/app_strings.dart';
+import '../../../core/l10n/locale_provider.dart';
 import '../../../core/network/api_exception.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -55,7 +55,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             _emailError == null && _passwordError == null ? error.message : null;
       });
     } catch (_) {
-      setState(() => _generalError = AppStrings.loginError);
+      if (mounted) {
+        setState(() => _generalError = context.l10n.loginError);
+      }
     } finally {
       if (mounted) {
         setState(() => _submitting = false);
@@ -65,8 +67,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
-      appBar: AppBar(title: const Text(AppStrings.loginTitle)),
+      appBar: AppBar(title: Text(l10n.loginTitle)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(
@@ -78,13 +82,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 key: const Key('login_email'),
                 controller: _emailController,
                 decoration: InputDecoration(
-                  labelText: AppStrings.emailLabel,
+                  labelText: l10n.emailLabel,
                   errorText: _emailError,
                 ),
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return AppStrings.emailRequired;
+                    return l10n.emailRequired;
                   }
                   return null;
                 },
@@ -94,13 +98,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 key: const Key('login_password'),
                 controller: _passwordController,
                 decoration: InputDecoration(
-                  labelText: AppStrings.passwordLabel,
+                  labelText: l10n.passwordLabel,
                   errorText: _passwordError,
                 ),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return AppStrings.passwordRequired;
+                    return l10n.passwordRequired;
                   }
                   return null;
                 },
@@ -121,11 +125,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         width: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text(AppStrings.loginAction),
+                    : Text(l10n.loginAction),
               ),
               TextButton(
                 onPressed: () => context.go('/register'),
-                child: const Text(AppStrings.goToRegister),
+                child: Text(l10n.goToRegister),
               ),
             ],
           ),

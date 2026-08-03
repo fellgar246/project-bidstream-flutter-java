@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/l10n/app_strings.dart';
+import '../../../core/l10n/locale_provider.dart';
 import '../../notifications/providers/notifications_provider.dart';
 import '../../notifications/providers/notifications_stomp_provider.dart';
 
@@ -16,7 +16,7 @@ class HomeScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(AppStrings.homeTitle),
+        title: Text(context.l10n.homeTitle),
         actions: [
           IconButton(
             onPressed: () => context.go('/notifications'),
@@ -29,7 +29,7 @@ class HomeScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.person_outline),
             onPressed: () => context.go('/profile'),
-            tooltip: AppStrings.viewProfile,
+            tooltip: context.l10n.viewProfile,
           ),
         ],
       ),
@@ -38,23 +38,23 @@ class HomeScreen extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              AppStrings.homeSubtitle,
+              context.l10n.homeSubtitle,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 24),
             FilledButton(
               onPressed: () => context.go('/categories'),
-              child: const Text(AppStrings.viewCategories),
+              child: Text(context.l10n.viewCategories),
             ),
             const SizedBox(height: 12),
             FilledButton(
               onPressed: () => context.go('/lots'),
-              child: const Text(AppStrings.viewLots),
+              child: Text(context.l10n.viewLots),
             ),
             const SizedBox(height: 12),
             OutlinedButton(
               onPressed: () => context.go('/seller/lots'),
-              child: const Text(AppStrings.viewSellerLots),
+              child: Text(context.l10n.viewSellerLots),
             ),
           ],
         ),

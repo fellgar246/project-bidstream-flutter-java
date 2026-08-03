@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/l10n/app_strings.dart';
+import '../../../core/l10n/locale_provider.dart';
 import '../data/lot_dto.dart';
 import '../data/lot_filters.dart';
 import '../providers/lots_list_provider.dart';
@@ -102,18 +102,18 @@ class _LotsListScreenState extends ConsumerState<LotsListScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(AppStrings.lotsError),
+              Text(context.l10n.lotsError),
               const SizedBox(height: 12),
               FilledButton(
                 onPressed: () => ref.read(lotsListProvider(_filters).notifier).reload(),
-                child: const Text(AppStrings.retry),
+                child: Text(context.l10n.retry),
               ),
             ],
           ),
         ),
         data: (state) {
           if (state.items.isEmpty) {
-            return const Center(child: Text(AppStrings.lotsEmpty));
+            return Center(child: Text(context.l10n.lotsEmpty));
           }
           return _buildList(state.items, state.isLoadingMore);
         },
@@ -124,7 +124,7 @@ class _LotsListScreenState extends ConsumerState<LotsListScreen> {
   Widget _buildScaffold({required Widget body, LotFacetsDto? facets}) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(AppStrings.lotsTitle),
+        title: Text(context.l10n.lotsTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list),
@@ -138,7 +138,7 @@ class _LotsListScreenState extends ConsumerState<LotsListScreen> {
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: AppStrings.lotsSearchHint,
+                hintText: context.l10n.lotsSearchHint,
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
@@ -166,16 +166,16 @@ class _LotsListScreenState extends ConsumerState<LotsListScreen> {
       return const Center(child: CircularProgressIndicator());
     }
     if (searchState.error != null) {
-      return Center(child: Text(AppStrings.lotsError));
+      return Center(child: Text(context.l10n.lotsError));
     }
     if (searchState.items.isEmpty) {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(AppStrings.lotsSearchEmpty(searchState.query)),
+            Text(context.l10n.lotsSearchEmpty(searchState.query)),
             const SizedBox(height: 12),
-            FilledButton(onPressed: _clearFilters, child: const Text(AppStrings.lotsClearFilters)),
+            FilledButton(onPressed: _clearFilters, child: Text(context.l10n.lotsClearFilters)),
           ],
         ),
       );
@@ -280,17 +280,19 @@ class _FiltersSheetState extends State<_FiltersSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(AppStrings.lotsFiltersTitle, style: Theme.of(context).textTheme.titleMedium),
+          Text(l10n.lotsFiltersTitle, style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
             initialValue: _status,
-            decoration: const InputDecoration(labelText: AppStrings.lotsFilterStatus),
+            decoration: InputDecoration(labelText: l10n.lotsFilterStatus),
             items: const [
               DropdownMenuItem(value: 'LIVE', child: Text('Live')),
               DropdownMenuItem(value: 'SCHEDULED', child: Text('Scheduled')),
@@ -301,7 +303,7 @@ class _FiltersSheetState extends State<_FiltersSheet> {
           const SizedBox(height: 12),
           DropdownButtonFormField<String>(
             initialValue: _sort,
-            decoration: const InputDecoration(labelText: AppStrings.lotsFilterSort),
+            decoration: InputDecoration(labelText: l10n.lotsFilterSort),
             items: const [
               DropdownMenuItem(value: 'endingSoon', child: Text('Ending soon')),
               DropdownMenuItem(value: 'newest', child: Text('Newest')),
@@ -316,7 +318,7 @@ class _FiltersSheetState extends State<_FiltersSheet> {
               context,
               widget.initial.copyWith(status: _status, sort: _sort),
             ),
-            child: const Text(AppStrings.lotsApplyFilters),
+            child: Text(l10n.lotsApplyFilters),
           ),
         ],
       ),
