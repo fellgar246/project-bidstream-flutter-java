@@ -17,9 +17,7 @@ public class LotImageRepositoryAdapter implements LotImageRepository {
   private final Clock clock;
 
   public LotImageRepositoryAdapter(
-      LotImageJpaRepository lotImageJpaRepository,
-      LotJpaRepository lotJpaRepository,
-      Clock clock) {
+      LotImageJpaRepository lotImageJpaRepository, LotJpaRepository lotJpaRepository, Clock clock) {
     this.lotImageJpaRepository = lotImageJpaRepository;
     this.lotJpaRepository = lotJpaRepository;
     this.clock = clock;

@@ -11,8 +11,7 @@ class LotImageTest {
 
   @Test
   void createPending_hasExpectedDefaults() {
-    LotImage image =
-        LotImage.createPending(1L, "lots/1/abc.jpg", 0, "image/jpeg", 1024L, NOW);
+    LotImage image = LotImage.createPending(1L, "lots/1/abc.jpg", 0, "image/jpeg", 1024L, NOW);
 
     assertThat(image.id()).isZero();
     assertThat(image.lotId()).isEqualTo(1L);
@@ -22,8 +21,7 @@ class LotImageTest {
 
   @Test
   void markReady_transitionsStatus() {
-    LotImage pending =
-        LotImage.createPending(1L, "lots/1/abc.jpg", 0, "image/jpeg", 1024L, NOW);
+    LotImage pending = LotImage.createPending(1L, "lots/1/abc.jpg", 0, "image/jpeg", 1024L, NOW);
     Instant later = NOW.plusSeconds(60);
 
     LotImage ready = pending.markReady(later);
@@ -34,8 +32,7 @@ class LotImageTest {
 
   @Test
   void markFailed_transitionsStatus() {
-    LotImage pending =
-        LotImage.createPending(1L, "lots/1/abc.jpg", 0, "image/jpeg", 1024L, NOW);
+    LotImage pending = LotImage.createPending(1L, "lots/1/abc.jpg", 0, "image/jpeg", 1024L, NOW);
 
     LotImage failed = pending.markFailed(NOW.plusSeconds(30));
 

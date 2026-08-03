@@ -36,6 +36,31 @@ class LotDetailScreen extends ConsumerWidget {
           children: [
             Text(lot.title, style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 8),
+            if (lot.images.isNotEmpty) ...[
+              SizedBox(
+                height: 120,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: lot.images.length,
+                  separatorBuilder: (_, _) => const SizedBox(width: 8),
+                  itemBuilder: (context, index) {
+                    final image = lot.images[index];
+                    final url = image.thumbnailUrl ?? image.url;
+                    return ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: url == null
+                          ? const SizedBox(
+                              width: 120,
+                              height: 120,
+                              child: ColoredBox(color: Colors.black12),
+                            )
+                          : Image.network(url, width: 120, height: 120, fit: BoxFit.cover),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
             Text(lot.description),
             const SizedBox(height: 16),
             Text('${AppStrings.lotCurrentPrice}: ${lot.currentPrice}'),

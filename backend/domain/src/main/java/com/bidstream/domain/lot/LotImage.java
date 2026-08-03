@@ -31,26 +31,71 @@ public record LotImage(
       long sizeBytes,
       Instant now) {
     return new LotImage(
-        0L, lotId, storageKey, null, position, contentType, sizeBytes, LotImageStatus.PENDING, now, now);
+        0L,
+        lotId,
+        storageKey,
+        null,
+        position,
+        contentType,
+        sizeBytes,
+        LotImageStatus.PENDING,
+        now,
+        now);
   }
 
   public LotImage markReady(Instant now) {
     return new LotImage(
-        id, lotId, storageKey, thumbnailKey, position, contentType, sizeBytes, LotImageStatus.READY, createdAt, now);
+        id,
+        lotId,
+        storageKey,
+        thumbnailKey,
+        position,
+        contentType,
+        sizeBytes,
+        LotImageStatus.READY,
+        createdAt,
+        now);
   }
 
   public LotImage markFailed(Instant now) {
     return new LotImage(
-        id, lotId, storageKey, thumbnailKey, position, contentType, sizeBytes, LotImageStatus.FAILED, createdAt, now);
+        id,
+        lotId,
+        storageKey,
+        thumbnailKey,
+        position,
+        contentType,
+        sizeBytes,
+        LotImageStatus.FAILED,
+        createdAt,
+        now);
   }
 
   public LotImage withThumbnail(String thumbnailKey, Instant now) {
     return new LotImage(
-        id, lotId, storageKey, thumbnailKey, position, contentType, sizeBytes, status, createdAt, now);
+        id,
+        lotId,
+        storageKey,
+        thumbnailKey,
+        position,
+        contentType,
+        sizeBytes,
+        status,
+        createdAt,
+        now);
   }
 
   public LotImage withPosition(int newPosition, Instant now) {
     return new LotImage(
-        id, lotId, storageKey, thumbnailKey, newPosition, contentType, sizeBytes, status, createdAt, now);
+        id,
+        lotId,
+        storageKey,
+        thumbnailKey,
+        newPosition,
+        contentType,
+        sizeBytes,
+        status,
+        createdAt,
+        now);
   }
 }

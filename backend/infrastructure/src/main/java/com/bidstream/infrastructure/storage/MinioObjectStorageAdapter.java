@@ -58,8 +58,7 @@ public class MinioObjectStorageAdapter implements ObjectStoragePort {
   @Override
   public byte[] getObject(String storageKey) {
     try (var stream =
-        minioClient.getObject(
-            GetObjectArgs.builder().bucket(bucket).object(storageKey).build())) {
+        minioClient.getObject(GetObjectArgs.builder().bucket(bucket).object(storageKey).build())) {
       return stream.readAllBytes();
     } catch (Exception ex) {
       throw new IllegalStateException("Failed to read object " + storageKey, ex);
@@ -70,10 +69,8 @@ public class MinioObjectStorageAdapter implements ObjectStoragePort {
   public void putObject(String storageKey, byte[] data, String contentType) {
     try {
       minioClient.putObject(
-          PutObjectArgs.builder()
-              .bucket(bucket)
-              .object(storageKey)
-              .stream(new ByteArrayInputStream(data), data.length, -1)
+          PutObjectArgs.builder().bucket(bucket).object(storageKey).stream(
+                  new ByteArrayInputStream(data), data.length, -1)
               .contentType(contentType)
               .build());
     } catch (Exception ex) {

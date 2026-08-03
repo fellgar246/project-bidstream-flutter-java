@@ -45,9 +45,7 @@ public class ImageConfirmService {
             .orElseThrow(() -> new NoSuchElementException("Image not found"));
 
     ObjectStoragePort.ObjectMetadata metadata =
-        objectStorage
-            .headObject(image.storageKey())
-            .orElseThrow(UploadNotFoundException::new);
+        objectStorage.headObject(image.storageKey()).orElseThrow(UploadNotFoundException::new);
 
     if (metadata.sizeBytes() != image.sizeBytes()
         || !metadata.contentType().equals(image.contentType())) {

@@ -48,7 +48,12 @@ public class PresignService {
   }
 
   public PresignResult presign(
-      long userId, Set<Role> roles, long lotId, String fileName, String contentType, long sizeBytes) {
+      long userId,
+      Set<Role> roles,
+      long lotId,
+      String fileName,
+      String contentType,
+      long sizeBytes) {
     Lot lot = lotRepository.findById(lotId).orElseThrow();
     LotAccessGuard.requireOwnerOrAdmin(lot, userId, roles);
     requireEditableLotStatus(lot);

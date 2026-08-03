@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
  * Removes orphaned objects from MinIO when presigned uploads were never confirmed.
  *
  * <p>Orphans are inevitable with presigned URLs: the client may abandon the upload after the API
- * creates a PENDING row, or the upload may fail without calling confirm. This job reconciles storage
- * with the database for rows stuck in PENDING beyond the grace period.
+ * creates a PENDING row, or the upload may fail without calling confirm. This job reconciles
+ * storage with the database for rows stuck in PENDING beyond the grace period.
  */
 @Component
 public class OrphanImageCleanupJob {
