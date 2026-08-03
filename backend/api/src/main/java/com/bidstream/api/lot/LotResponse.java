@@ -21,4 +21,5 @@ public record LotResponse(
     List<LotImageSummary> images,
     boolean watched,
     boolean canEdit,
-    boolean canBid) {}
+    boolean canBid,
+    Double rank) {}

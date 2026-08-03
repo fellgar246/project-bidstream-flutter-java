@@ -1,5 +1,6 @@
 package com.bidstream.application.auction;
 
+import com.bidstream.application.cache.LotCacheInvalidator;
 import com.bidstream.application.outbox.OutboxWriter;
 import com.bidstream.application.realtime.DomainEventPublisher;
 import com.bidstream.application.realtime.LotRealtimeEvent;
@@ -25,18 +26,21 @@ public class CloseAuctionService {
   private final OutboxWriter outboxWriter;
   private final DomainEventPublisher domainEventPublisher;
   private final Clock clock;
+  private final LotCacheInvalidator lotCacheInvalidator;
 
   public CloseAuctionService(
       LotRepository lotRepository,
       BidRepository bidRepository,
       OutboxWriter outboxWriter,
       DomainEventPublisher domainEventPublisher,
-      Clock clock) {
+      Clock clock,
+      LotCacheInvalidator lotCacheInvalidator) {
     this.lotRepository = lotRepository;
     this.bidRepository = bidRepository;
     this.outboxWriter = outboxWriter;
     this.domainEventPublisher = domainEventPublisher;
     this.clock = clock;
+    this.lotCacheInvalidator = lotCacheInvalidator;
   }
 
   @Transactional
@@ -57,6 +61,7 @@ public class CloseAuctionService {
       domainEventPublisher.publish(
           new LotRealtimeEvent.LotClosedEvent(
               lotId, closed, Optional.empty(), REASON_NO_BIDS, now));
+      lotCacheInvalidator.invalidateLotAndCatalog(lotId);
       return closed;
     }
 
@@ -66,6 +71,7 @@ public class CloseAuctionService {
       domainEventPublisher.publish(
           new LotRealtimeEvent.LotClosedEvent(
               lotId, closed, Optional.empty(), REASON_RESERVE_NOT_MET, now));
+      lotCacheInvalidator.invalidateLotAndCatalog(lotId);
       return closed;
     }
 
@@ -78,11 +84,8 @@ public class CloseAuctionService {
         closed, winningBid.id(), winningBid.bidderId(), winningBid.amount().cents(), now);
     domainEventPublisher.publish(
         new LotRealtimeEvent.LotClosedEvent(
-            lotId,
-            closed,
-            Optional.of(winningBid.bidderId()),
-            null,
-            now));
+            lotId, closed, Optional.of(winningBid.bidderId()), null, now));
+    lotCacheInvalidator.invalidateLotAndCatalog(lotId);
     return closed;
   }
 }

@@ -23,6 +23,7 @@ public interface NotificationJpaRepository extends JpaRepository<NotificationEnt
   java.util.Optional<NotificationEntity> findByIdAndUserId(long id, long userId);
 
   @Modifying
-  @Query("UPDATE NotificationEntity n SET n.readAt = :readAt WHERE n.userId = :userId AND n.readAt IS NULL")
+  @Query(
+      "UPDATE NotificationEntity n SET n.readAt = :readAt WHERE n.userId = :userId AND n.readAt IS NULL")
   int markAllRead(@Param("userId") long userId, @Param("readAt") java.time.Instant readAt);
 }

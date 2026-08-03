@@ -33,12 +33,15 @@ class LotServiceExtendedTest {
 
   @Mock private LotRepository lotRepository;
   @Mock private WatchRepository watchRepository;
+  @Mock private com.bidstream.application.cache.LotCacheInvalidator lotCacheInvalidator;
 
   private LotService lotService;
 
   @BeforeEach
   void setUp() {
-    lotService = new LotService(lotRepository, watchRepository, new LotsProperties(), CLOCK);
+    lotService =
+        new LotService(
+            lotRepository, watchRepository, new LotsProperties(), CLOCK, lotCacheInvalidator);
   }
 
   private static final Clock CLOCK = Clock.fixed(NOW, ZoneOffset.UTC);

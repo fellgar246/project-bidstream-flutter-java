@@ -1,6 +1,5 @@
 package com.bidstream.application.notification;
 
-import com.bidstream.domain.lot.ForbiddenLotAccessException;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.NoSuchElementException;

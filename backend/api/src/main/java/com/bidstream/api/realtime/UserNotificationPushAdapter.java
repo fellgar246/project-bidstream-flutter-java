@@ -25,7 +25,6 @@ public class UserNotificationPushAdapter implements UserNotificationPushPort {
     body.put("type", notification.type());
     body.put("payload", notification.payload());
     body.put("createdAt", notification.createdAt().toString());
-    messagingTemplate.convertAndSendToUser(
-        String.valueOf(userId), "/queue/notifications", body);
+    messagingTemplate.convertAndSendToUser(String.valueOf(userId), "/queue/notifications", body);
   }
 }

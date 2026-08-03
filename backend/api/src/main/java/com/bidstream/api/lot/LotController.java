@@ -5,11 +5,12 @@ import com.bidstream.application.lot.CreateLotUseCase;
 import com.bidstream.application.lot.DeleteLotUseCase;
 import com.bidstream.application.lot.GetLotUseCase;
 import com.bidstream.application.lot.ListLotsUseCase;
+import com.bidstream.application.lot.LotListResult;
 import com.bidstream.application.lot.ScheduleLotUseCase;
 import com.bidstream.application.lot.UpdateLotUseCase;
 import com.bidstream.domain.lot.Lot;
-import com.bidstream.domain.lot.LotPage;
 import com.bidstream.domain.lot.LotQuery;
+import com.bidstream.domain.lot.LotSearchFacets;
 import com.bidstream.domain.lot.LotSort;
 import com.bidstream.domain.lot.LotStatus;
 import com.bidstream.domain.money.Money;
@@ -137,6 +138,7 @@ public class LotController {
       @RequestParam(required = false) Long maxPriceCents,
       @RequestParam(required = false) Long sellerId,
       @RequestParam(required = false) String q,
+      @RequestParam(defaultValue = "false") boolean facets,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "20") int size,
       @RequestParam(defaultValue = "endingSoon") String sort) {
@@ -150,26 +152,42 @@ public class LotController {
             Optional.ofNullable(q),
             page,
             size,
-            parseSort(sort));
-    LotPage lotPage = listLotsUseCase.execute(query);
+            parseSort(sort),
+            facets);
+    LotListResult lotPage = listLotsUseCase.execute(query);
     Long viewerUserId = authentication != null ? userId(authentication) : null;
     Set<Role> viewerRoles = authentication != null ? roles(authentication) : Set.of();
     List<LotResponse> content =
         lotPage.content().stream()
-            .map(lot -> lotResponseMapper.toResponse(lot, viewerUserId, viewerRoles))
+            .map(snapshot -> lotResponseMapper.fromSnapshot(snapshot, viewerUserId, viewerRoles))
             .toList();
+    LotFacetsResponse facetsResponse = lotPage.facets().map(this::toFacetsResponse).orElse(null);
     return new LotPageResponse(
         content,
         new LotPageResponse.PageMetadata(
-            lotPage.page(), lotPage.size(), lotPage.totalElements(), lotPage.totalPages()));
+            lotPage.page(), lotPage.size(), lotPage.totalElements(), lotPage.totalPages()),
+        facetsResponse);
   }
 
   @GetMapping("/{id}")
   public LotResponse get(Authentication authentication, @PathVariable long id) {
-    Lot lot = getLotUseCase.execute(id);
+    var snapshot = getLotUseCase.execute(id);
     Long viewerUserId = authentication != null ? userId(authentication) : null;
     Set<Role> viewerRoles = authentication != null ? roles(authentication) : Set.of();
-    return lotResponseMapper.toResponse(lot, viewerUserId, viewerRoles);
+    return lotResponseMapper.fromSnapshot(snapshot, viewerUserId, viewerRoles);
+  }
+
+  private LotFacetsResponse toFacetsResponse(LotSearchFacets facets) {
+    return new LotFacetsResponse(
+        facets.categories().stream()
+            .map(c -> new LotFacetsResponse.CategoryFacetResponse(c.id(), c.name(), c.count()))
+            .toList(),
+        facets.priceRanges().stream()
+            .map(
+                p ->
+                    new LotFacetsResponse.PriceRangeFacetResponse(
+                        p.fromCents(), p.toCents(), p.count()))
+            .toList());
   }
 
   private static LotSort parseSort(String sort) {

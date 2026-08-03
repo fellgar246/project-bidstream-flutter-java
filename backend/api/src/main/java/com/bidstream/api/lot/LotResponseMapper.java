@@ -1,5 +1,6 @@
 package com.bidstream.api.lot;
 
+import com.bidstream.application.cache.CachedLotSnapshot;
 import com.bidstream.application.lot.LotService;
 import com.bidstream.application.lot.port.ObjectStoragePort;
 import com.bidstream.domain.category.CategoryRepository;
@@ -9,6 +10,7 @@ import com.bidstream.domain.lot.LotImageRepository;
 import com.bidstream.domain.lot.LotImageStatus;
 import com.bidstream.domain.user.Role;
 import com.bidstream.domain.user.UserRepository;
+import java.time.Instant;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -67,7 +69,76 @@ public class LotResponseMapper {
         mapImages(lot.id()),
         watched,
         lotService.canEdit(lot, viewerUserId, viewerRoles),
-        lotService.canBid(lot, viewerUserId));
+        lotService.canBid(lot, viewerUserId),
+        null);
+  }
+
+  public LotResponse fromSnapshot(
+      CachedLotSnapshot snapshot, Long viewerUserId, Set<Role> viewerRoles) {
+    Lot lot = snapshotToLot(snapshot);
+    boolean watched = viewerUserId != null && lotService.isWatched(viewerUserId, lot.id());
+    List<LotImageSummary> images =
+        snapshot.images().stream()
+            .map(
+                image ->
+                    new LotImageSummary(
+                        image.id(),
+                        image.url(),
+                        image.thumbnailUrl(),
+                        image.position(),
+                        image.contentType(),
+                        image.status()))
+            .toList();
+
+    return new LotResponse(
+        snapshot.id(),
+        snapshot.title(),
+        snapshot.description(),
+        new CategorySummary(snapshot.category().id(), snapshot.category().name()),
+        new SellerSummary(snapshot.seller().id(), snapshot.seller().displayName()),
+        snapshot.startingPrice(),
+        snapshot.minIncrement(),
+        snapshot.currentPrice(),
+        snapshot.bidCount(),
+        snapshot.hasReserve(),
+        snapshot.reserveMet(),
+        snapshot.status(),
+        snapshot.scheduledStartAt(),
+        snapshot.scheduledEndAt(),
+        snapshot.actualEndAt(),
+        images,
+        watched,
+        lotService.canEdit(lot, viewerUserId, viewerRoles),
+        lotService.canBid(lot, viewerUserId),
+        snapshot.rank());
+  }
+
+  private static Lot snapshotToLot(CachedLotSnapshot snapshot) {
+    Instant placeholder = Instant.EPOCH;
+    return new Lot(
+        snapshot.id(),
+        snapshot.seller().id(),
+        snapshot.title(),
+        snapshot.description(),
+        snapshot.category().id(),
+        com.bidstream.domain.money.Money.fromString(snapshot.startingPrice()),
+        com.bidstream.domain.money.Money.fromString(snapshot.minIncrement()),
+        null,
+        com.bidstream.domain.lot.LotStatus.valueOf(snapshot.status()),
+        snapshot.scheduledStartAt() != null
+            ? java.time.Instant.parse(snapshot.scheduledStartAt())
+            : null,
+        snapshot.scheduledEndAt() != null
+            ? java.time.Instant.parse(snapshot.scheduledEndAt())
+            : null,
+        snapshot.actualEndAt() != null ? java.time.Instant.parse(snapshot.actualEndAt()) : null,
+        com.bidstream.domain.money.Money.fromString(snapshot.currentPrice()),
+        snapshot.bidCount(),
+        null,
+        0,
+        0L,
+        placeholder,
+        placeholder);
   }
 
   private List<LotImageSummary> mapImages(long lotId) {

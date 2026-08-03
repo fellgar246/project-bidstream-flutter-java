@@ -38,8 +38,7 @@ public class NotificationController {
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "20") int size) {
     long userId = (long) authentication.getPrincipal();
-    List<Notification> items =
-        listNotificationsUseCase.execute(userId, unreadOnly, page, size);
+    List<Notification> items = listNotificationsUseCase.execute(userId, unreadOnly, page, size);
     long unreadCount = listNotificationsUseCase.countUnread(userId);
     return new NotificationListResponse(
         items.stream().map(NotificationResponse::from).toList(), unreadCount);

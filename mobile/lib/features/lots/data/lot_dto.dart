@@ -123,10 +123,11 @@ class LotSellerDto {
 }
 
 class LotPageDto {
-  const LotPageDto({required this.content, required this.page});
+  const LotPageDto({required this.content, required this.page, this.facets});
 
   final List<LotDto> content;
   final LotPageMetadata page;
+  final LotFacetsDto? facets;
 
   factory LotPageDto.fromJson(Map<String, dynamic> json) {
     final items = (json['content'] as List<dynamic>? ?? [])
@@ -135,6 +136,63 @@ class LotPageDto {
     return LotPageDto(
       content: items,
       page: LotPageMetadata.fromJson(json['page'] as Map<String, dynamic>),
+      facets: json['facets'] == null
+          ? null
+          : LotFacetsDto.fromJson(json['facets'] as Map<String, dynamic>),
+    );
+  }
+}
+
+class LotFacetsDto {
+  const LotFacetsDto({required this.categories, required this.priceRanges});
+
+  final List<CategoryFacetDto> categories;
+  final List<PriceRangeFacetDto> priceRanges;
+
+  factory LotFacetsDto.fromJson(Map<String, dynamic> json) {
+    return LotFacetsDto(
+      categories: (json['categories'] as List<dynamic>? ?? [])
+          .map((item) => CategoryFacetDto.fromJson(item as Map<String, dynamic>))
+          .toList(),
+      priceRanges: (json['priceRanges'] as List<dynamic>? ?? [])
+          .map((item) => PriceRangeFacetDto.fromJson(item as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+}
+
+class CategoryFacetDto {
+  const CategoryFacetDto({required this.id, required this.name, required this.count});
+
+  final int id;
+  final String name;
+  final int count;
+
+  factory CategoryFacetDto.fromJson(Map<String, dynamic> json) {
+    return CategoryFacetDto(
+      id: json['id'] as int,
+      name: json['name'] as String,
+      count: json['count'] as int,
+    );
+  }
+}
+
+class PriceRangeFacetDto {
+  const PriceRangeFacetDto({
+    required this.fromCents,
+    required this.toCents,
+    required this.count,
+  });
+
+  final int fromCents;
+  final int toCents;
+  final int count;
+
+  factory PriceRangeFacetDto.fromJson(Map<String, dynamic> json) {
+    return PriceRangeFacetDto(
+      fromCents: json['fromCents'] as int,
+      toCents: json['toCents'] as int,
+      count: json['count'] as int,
     );
   }
 }

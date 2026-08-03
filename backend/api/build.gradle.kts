@@ -40,6 +40,10 @@ dependencies {
     testImplementation("org.testcontainers:testcontainers")
     testImplementation("com.redis:testcontainers-redis:2.2.2")
     testImplementation("org.awaitility:awaitility:4.2.2")
+    testImplementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    testImplementation("com.bucket4j:bucket4j-core:8.10.1")
+    testImplementation("com.bucket4j:bucket4j-redis:8.10.1")
+    testImplementation("io.lettuce:lettuce-core")
     testImplementation("io.minio:minio:8.5.12")
     testImplementation("com.tngtech.archunit:archunit-junit5:1.3.0")
 }

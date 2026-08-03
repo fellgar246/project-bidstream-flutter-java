@@ -33,10 +33,6 @@ public sealed interface LotRealtimeEvent
   record LotStartedEvent(long lotId, Lot lot, Instant occurredAt) implements LotRealtimeEvent {}
 
   record LotClosedEvent(
-      long lotId,
-      Lot lot,
-      Optional<Long> winnerId,
-      String noSaleReason,
-      Instant occurredAt)
+      long lotId, Lot lot, Optional<Long> winnerId, String noSaleReason, Instant occurredAt)
       implements LotRealtimeEvent {}
 }

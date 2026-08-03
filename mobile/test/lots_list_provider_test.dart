@@ -41,7 +41,7 @@ class _DelayedLotsApi extends LotsApi {
   _DelayedLotsApi() : super(DioClient(baseUrl: 'http://test'));
 
   @override
-  Future<LotPageDto> fetchLots(LotFilters filters, int page) async {
+  Future<LotPageDto> fetchLots(LotFilters filters, int page, {bool facets = false}) async {
     await Future<void>.delayed(const Duration(milliseconds: 30));
     return LotPageDto(
       content: [

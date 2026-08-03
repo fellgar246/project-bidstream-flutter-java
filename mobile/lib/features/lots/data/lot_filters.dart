@@ -41,7 +41,7 @@ class LotFilters {
     );
   }
 
-  Map<String, dynamic> toQueryParams(int page) {
+  Map<String, dynamic> toQueryParams(int page, {bool facets = false}) {
     return {
       'status': status,
       if (categoryId != null) 'categoryId': categoryId,
@@ -49,10 +49,15 @@ class LotFilters {
       if (maxPriceCents != null) 'maxPriceCents': maxPriceCents,
       if (sellerId != null) 'sellerId': sellerId,
       if (query != null && query!.isNotEmpty) 'q': query,
+      if (facets) 'facets': true,
       'page': page,
       'size': size,
       'sort': sort,
     };
+  }
+
+  LotFilters clearFilters() {
+    return LotFilters(status: status, sort: sort, size: size);
   }
 
   @override

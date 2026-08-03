@@ -1,10 +1,9 @@
 package com.bidstream.api.lot;
 
-import com.bidstream.api.support.IntegrationTestInitializer;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.bidstream.api.support.IntegrationTestInitializer;
 import com.bidstream.api.support.MinioTestContainer;
-import com.bidstream.api.support.PostgresTestContainer;
 import com.bidstream.application.lot.OrphanImageCleanupJob;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;

@@ -18,5 +18,6 @@ public interface OutboxEventJpaRepository extends JpaRepository<OutboxEventEntit
       nativeQuery = true)
   java.util.List<OutboxEventEntity> claimUnpublished(@Param("limit") int limit);
 
-  java.util.List<OutboxEventEntity> findByPublishedAtIsNullAndAttemptsGreaterThanEqual(int attempts);
+  java.util.List<OutboxEventEntity> findByPublishedAtIsNullAndAttemptsGreaterThanEqual(
+      int attempts);
 }

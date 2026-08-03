@@ -1,13 +1,11 @@
 package com.bidstream.api.lot;
 
-import com.bidstream.api.support.IntegrationTestInitializer;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.bidstream.api.support.MinioTestContainer;
-import com.bidstream.api.support.PostgresTestContainer;
+import com.bidstream.api.support.IntegrationTestInitializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;

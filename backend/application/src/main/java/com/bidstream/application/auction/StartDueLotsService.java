@@ -1,5 +1,6 @@
 package com.bidstream.application.auction;
 
+import com.bidstream.application.cache.LotCacheInvalidator;
 import com.bidstream.application.outbox.OutboxWriter;
 import com.bidstream.application.realtime.DomainEventPublisher;
 import com.bidstream.application.realtime.LotRealtimeEvent;
@@ -20,16 +21,19 @@ public class StartDueLotsService {
   private final OutboxWriter outboxWriter;
   private final DomainEventPublisher domainEventPublisher;
   private final Clock clock;
+  private final LotCacheInvalidator lotCacheInvalidator;
 
   public StartDueLotsService(
       LotRepository lotRepository,
       OutboxWriter outboxWriter,
       DomainEventPublisher domainEventPublisher,
-      Clock clock) {
+      Clock clock,
+      LotCacheInvalidator lotCacheInvalidator) {
     this.lotRepository = lotRepository;
     this.outboxWriter = outboxWriter;
     this.domainEventPublisher = domainEventPublisher;
     this.clock = clock;
+    this.lotCacheInvalidator = lotCacheInvalidator;
   }
 
   @Transactional
@@ -41,6 +45,7 @@ public class StartDueLotsService {
       Lot live = lotRepository.save(lot.start(now));
       outboxWriter.writeLotStarted(live, now);
       domainEventPublisher.publish(new LotRealtimeEvent.LotStartedEvent(lot.id(), live, now));
+      lotCacheInvalidator.invalidateLotAndCatalog(lot.id());
       started++;
     }
     return started;

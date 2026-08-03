@@ -13,7 +13,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConditionalOnProperty(name = "bidstream.scheduler.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(
+    name = "bidstream.scheduler.enabled",
+    havingValue = "true",
+    matchIfMissing = true)
 public class AuctionSchedulerJobs {
 
   private static final Logger log = LoggerFactory.getLogger(AuctionSchedulerJobs.class);

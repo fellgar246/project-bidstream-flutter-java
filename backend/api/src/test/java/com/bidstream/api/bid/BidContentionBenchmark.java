@@ -3,9 +3,7 @@ package com.bidstream.api.bid;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-import com.bidstream.api.support.PostgresTestContainer;
 import com.bidstream.api.support.IntegrationTestInitializer;
-import com.bidstream.api.support.RedisTestContainer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;

@@ -4,8 +4,8 @@ import com.bidstream.domain.lot.Lot;
 import com.bidstream.domain.lot.LotPage;
 import com.bidstream.domain.lot.LotQuery;
 import com.bidstream.domain.lot.LotRepository;
-import com.bidstream.domain.lot.LotStatus;
-import com.bidstream.domain.money.Money;
+import com.bidstream.domain.lot.LotSearchFacets;
+import com.bidstream.domain.lot.LotSearchResult;
 import com.bidstream.infrastructure.persistence.category.CategoryEntity;
 import com.bidstream.infrastructure.persistence.category.CategoryJpaRepository;
 import com.bidstream.infrastructure.persistence.user.UserEntity;
@@ -13,6 +13,7 @@ import com.bidstream.infrastructure.persistence.user.UserJpaRepository;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +26,7 @@ public class LotRepositoryAdapter implements LotRepository {
   private final LotImageJpaRepository lotImageJpaRepository;
   private final UserJpaRepository userJpaRepository;
   private final CategoryJpaRepository categoryJpaRepository;
+  private final LotSearchRepository lotSearchRepository;
   private final Clock clock;
 
   public LotRepositoryAdapter(
@@ -32,11 +34,13 @@ public class LotRepositoryAdapter implements LotRepository {
       LotImageJpaRepository lotImageJpaRepository,
       UserJpaRepository userJpaRepository,
       CategoryJpaRepository categoryJpaRepository,
+      LotSearchRepository lotSearchRepository,
       Clock clock) {
     this.lotJpaRepository = lotJpaRepository;
     this.lotImageJpaRepository = lotImageJpaRepository;
     this.userJpaRepository = userJpaRepository;
     this.categoryJpaRepository = categoryJpaRepository;
+    this.lotSearchRepository = lotSearchRepository;
     this.clock = clock;
   }
 
@@ -78,12 +82,12 @@ public class LotRepositoryAdapter implements LotRepository {
 
   @Override
   public Optional<Lot> findById(long id) {
-    return lotJpaRepository.findById(id).map(this::toDomain);
+    return lotJpaRepository.findById(id).map(LotEntityMapper::toDomain);
   }
 
   @Override
   public Optional<Lot> findByIdForUpdate(long id) {
-    return lotJpaRepository.findByIdForUpdate(id).map(this::toDomain);
+    return lotJpaRepository.findByIdForUpdate(id).map(LotEntityMapper::toDomain);
   }
 
   @Override
@@ -97,14 +101,27 @@ public class LotRepositoryAdapter implements LotRepository {
         PageRequest.of(query.page(), query.size(), LotSpecifications.toSort(query.sort()));
     Page<LotEntity> page =
         lotJpaRepository.findAll(LotSpecifications.forPublicQuery(query), pageRequest);
-    List<Lot> content = page.getContent().stream().map(this::toDomain).toList();
+    List<Lot> content = page.getContent().stream().map(LotEntityMapper::toDomain).toList();
     return new LotPage(content, query.page(), query.size(), page.getTotalElements());
+  }
+
+  @Override
+  public LotSearchResult search(LotQuery query) {
+    if (query.searchQuery().filter(q -> !q.isBlank()).isEmpty()) {
+      LotPage page = findPublic(query);
+      Optional<LotSearchFacets> facets =
+          query.facets()
+              ? Optional.of(new LotSearchFacets(List.of(), List.of()))
+              : Optional.empty();
+      return new LotSearchResult(page, Map.of(), facets);
+    }
+    return lotSearchRepository.search(query);
   }
 
   @Override
   public List<Lot> findBySellerId(long sellerId) {
     return lotJpaRepository.findBySeller_IdOrderByCreatedAtDesc(sellerId).stream()
-        .map(this::toDomain)
+        .map(LotEntityMapper::toDomain)
         .toList();
   }
 
@@ -120,10 +137,8 @@ public class LotRepositoryAdapter implements LotRepository {
 
   @Override
   public List<Lot> findScheduledReadyToStart(Instant now, int limit) {
-    return lotJpaRepository
-        .findScheduledReadyToStart(now, PageRequest.of(0, limit))
-        .stream()
-        .map(this::toDomain)
+    return lotJpaRepository.findScheduledReadyToStart(now, PageRequest.of(0, limit)).stream()
+        .map(LotEntityMapper::toDomain)
         .toList();
   }
 
@@ -133,29 +148,6 @@ public class LotRepositoryAdapter implements LotRepository {
   }
 
   private Lot toDomain(LotEntity entity) {
-    Money reservePrice =
-        entity.getReservePriceCents() == null
-            ? null
-            : Money.fromCents(entity.getReservePriceCents());
-    return new Lot(
-        entity.getId(),
-        entity.getSeller().getId(),
-        entity.getTitle(),
-        entity.getDescription(),
-        entity.getCategory().getId(),
-        Money.fromCents(entity.getStartingPriceCents()),
-        Money.fromCents(entity.getMinIncrementCents()),
-        reservePrice,
-        LotStatus.valueOf(entity.getStatus()),
-        entity.getScheduledStartAt(),
-        entity.getScheduledEndAt(),
-        entity.getActualEndAt(),
-        Money.fromCents(entity.getCurrentPriceCents()),
-        entity.getBidCount(),
-        entity.getWinningBidId(),
-        entity.getExtensionCount(),
-        entity.getVersion(),
-        entity.getCreatedAt(),
-        entity.getUpdatedAt());
+    return LotEntityMapper.toDomain(entity);
   }
 }

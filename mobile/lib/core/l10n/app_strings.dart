@@ -40,6 +40,9 @@ abstract final class AppStrings {
   static const lotsFilterStatus = 'Status';
   static const lotsFilterSort = 'Sort';
   static const lotsApplyFilters = 'Apply filters';
+  static const lotsSearchHint = 'Search lots';
+  static const lotsClearFilters = 'Clear filters';
+  static String lotsSearchEmpty(String query) => 'No results for "$query"';
   static const lotDetailTitle = 'Lot detail';
   static const lotCurrentPrice = 'Current price';
   static const lotStatus = 'Status';

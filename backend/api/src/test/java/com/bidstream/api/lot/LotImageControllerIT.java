@@ -1,6 +1,5 @@
 package com.bidstream.api.lot;
 
-import com.bidstream.api.support.IntegrationTestInitializer;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -9,8 +8,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.bidstream.api.support.IntegrationTestInitializer;
 import com.bidstream.api.support.MinioTestContainer;
-import com.bidstream.api.support.PostgresTestContainer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.minio.MinioClient;

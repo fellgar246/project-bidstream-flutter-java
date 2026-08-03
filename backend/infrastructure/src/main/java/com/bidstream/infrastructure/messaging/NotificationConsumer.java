@@ -1,12 +1,10 @@
 package com.bidstream.infrastructure.messaging;
 
-import com.bidstream.application.messaging.MailPort;
 import com.bidstream.application.messaging.ProcessedEventPort;
 import com.bidstream.application.notification.Notification;
 import com.bidstream.application.notification.NotificationRepository;
 import com.bidstream.application.notification.UserNotificationPushPort;
 import com.bidstream.application.outbox.OutboxEvent;
-import com.bidstream.domain.user.UserRepository;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -74,14 +72,10 @@ public class NotificationConsumer {
       case OutboxEvent.LOT_CLOSED_SOLD -> {
         result.add(
             new NotificationCandidate(
-                ((Number) payload.get("winnerId")).longValue(),
-                "YOU_WON",
-                Map.copyOf(payload)));
+                ((Number) payload.get("winnerId")).longValue(), "YOU_WON", Map.copyOf(payload)));
         result.add(
             new NotificationCandidate(
-                ((Number) payload.get("sellerId")).longValue(),
-                "LOT_SOLD",
-                Map.copyOf(payload)));
+                ((Number) payload.get("sellerId")).longValue(), "LOT_SOLD", Map.copyOf(payload)));
       }
       case OutboxEvent.LOT_CLOSED_NO_SALE ->
           result.add(

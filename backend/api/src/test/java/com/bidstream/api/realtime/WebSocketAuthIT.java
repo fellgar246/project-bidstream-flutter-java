@@ -1,11 +1,9 @@
 package com.bidstream.api.realtime;
 
-import com.bidstream.api.support.IntegrationTestInitializer;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.bidstream.api.support.PostgresTestContainer;
-import com.bidstream.api.support.RedisTestContainer;
+import com.bidstream.api.support.IntegrationTestInitializer;
 import com.bidstream.api.support.StompTestSupport;
 import com.bidstream.api.support.TestEmails;
 import java.net.URI;

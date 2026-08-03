@@ -1,5 +1,6 @@
 package com.bidstream.application.lot;
 
+import com.bidstream.application.cache.LotCacheInvalidator;
 import com.bidstream.domain.lot.ImageRequiredException;
 import com.bidstream.domain.lot.Lot;
 import com.bidstream.domain.lot.LotPage;
@@ -25,16 +26,19 @@ public class LotService {
   private final WatchRepository watchRepository;
   private final LotsProperties lotsProperties;
   private final Clock clock;
+  private final LotCacheInvalidator lotCacheInvalidator;
 
   public LotService(
       LotRepository lotRepository,
       WatchRepository watchRepository,
       LotsProperties lotsProperties,
-      Clock clock) {
+      Clock clock,
+      LotCacheInvalidator lotCacheInvalidator) {
     this.lotRepository = lotRepository;
     this.watchRepository = watchRepository;
     this.lotsProperties = lotsProperties;
     this.clock = clock;
+    this.lotCacheInvalidator = lotCacheInvalidator;
   }
 
   public Lot createLot(
@@ -56,7 +60,9 @@ public class LotService {
             minIncrement,
             reservePrice,
             now);
-    return lotRepository.save(draft);
+    Lot saved = lotRepository.save(draft);
+    lotCacheInvalidator.invalidateCatalog();
+    return saved;
   }
 
   public Lot updateLot(
@@ -80,7 +86,9 @@ public class LotService {
             minIncrement,
             reservePrice,
             clock.instant());
-    return lotRepository.save(updated);
+    Lot saved = lotRepository.save(updated);
+    lotCacheInvalidator.invalidateLot(lotId);
+    return saved;
   }
 
   public void deleteLot(long userId, Set<Role> roles, long lotId) {
@@ -88,6 +96,7 @@ public class LotService {
     LotAccessGuard.requireOwnerOrAdmin(lot, userId, roles);
     LotAccessGuard.requireDeletable(lot);
     lotRepository.deleteById(lotId);
+    lotCacheInvalidator.invalidateLotAndCatalog(lotId);
   }
 
   public Lot scheduleLot(
@@ -98,14 +107,18 @@ public class LotService {
       throw new ImageRequiredException();
     }
     Lot scheduled = lot.schedule(scheduledStartAt, scheduledEndAt, clock.instant());
-    return lotRepository.save(scheduled);
+    Lot saved = lotRepository.save(scheduled);
+    lotCacheInvalidator.invalidateLotAndCatalog(lotId);
+    return saved;
   }
 
   public Lot cancelLot(long userId, Set<Role> roles, long lotId) {
     Lot lot = findLotOrThrow(lotId);
     LotAccessGuard.requireOwnerOrAdmin(lot, userId, roles);
     Lot cancelled = lot.cancel(clock.instant());
-    return lotRepository.save(cancelled);
+    Lot saved = lotRepository.save(cancelled);
+    lotCacheInvalidator.invalidateLotAndCatalog(lotId);
+    return saved;
   }
 
   public Lot getLot(long lotId) {
@@ -122,7 +135,9 @@ public class LotService {
 
   public Lot forceStatus(long lotId, LotStatus status) {
     Lot lot = findLotOrThrow(lotId);
-    return lotRepository.save(lot.forceStatus(status, clock.instant()));
+    Lot saved = lotRepository.save(lot.forceStatus(status, clock.instant()));
+    lotCacheInvalidator.invalidateLotAndCatalog(lotId);
+    return saved;
   }
 
   public void watchLot(long userId, long lotId) {

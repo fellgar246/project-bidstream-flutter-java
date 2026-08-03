@@ -20,9 +20,7 @@ public class InvoiceConsumer {
   private final Clock clock;
 
   public InvoiceConsumer(
-      ProcessedEventPort processedEventPort,
-      InvoiceRepository invoiceRepository,
-      Clock clock) {
+      ProcessedEventPort processedEventPort, InvoiceRepository invoiceRepository, Clock clock) {
     this.processedEventPort = processedEventPort;
     this.invoiceRepository = invoiceRepository;
     this.clock = clock;

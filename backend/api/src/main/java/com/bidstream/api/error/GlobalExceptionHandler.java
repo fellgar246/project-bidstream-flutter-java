@@ -19,6 +19,7 @@ import com.bidstream.domain.lot.LotValidationException;
 import com.bidstream.domain.lot.UnsupportedMediaTypeException;
 import com.bidstream.domain.lot.UploadMismatchException;
 import com.bidstream.domain.lot.UploadNotFoundException;
+import com.bidstream.domain.ratelimit.RateLimitExceededException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -152,6 +153,15 @@ public class GlobalExceptionHandler {
     String traceId = traceId();
     return response(
         HttpStatus.CONFLICT, "image_limit_reached", ex.getMessage(), Map.of(), traceId, ex);
+  }
+
+  @ExceptionHandler(RateLimitExceededException.class)
+  public ResponseEntity<ErrorResponse> handleRateLimit(RateLimitExceededException ex) {
+    String traceId = traceId();
+    long retrySeconds = Math.max(1, ex.retryAfter().getSeconds());
+    return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+        .header("Retry-After", String.valueOf(retrySeconds))
+        .body(new ErrorResponse(new ErrorBody("rate_limited", ex.getMessage(), Map.of()), traceId));
   }
 
   @ExceptionHandler(UploadNotFoundException.class)

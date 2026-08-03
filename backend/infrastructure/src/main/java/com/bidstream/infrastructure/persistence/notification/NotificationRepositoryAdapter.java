@@ -44,9 +44,7 @@ public class NotificationRepositoryAdapter implements NotificationRepository {
 
   @Override
   public List<Notification> findByUserId(long userId, boolean unreadOnly, int page, int size) {
-    return jpaRepository
-        .findByUser(userId, unreadOnly, PageRequest.of(page, size))
-        .stream()
+    return jpaRepository.findByUser(userId, unreadOnly, PageRequest.of(page, size)).stream()
         .map(this::toDomain)
         .toList();
   }

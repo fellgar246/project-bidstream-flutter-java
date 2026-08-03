@@ -2,9 +2,7 @@ package com.bidstream.api.bid;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.bidstream.api.support.PostgresTestContainer;
 import com.bidstream.api.support.IntegrationTestInitializer;
-import com.bidstream.api.support.RedisTestContainer;
 import com.bidstream.application.bid.DistributedLockPort;
 import com.bidstream.infrastructure.lock.RedisDistributedLockAdapter;
 import java.time.Duration;

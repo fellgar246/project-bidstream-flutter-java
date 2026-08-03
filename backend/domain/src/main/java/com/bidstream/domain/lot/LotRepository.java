@@ -16,6 +16,8 @@ public interface LotRepository {
 
   LotPage findPublic(LotQuery query);
 
+  LotSearchResult search(LotQuery query);
+
   List<Lot> findBySellerId(long sellerId);
 
   long countBySellerId(long sellerId);

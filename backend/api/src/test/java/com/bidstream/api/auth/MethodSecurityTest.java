@@ -3,7 +3,6 @@ package com.bidstream.api.auth;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.bidstream.api.support.PostgresTestContainer;
 import com.bidstream.api.support.IntegrationTestInitializer;
 import com.bidstream.application.auth.AuthService;
 import com.bidstream.application.lot.CreateLotUseCase;

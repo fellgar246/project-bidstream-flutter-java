@@ -2,7 +2,6 @@ package com.bidstream.api.seed;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.bidstream.api.support.PostgresTestContainer;
 import com.bidstream.api.support.IntegrationTestInitializer;
 import com.bidstream.infrastructure.seed.CategorySeeder;
 import org.junit.jupiter.api.Test;

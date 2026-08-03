@@ -3,7 +3,6 @@ package com.bidstream.infrastructure.messaging;
 import com.bidstream.application.messaging.MailPort;
 import com.bidstream.application.messaging.ProcessedEventPort;
 import com.bidstream.application.outbox.OutboxEvent;
-import com.bidstream.domain.user.User;
 import com.bidstream.domain.user.UserRepository;
 import java.time.Clock;
 import java.time.Instant;

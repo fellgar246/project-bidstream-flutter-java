@@ -1,20 +1,21 @@
 package com.bidstream.application.lot;
 
-import com.bidstream.domain.lot.Lot;
+import com.bidstream.application.cache.CachedLotSnapshot;
+import com.bidstream.application.cache.LotReadCacheService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class GetLotUseCase {
 
-  private final LotService lotService;
+  private final LotReadCacheService lotReadCacheService;
 
-  public GetLotUseCase(LotService lotService) {
-    this.lotService = lotService;
+  public GetLotUseCase(LotReadCacheService lotReadCacheService) {
+    this.lotReadCacheService = lotReadCacheService;
   }
 
   @Transactional(readOnly = true)
-  public Lot execute(long lotId) {
-    return lotService.getLot(lotId);
+  public CachedLotSnapshot execute(long lotId) {
+    return lotReadCacheService.getLotSnapshot(lotId);
   }
 }

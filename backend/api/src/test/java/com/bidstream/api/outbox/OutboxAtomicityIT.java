@@ -62,7 +62,9 @@ class OutboxAtomicityIT {
                     """))
         .andExpect(status().is5xxServerError());
 
-    Integer bids = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM bids WHERE lot_id = ?", Integer.class, lotId);
+    Integer bids =
+        jdbcTemplate.queryForObject(
+            "SELECT COUNT(*) FROM bids WHERE lot_id = ?", Integer.class, lotId);
     Integer outbox =
         jdbcTemplate.queryForObject(
             "SELECT COUNT(*) FROM outbox_events WHERE aggregate_id = ?", Integer.class, lotId);

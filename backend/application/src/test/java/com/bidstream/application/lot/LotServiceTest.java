@@ -34,13 +34,15 @@ class LotServiceTest {
 
   @Mock private LotRepository lotRepository;
   @Mock private WatchRepository watchRepository;
+  @Mock private com.bidstream.application.cache.LotCacheInvalidator lotCacheInvalidator;
 
   private LotService lotService;
 
   @BeforeEach
   void setUp() {
     LotsProperties properties = new LotsProperties();
-    lotService = new LotService(lotRepository, watchRepository, properties, CLOCK);
+    lotService =
+        new LotService(lotRepository, watchRepository, properties, CLOCK, lotCacheInvalidator);
   }
 
   @Test
@@ -100,7 +102,8 @@ class LotServiceTest {
   void rb12_scheduleWithoutReadyImages_throwsImageRequired() {
     LotsProperties properties = new LotsProperties();
     properties.setRequireImagesForSchedule(true);
-    lotService = new LotService(lotRepository, watchRepository, properties, CLOCK);
+    lotService =
+        new LotService(lotRepository, watchRepository, properties, CLOCK, lotCacheInvalidator);
 
     Lot lot = draftLot(1L, 10L);
     when(lotRepository.findById(1L)).thenReturn(Optional.of(lot));

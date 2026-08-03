@@ -10,11 +10,11 @@ class LotsApi {
 
   final DioClient _client;
 
-  Future<LotPageDto> fetchLots(LotFilters filters, int page) async {
+  Future<LotPageDto> fetchLots(LotFilters filters, int page, {bool facets = false}) async {
     try {
       final response = await _client.dio.get<Map<String, dynamic>>(
         '/lots',
-        queryParameters: filters.toQueryParams(page),
+        queryParameters: filters.toQueryParams(page, facets: facets),
       );
       return LotPageDto.fromJson(response.data ?? {});
     } on DioException catch (error) {

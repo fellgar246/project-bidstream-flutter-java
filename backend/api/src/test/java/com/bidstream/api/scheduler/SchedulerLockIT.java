@@ -81,8 +81,7 @@ class SchedulerLockIT {
     Integer events =
         jdbcTemplate.queryForObject(
             "SELECT COUNT(*) FROM outbox_events WHERE aggregate_id = ? AND event_type LIKE 'LotClosed%'",
-            Integer.class,
-            lotId);
+            Integer.class, lotId);
     assertThat(events).isEqualTo(1);
   }
 

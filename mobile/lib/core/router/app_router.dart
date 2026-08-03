@@ -13,6 +13,7 @@ import '../../features/lots/presentation/live_auction_screen.dart';
 import '../../features/lots/presentation/lot_detail_screen.dart';
 import '../../features/lots/presentation/lot_edit_screen.dart';
 import '../../features/lots/presentation/lot_form_screen.dart';
+import '../../features/lots/data/lot_filters.dart';
 import '../../features/lots/presentation/lots_list_screen.dart';
 import '../../features/lots/presentation/seller_lots_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
@@ -80,7 +81,16 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/lots',
-        builder: (context, state) => const LotsListScreen(),
+        builder: (context, state) {
+          final query = state.uri.queryParameters;
+          final filters = LotFilters(
+            query: query['q'],
+            categoryId: int.tryParse(query['categoryId'] ?? ''),
+            minPriceCents: int.tryParse(query['minPriceCents'] ?? ''),
+            maxPriceCents: int.tryParse(query['maxPriceCents'] ?? ''),
+          );
+          return LotsListScreen(initialFilters: filters);
+        },
       ),
       GoRoute(
         path: '/lots/:id/live',

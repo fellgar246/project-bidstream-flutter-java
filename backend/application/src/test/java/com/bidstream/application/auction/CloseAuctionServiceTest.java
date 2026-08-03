@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.bidstream.application.auction.CloseAuctionService;
 import com.bidstream.application.outbox.OutboxWriter;
 import com.bidstream.application.realtime.DomainEventPublisher;
 import com.bidstream.domain.bid.Bid;
@@ -23,9 +22,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CloseAuctionServiceTest {
@@ -36,6 +32,7 @@ class CloseAuctionServiceTest {
   @Mock private BidRepository bidRepository;
   @Mock private OutboxWriter outboxWriter;
   @Mock private DomainEventPublisher domainEventPublisher;
+  @Mock private com.bidstream.application.cache.LotCacheInvalidator lotCacheInvalidator;
 
   private CloseAuctionService service;
   private Lot liveLot;
@@ -48,7 +45,8 @@ class CloseAuctionServiceTest {
             bidRepository,
             outboxWriter,
             domainEventPublisher,
-            Clock.fixed(NOW, ZoneOffset.UTC));
+            Clock.fixed(NOW, ZoneOffset.UTC),
+            lotCacheInvalidator);
     liveLot = sampleLiveLot(0, Money.fromCents(0));
   }
 
@@ -101,8 +99,7 @@ class CloseAuctionServiceTest {
   @Test
   void close_reserveMet_soldWithWinningBid() {
     Lot withBids = sampleLiveLot(3, Money.fromCents(25000));
-    Bid winning =
-        new Bid(99L, 1L, 42L, Money.fromCents(25000), NOW, "req-1", NOW);
+    Bid winning = new Bid(99L, 1L, 42L, Money.fromCents(25000), NOW, "req-1", NOW);
     when(lotRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(withBids));
     when(bidRepository.findHighestBidByLotId(1L)).thenReturn(Optional.of(winning));
     when(lotRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));

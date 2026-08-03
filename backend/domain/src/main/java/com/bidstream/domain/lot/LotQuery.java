@@ -11,7 +11,8 @@ public record LotQuery(
     Optional<String> searchQuery,
     int page,
     int size,
-    LotSort sort) {
+    LotSort sort,
+    boolean facets) {
 
   public LotQuery {
     if (page < 0) {
@@ -20,5 +21,29 @@ public record LotQuery(
     if (size < 1 || size > 100) {
       throw new IllegalArgumentException("size must be between 1 and 100");
     }
+  }
+
+  /** Backward-compatible constructor without facets flag. */
+  public LotQuery(
+      Optional<LotStatus> status,
+      Optional<Long> categoryId,
+      Optional<Long> minPriceCents,
+      Optional<Long> maxPriceCents,
+      Optional<Long> sellerId,
+      Optional<String> searchQuery,
+      int page,
+      int size,
+      LotSort sort) {
+    this(
+        status,
+        categoryId,
+        minPriceCents,
+        maxPriceCents,
+        sellerId,
+        searchQuery,
+        page,
+        size,
+        sort,
+        false);
   }
 }

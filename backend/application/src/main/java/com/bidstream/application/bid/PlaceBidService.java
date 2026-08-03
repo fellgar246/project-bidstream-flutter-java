@@ -1,5 +1,6 @@
 package com.bidstream.application.bid;
 
+import com.bidstream.application.cache.LotCacheInvalidator;
 import com.bidstream.application.outbox.OutboxWriter;
 import com.bidstream.application.realtime.DomainEventPublisher;
 import com.bidstream.application.realtime.LotRealtimeEvent;
@@ -35,6 +36,7 @@ public class PlaceBidService {
   private final OutboxWriter outboxWriter;
   private final UserRepository userRepository;
   private final Clock clock;
+  private final LotCacheInvalidator lotCacheInvalidator;
 
   public PlaceBidService(
       LotRepository lotRepository,
@@ -46,7 +48,8 @@ public class PlaceBidService {
       DomainEventPublisher domainEventPublisher,
       OutboxWriter outboxWriter,
       UserRepository userRepository,
-      Clock clock) {
+      Clock clock,
+      LotCacheInvalidator lotCacheInvalidator) {
     this.lotRepository = lotRepository;
     this.bidRepository = bidRepository;
     this.bidValidator = bidValidator;
@@ -56,6 +59,7 @@ public class PlaceBidService {
     this.outboxWriter = outboxWriter;
     this.userRepository = userRepository;
     this.clock = clock;
+    this.lotCacheInvalidator = lotCacheInvalidator;
   }
 
   public PlaceBidOutcome placeBid(long lotId, long bidderId, Money amount, String clientRequestId) {
@@ -74,6 +78,9 @@ public class PlaceBidService {
               transactionTemplate.execute(
                   status -> attemptPlaceBid(lotId, bidderId, amount, clientRequestId));
           if (outcome != null) {
+            if (!outcome.idempotentReplay()) {
+              lotCacheInvalidator.invalidateLot(lotId);
+            }
             return outcome;
           }
         } catch (OptimisticLockingFailureException ex) {
