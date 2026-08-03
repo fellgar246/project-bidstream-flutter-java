@@ -4,6 +4,7 @@ import com.bidstream.domain.category.Category;
 import com.bidstream.domain.category.CategoryRepository;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -18,6 +19,13 @@ public class CategoryRepositoryAdapter implements CategoryRepository {
   @Override
   public List<Category> findRootCategoriesWithChildren() {
     return jpaRepository.findRootsWithChildren().stream().map(this::toDomain).toList();
+  }
+
+  @Override
+  public Optional<Category> findById(long id) {
+    return jpaRepository
+        .findById(id)
+        .map(entity -> new Category(entity.getId(), entity.getSlug(), entity.getName()));
   }
 
   private Category toDomain(CategoryEntity entity) {

@@ -4,6 +4,10 @@ import com.bidstream.domain.auth.AlreadySellerException;
 import com.bidstream.domain.auth.DuplicateEmailException;
 import com.bidstream.domain.auth.InvalidCredentialsException;
 import com.bidstream.domain.auth.TokenReuseException;
+import com.bidstream.domain.lot.ForbiddenLotAccessException;
+import com.bidstream.domain.lot.ImageRequiredException;
+import com.bidstream.domain.lot.InvalidTransitionException;
+import com.bidstream.domain.lot.LotValidationException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -60,6 +64,35 @@ public class GlobalExceptionHandler {
     String traceId = traceId();
     return response(
         HttpStatus.UNAUTHORIZED, "token_reuse_detected", ex.getMessage(), Map.of(), traceId, ex);
+  }
+
+  @ExceptionHandler(ForbiddenLotAccessException.class)
+  public ResponseEntity<ErrorResponse> handleForbiddenLot(ForbiddenLotAccessException ex) {
+    String traceId = traceId();
+    return response(HttpStatus.FORBIDDEN, "forbidden", ex.getMessage(), Map.of(), traceId, ex);
+  }
+
+  @ExceptionHandler(InvalidTransitionException.class)
+  public ResponseEntity<ErrorResponse> handleInvalidTransition(InvalidTransitionException ex) {
+    String traceId = traceId();
+    Map<String, String> details = new LinkedHashMap<>();
+    details.put("from", ex.from().name());
+    details.put("event", ex.event().name());
+    return response(
+        HttpStatus.CONFLICT, "invalid_transition", ex.getMessage(), details, traceId, ex);
+  }
+
+  @ExceptionHandler(LotValidationException.class)
+  public ResponseEntity<ErrorResponse> handleLotValidation(LotValidationException ex) {
+    String traceId = traceId();
+    return response(
+        HttpStatus.BAD_REQUEST, "validation_error", ex.getMessage(), ex.details(), traceId, ex);
+  }
+
+  @ExceptionHandler(ImageRequiredException.class)
+  public ResponseEntity<ErrorResponse> handleImageRequired(ImageRequiredException ex) {
+    String traceId = traceId();
+    return response(HttpStatus.CONFLICT, "image_required", ex.getMessage(), Map.of(), traceId, ex);
   }
 
   @ExceptionHandler(AccessDeniedException.class)
