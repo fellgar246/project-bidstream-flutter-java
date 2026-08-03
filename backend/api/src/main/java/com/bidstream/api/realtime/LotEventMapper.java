@@ -40,4 +40,37 @@ public class LotEventMapper {
         event.occurredAt(),
         payload);
   }
+
+  public LotEventEnvelope toLotStarted(LotRealtimeEvent.LotStartedEvent event) {
+    Map<String, Object> payload = new LinkedHashMap<>();
+    payload.put("lotId", event.lotId());
+    payload.put("sellerId", event.lot().sellerId());
+    payload.put("status", event.lot().status().name());
+    return new LotEventEnvelope(
+        LotEventEnvelope.eventIdForLotLifecycle(event.lotId(), LotEventEnvelope.LOT_STARTED),
+        LotEventEnvelope.LOT_STARTED,
+        event.lotId(),
+        event.occurredAt(),
+        payload);
+  }
+
+  public LotEventEnvelope toLotClosed(LotRealtimeEvent.LotClosedEvent event) {
+    Map<String, Object> payload = new LinkedHashMap<>();
+    payload.put("lotId", event.lotId());
+    payload.put("status", event.lot().status().name());
+    event.winnerId().ifPresent(winnerId -> payload.put("winnerId", winnerId));
+    if (event.noSaleReason() != null) {
+      payload.put("reason", event.noSaleReason());
+    }
+    if (event.lot().winningBidId() != null) {
+      payload.put("winningBidId", event.lot().winningBidId());
+    }
+    payload.put("currentPrice", event.lot().currentPrice().toString());
+    return new LotEventEnvelope(
+        LotEventEnvelope.eventIdForLotLifecycle(event.lotId(), LotEventEnvelope.LOT_CLOSED),
+        LotEventEnvelope.LOT_CLOSED,
+        event.lotId(),
+        event.occurredAt(),
+        payload);
+  }
 }

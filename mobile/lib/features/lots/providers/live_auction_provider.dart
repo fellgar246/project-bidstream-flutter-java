@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/auth/token_storage.dart';
+import '../../../core/l10n/app_strings.dart';
 import '../../../core/realtime/bidstream_stomp_client.dart';
 import '../../../core/realtime/stomp_client.dart';
 import '../data/lot_events_api.dart';
@@ -29,6 +30,8 @@ class LiveAuctionState {
     this.showExtendedBanner = false,
     this.bids = const [],
     this.outbidMessage,
+    this.closedMessage,
+    this.lotStatus,
   });
 
   final String currentPrice;
@@ -38,6 +41,8 @@ class LiveAuctionState {
   final bool showExtendedBanner;
   final List<LiveBidEntry> bids;
   final String? outbidMessage;
+  final String? closedMessage;
+  final String? lotStatus;
 
   LiveAuctionState copyWith({
     String? currentPrice,
@@ -47,6 +52,8 @@ class LiveAuctionState {
     bool? showExtendedBanner,
     List<LiveBidEntry>? bids,
     String? outbidMessage,
+    String? closedMessage,
+    String? lotStatus,
   }) {
     return LiveAuctionState(
       currentPrice: currentPrice ?? this.currentPrice,
@@ -56,6 +63,8 @@ class LiveAuctionState {
       showExtendedBanner: showExtendedBanner ?? this.showExtendedBanner,
       bids: bids ?? this.bids,
       outbidMessage: outbidMessage,
+      closedMessage: closedMessage ?? this.closedMessage,
+      lotStatus: lotStatus ?? this.lotStatus,
     );
   }
 }
@@ -116,6 +125,19 @@ class LiveAuctionNotifier extends FamilyNotifier<LiveAuctionState, int> {
         state = state.copyWith(
           scheduledEndAt: event.payload['scheduledEndAt'] as String? ?? state.scheduledEndAt,
           showExtendedBanner: true,
+        );
+      case 'LOT_CLOSED':
+        final status = event.payload['status'] as String? ?? '';
+        final reason = event.payload['reason'] as String?;
+        String? message;
+        if (status == 'CLOSED_SOLD') {
+          message = AppStrings.liveYouWon;
+        } else if (status == 'CLOSED_NO_SALE') {
+          message = AppStrings.liveClosedNoSale;
+        }
+        state = state.copyWith(
+          lotStatus: status,
+          closedMessage: message ?? (reason != null ? AppStrings.liveClosedNoSale : null),
         );
       default:
         break;

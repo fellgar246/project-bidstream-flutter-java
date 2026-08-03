@@ -58,6 +58,18 @@ public class RealtimeBroadcastListener {
     messagingTemplate.convertAndSend("/topic/lots/" + event.lotId(), envelope);
   }
 
+  @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+  public void onLotStarted(LotRealtimeEvent.LotStartedEvent event) {
+    LotEventEnvelope envelope = lotEventMapper.toLotStarted(event);
+    messagingTemplate.convertAndSend("/topic/lots/" + event.lotId(), envelope);
+  }
+
+  @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+  public void onLotClosed(LotRealtimeEvent.LotClosedEvent event) {
+    LotEventEnvelope envelope = lotEventMapper.toLotClosed(event);
+    messagingTemplate.convertAndSend("/topic/lots/" + event.lotId(), envelope);
+  }
+
   public void publishPresence(long lotId) {
     if (!presenceRateLimiter.shouldPublish(lotId)) {
       return;

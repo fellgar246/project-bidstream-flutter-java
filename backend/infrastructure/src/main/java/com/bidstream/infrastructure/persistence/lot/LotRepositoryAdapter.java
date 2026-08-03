@@ -82,6 +82,11 @@ public class LotRepositoryAdapter implements LotRepository {
   }
 
   @Override
+  public Optional<Lot> findByIdForUpdate(long id) {
+    return lotJpaRepository.findByIdForUpdate(id).map(this::toDomain);
+  }
+
+  @Override
   public void deleteById(long id) {
     lotJpaRepository.deleteById(id);
   }
@@ -111,6 +116,20 @@ public class LotRepositoryAdapter implements LotRepository {
   @Override
   public boolean hasReadyImages(long lotId) {
     return lotImageJpaRepository.existsByLot_IdAndStatus(lotId, "READY");
+  }
+
+  @Override
+  public List<Lot> findScheduledReadyToStart(Instant now, int limit) {
+    return lotJpaRepository
+        .findScheduledReadyToStart(now, PageRequest.of(0, limit))
+        .stream()
+        .map(this::toDomain)
+        .toList();
+  }
+
+  @Override
+  public List<Long> findLiveIdsReadyToClose(Instant now, int limit) {
+    return lotJpaRepository.findLiveIdsReadyToClose(now, PageRequest.of(0, limit));
   }
 
   private Lot toDomain(LotEntity entity) {

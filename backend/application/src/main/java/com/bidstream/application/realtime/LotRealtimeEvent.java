@@ -7,7 +7,10 @@ import java.util.Optional;
 
 /** Application events emitted after a successful bid (published inside the transaction). */
 public sealed interface LotRealtimeEvent
-    permits LotRealtimeEvent.BidPlacedEvent, LotRealtimeEvent.LotExtendedEvent {
+    permits LotRealtimeEvent.BidPlacedEvent,
+        LotRealtimeEvent.LotExtendedEvent,
+        LotRealtimeEvent.LotStartedEvent,
+        LotRealtimeEvent.LotClosedEvent {
 
   long lotId();
 
@@ -25,5 +28,15 @@ public sealed interface LotRealtimeEvent
       implements LotRealtimeEvent {}
 
   record LotExtendedEvent(long lotId, Lot lot, long bidId, Instant occurredAt)
+      implements LotRealtimeEvent {}
+
+  record LotStartedEvent(long lotId, Lot lot, Instant occurredAt) implements LotRealtimeEvent {}
+
+  record LotClosedEvent(
+      long lotId,
+      Lot lot,
+      Optional<Long> winnerId,
+      String noSaleReason,
+      Instant occurredAt)
       implements LotRealtimeEvent {}
 }

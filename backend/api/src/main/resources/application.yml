@@ -25,6 +25,26 @@ spring:
     port: ${SPRING_RABBITMQ_PORT:5672}
     username: ${SPRING_RABBITMQ_USERNAME:bidstream}
     password: ${SPRING_RABBITMQ_PASSWORD:bidstream}
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    listener:
+      simple:
+        retry:
+          enabled: true
+          max-attempts: 4
+          initial-interval: 1000
+          multiplier: 5
+          max-interval: 25000
+        default-requeue-rejected: false
+  mail:
+    host: ${SPRING_MAIL_HOST:localhost}
+    port: ${SPRING_MAIL_PORT:1025}
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
   mvc:
     throw-exception-if-no-handler-found: true
   web:
@@ -50,6 +70,8 @@ bidstream:
     require-images-for-schedule: true
   realtime:
     presence-ttl-seconds: 30
+  scheduler:
+    enabled: true
   storage:
     minio:
       endpoint: ${MINIO_ENDPOINT:http://localhost:9000}

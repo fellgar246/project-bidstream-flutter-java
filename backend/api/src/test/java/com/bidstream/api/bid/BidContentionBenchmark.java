@@ -4,6 +4,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 import com.bidstream.api.support.PostgresTestContainer;
+import com.bidstream.api.support.IntegrationTestInitializer;
 import com.bidstream.api.support.RedisTestContainer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
@@ -32,8 +33,7 @@ import org.springframework.test.web.servlet.MvcResult;
  */
 @SpringBootTest
 @AutoConfigureMockMvc
-@ContextConfiguration(
-    initializers = {PostgresTestContainer.Initializer.class, RedisTestContainer.Initializer.class})
+@ContextConfiguration(initializers = IntegrationTestInitializer.class)
 @EnabledIfEnvironmentVariable(named = "RUN_BID_BENCHMARK", matches = "true")
 class BidContentionBenchmark {
 

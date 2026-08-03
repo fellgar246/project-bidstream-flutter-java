@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.bidstream.api.support.PostgresTestContainer;
+import com.bidstream.api.support.IntegrationTestInitializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ContextConfiguration(initializers = PostgresTestContainer.Initializer.class)
+@ContextConfiguration(initializers = IntegrationTestInitializer.class)
 class AuthControllerIT {
 
   @Autowired private MockMvc mockMvc;

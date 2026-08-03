@@ -1,5 +1,6 @@
 package com.bidstream.api.bid;
 
+import com.bidstream.api.support.IntegrationTestInitializer;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -28,8 +29,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ContextConfiguration(
-    initializers = {PostgresTestContainer.Initializer.class, RedisTestContainer.Initializer.class})
+@ContextConfiguration(initializers = IntegrationTestInitializer.class)
 class BidConcurrencyIT {
 
   @Autowired private MockMvc mockMvc;

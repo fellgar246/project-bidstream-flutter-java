@@ -24,6 +24,7 @@ dependencies {
     implementation("org.springframework:spring-tx")
     implementation("org.springframework:spring-web")
     implementation("org.springframework:spring-context-support")
+    implementation("org.springframework.boot:spring-boot-autoconfigure")
     implementation("org.slf4j:slf4j-api")
     implementation("org.sejda.imageio:webp-imageio:0.1.6")
     implementation("org.springframework.security:spring-security-core")

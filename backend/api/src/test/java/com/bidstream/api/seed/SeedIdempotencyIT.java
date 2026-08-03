@@ -3,6 +3,7 @@ package com.bidstream.api.seed;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bidstream.api.support.PostgresTestContainer;
+import com.bidstream.api.support.IntegrationTestInitializer;
 import com.bidstream.infrastructure.seed.CategorySeeder;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 
 @SpringBootTest
-@ContextConfiguration(initializers = PostgresTestContainer.Initializer.class)
+@ContextConfiguration(initializers = IntegrationTestInitializer.class)
 class SeedIdempotencyIT {
 
   @Autowired private CategorySeeder categorySeeder;

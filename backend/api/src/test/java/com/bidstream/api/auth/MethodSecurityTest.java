@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.bidstream.api.support.PostgresTestContainer;
+import com.bidstream.api.support.IntegrationTestInitializer;
 import com.bidstream.application.auth.AuthService;
 import com.bidstream.application.lot.CreateLotUseCase;
 import com.bidstream.domain.money.Money;
@@ -17,7 +18,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 
 @SpringBootTest
-@ContextConfiguration(initializers = PostgresTestContainer.Initializer.class)
+@ContextConfiguration(initializers = IntegrationTestInitializer.class)
 class MethodSecurityTest {
 
   @Autowired private CreateLotUseCase createLotUseCase;

@@ -49,6 +49,7 @@ class PlaceBidServiceTest {
   @Mock private DistributedLockPort distributedLock;
   @Mock private TransactionTemplate transactionTemplate;
   @Mock private DomainEventPublisher domainEventPublisher;
+  @Mock private com.bidstream.application.outbox.OutboxWriter outboxWriter;
   @Mock private UserRepository userRepository;
 
   private PlaceBidService service;
@@ -64,6 +65,7 @@ class PlaceBidServiceTest {
             distributedLock,
             transactionTemplate,
             domainEventPublisher,
+            outboxWriter,
             userRepository,
             Clock.fixed(NOW, ZoneOffset.UTC));
 

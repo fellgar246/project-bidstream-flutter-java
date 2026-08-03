@@ -1,5 +1,6 @@
 package com.bidstream.application.bid;
 
+import com.bidstream.application.outbox.OutboxWriter;
 import com.bidstream.application.realtime.DomainEventPublisher;
 import com.bidstream.application.realtime.LotRealtimeEvent;
 import com.bidstream.domain.bid.Bid;
@@ -31,6 +32,7 @@ public class PlaceBidService {
   private final DistributedLockPort distributedLock;
   private final TransactionTemplate transactionTemplate;
   private final DomainEventPublisher domainEventPublisher;
+  private final OutboxWriter outboxWriter;
   private final UserRepository userRepository;
   private final Clock clock;
 
@@ -42,6 +44,7 @@ public class PlaceBidService {
       @org.springframework.beans.factory.annotation.Qualifier("requiresNewTransactionTemplate")
           TransactionTemplate transactionTemplate,
       DomainEventPublisher domainEventPublisher,
+      OutboxWriter outboxWriter,
       UserRepository userRepository,
       Clock clock) {
     this.lotRepository = lotRepository;
@@ -50,6 +53,7 @@ public class PlaceBidService {
     this.distributedLock = distributedLock;
     this.transactionTemplate = transactionTemplate;
     this.domainEventPublisher = domainEventPublisher;
+    this.outboxWriter = outboxWriter;
     this.userRepository = userRepository;
     this.clock = clock;
   }
@@ -126,9 +130,11 @@ public class PlaceBidService {
     if (acceptance.extended()) {
       domainEventPublisher.publish(
           new LotRealtimeEvent.LotExtendedEvent(lotId, savedLot, bid.id(), now));
+      outboxWriter.writeLotExtended(
+          savedLot, savedLot.scheduledEndAt(), savedLot.extensionCount(), now);
     }
 
-    // TODO(SPEC-07): write outbox event in same transaction (RB-09)
+    outboxWriter.writeBidPlaced(savedLot, bid, previousHighestBidderId, now);
 
     return PlaceBidOutcome.created(bid, savedLot, acceptance.extended());
   }

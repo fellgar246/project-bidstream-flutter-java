@@ -1,5 +1,6 @@
 package com.bidstream.api.realtime;
 
+import com.bidstream.api.support.IntegrationTestInitializer;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -17,8 +18,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ContextConfiguration;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ContextConfiguration(
-    initializers = {PostgresTestContainer.Initializer.class, RedisTestContainer.Initializer.class})
+@ContextConfiguration(initializers = IntegrationTestInitializer.class)
 class WebSocketAuthIT {
 
   @LocalServerPort private int port;

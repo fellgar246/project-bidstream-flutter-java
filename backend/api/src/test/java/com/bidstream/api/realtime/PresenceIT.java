@@ -1,5 +1,6 @@
 package com.bidstream.api.realtime;
 
+import com.bidstream.api.support.IntegrationTestInitializer;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -30,8 +31,7 @@ import org.springframework.test.web.servlet.MvcResult;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @TestPropertySource(properties = "bidstream.realtime.presence-ttl-seconds=2")
-@ContextConfiguration(
-    initializers = {PostgresTestContainer.Initializer.class, RedisTestContainer.Initializer.class})
+@ContextConfiguration(initializers = IntegrationTestInitializer.class)
 class PresenceIT {
 
   @LocalServerPort private int port;

@@ -1,5 +1,6 @@
 package com.bidstream.api.lot;
 
+import com.bidstream.api.support.IntegrationTestInitializer;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bidstream.api.support.MinioTestContainer;
@@ -19,8 +20,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 
 @SpringBootTest
-@ContextConfiguration(
-    initializers = {PostgresTestContainer.Initializer.class, MinioTestContainer.Initializer.class})
+@ContextConfiguration(initializers = IntegrationTestInitializer.class)
 class OrphanCleanupIT {
 
   @Autowired private OrphanImageCleanupJob orphanImageCleanupJob;

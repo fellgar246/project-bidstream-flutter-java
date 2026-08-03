@@ -33,11 +33,13 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-starter-jdbc")
     testImplementation("org.springframework.boot:spring-boot-starter-data-redis")
+    testImplementation("org.springframework.boot:spring-boot-starter-amqp")
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:postgresql")
     testImplementation("org.testcontainers:testcontainers")
     testImplementation("com.redis:testcontainers-redis:2.2.2")
+    testImplementation("org.awaitility:awaitility:4.2.2")
     testImplementation("io.minio:minio:8.5.12")
     testImplementation("com.tngtech.archunit:archunit-junit5:1.3.0")
 }

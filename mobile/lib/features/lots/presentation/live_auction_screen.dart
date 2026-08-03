@@ -102,6 +102,12 @@ class _LiveAuctionScreenState extends ConsumerState<LiveAuctionScreen> {
                 padding: const EdgeInsets.all(12),
                 child: Text(live.outbidMessage!),
               ),
+            if (live.closedMessage != null)
+              Container(
+                color: Colors.green.shade50,
+                padding: const EdgeInsets.all(12),
+                child: Text(live.closedMessage!, style: const TextStyle(fontSize: 16)),
+              ),
             Padding(
               padding: const EdgeInsets.all(24),
               child: Column(

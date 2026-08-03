@@ -47,9 +47,10 @@ class LotTest {
             .schedule(NOW.plus(10, ChronoUnit.MINUTES), NOW.plus(70, ChronoUnit.MINUTES), NOW)
             .start(NOW);
 
-    Lot sold = live.closeSold(NOW);
+    Lot sold = live.closeSold(42L, NOW);
     assertThat(sold.status()).isEqualTo(LotStatus.CLOSED_SOLD);
     assertThat(sold.actualEndAt()).isEqualTo(NOW);
+    assertThat(sold.winningBidId()).isEqualTo(42L);
 
     Lot noSale = live.closeNoSale(NOW);
     assertThat(noSale.status()).isEqualTo(LotStatus.CLOSED_NO_SALE);

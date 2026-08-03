@@ -81,4 +81,15 @@ abstract final class AppStrings {
   static const liveReconnecting = 'Reconnecting…';
   static const liveDisconnected = 'Connection lost';
   static const liveWatchAction = 'Watch live';
+  static const liveYouWon = '🎉 You won!';
+  static const liveClosedNoSale = 'Auction closed without sale';
+
+  static const notificationsTitle = 'Notifications';
+  static const markAllRead = 'Mark all read';
+  static const noNotifications = 'No notifications yet';
+  static const notificationYouWon = 'You won the auction';
+  static const notificationOutbid = 'You were outbid';
+  static const notificationLotSold = 'Your lot sold';
+  static const notificationLotNoSale = 'Lot closed without sale';
+  static const notificationLotStarted = 'Your lot is live';
 }

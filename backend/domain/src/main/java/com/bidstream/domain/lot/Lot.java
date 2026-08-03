@@ -202,7 +202,7 @@ public record Lot(
         now);
   }
 
-  public Lot closeSold(Instant now) {
+  public Lot closeSold(long winningBidId, Instant now) {
     LotStatus next = LotStateMachine.transition(status, LotEvent.CLOSE_SOLD);
     return new Lot(
         id,

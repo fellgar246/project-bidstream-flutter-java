@@ -21,4 +21,15 @@ public record LotEventEnvelope(
   public static long eventIdForExtension(long bidId) {
     return bidId * 2L + 1L;
   }
+
+  /** Synthetic event id for lot lifecycle events (high range avoids bid collisions). */
+  public static long eventIdForLotLifecycle(long lotId, String type) {
+    long suffix =
+        switch (type) {
+          case LOT_STARTED -> 1L;
+          case LOT_CLOSED -> 2L;
+          default -> 0L;
+        };
+    return lotId * 10_000L + suffix;
+  }
 }
