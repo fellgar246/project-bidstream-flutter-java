@@ -51,6 +51,17 @@
 	<string>BidStream needs camera access to photograph lot items.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>BidStream needs photo library access to attach lot images.</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>bidstream</string>
+			</array>
+		</dict>
+	</array>
+	<key>FlutterDeepLinkingEnabled</key>
+	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

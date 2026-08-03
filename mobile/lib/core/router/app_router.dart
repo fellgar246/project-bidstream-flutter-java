@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'deferred_route.dart';
 import '../auth/auth_controller.dart';
 import '../auth/auth_state.dart';
 import '../../features/auth/presentation/login_screen.dart';
@@ -31,6 +32,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final authAsync = ref.read(authControllerProvider);
       final location = state.matchedLocation;
+      final fullPath = state.uri.path;
 
       if (authAsync.isLoading || authAsync.hasError) {
         return location == '/splash' ? null : '/splash';
@@ -41,6 +43,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         case AuthStatus.unknown:
           return location == '/splash' ? null : '/splash';
         case AuthStatus.unauthenticated:
+          if (_isLotDeepLink(fullPath)) {
+            setDeferredRoute(fullPath);
+          }
           if (location == '/login' || location == '/register') {
             return null;
           }
@@ -49,6 +54,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           if (location == '/login' ||
               location == '/register' ||
               location == '/splash') {
+            final deferred = takeDeferredRoute();
+            if (deferred != null) {
+              return deferred;
+            }
             return '/';
           }
           return null;
@@ -128,3 +137,8 @@ final routerProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
+
+bool _isLotDeepLink(String path) {
+  final match = RegExp(r'^/lots/\d+').firstMatch(path);
+  return match != null;
+}
