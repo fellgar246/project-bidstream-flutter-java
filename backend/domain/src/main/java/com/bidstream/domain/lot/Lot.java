@@ -273,6 +273,55 @@ public record Lot(
         updatedAt);
   }
 
+  /** Minimum valid bid amount for RB-04. */
+  public Money minimumNextBid() {
+    if (bidCount == 0) {
+      return startingPrice;
+    }
+    return currentPrice.add(minIncrement);
+  }
+
+  /** Applies an accepted bid and anti-sniping extension (RB-06). */
+  public BidAcceptanceResult acceptBid(Money amount, Instant now) {
+    Duration timeToEnd = Duration.between(now, scheduledEndAt);
+    boolean extended = false;
+    Instant newEndAt = scheduledEndAt;
+    int newExtensionCount = extensionCount;
+
+    if (scheduledEndAt != null
+        && timeToEnd.compareTo(Duration.ofSeconds(30)) < 0
+        && extensionCount < 10) {
+      newEndAt = now.plus(Duration.ofSeconds(30));
+      newExtensionCount = extensionCount + 1;
+      extended = true;
+    }
+
+    Lot updated =
+        new Lot(
+            id,
+            sellerId,
+            title,
+            description,
+            categoryId,
+            startingPrice,
+            minIncrement,
+            reservePrice,
+            status,
+            scheduledStartAt,
+            newEndAt,
+            actualEndAt,
+            amount,
+            bidCount + 1,
+            winningBidId,
+            newExtensionCount,
+            version,
+            createdAt,
+            now);
+    return new BidAcceptanceResult(updated, extended);
+  }
+
+  public record BidAcceptanceResult(Lot lot, boolean extended) {}
+
   public Lot withVersion(long newVersion) {
     return new Lot(
         id,
