@@ -67,4 +67,10 @@ abstract final class AppStrings {
   static const sellerLotsTitle = 'My lots';
   static const viewLots = 'Browse lots';
   static const viewSellerLots = 'My lots';
+
+  static const bidTitle = 'Place a bid';
+  static const bidAmountLabel = 'Your bid amount';
+  static const bidPlaceAction = 'Place bid';
+  static const bidMinIncrement = 'Minimum increment';
+  static const bidInvalidAmount = 'Enter a valid amount';
 }
