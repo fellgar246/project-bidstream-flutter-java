@@ -93,11 +93,11 @@ class LiveAuctionNotifier extends FamilyNotifier<LiveAuctionState, int> {
   @override
   LiveAuctionState build(int lotId) {
     ref.listen(lotDetailProvider(lotId), (previous, next) {
-      next.whenData((lot) {
+      next.whenData((detail) {
         state = state.copyWith(
-          currentPrice: lot.currentPrice,
-          bidCount: lot.bidCount,
-          scheduledEndAt: lot.scheduledEndAt,
+          currentPrice: detail.lot.currentPrice,
+          bidCount: detail.lot.bidCount,
+          scheduledEndAt: detail.lot.scheduledEndAt,
         );
       });
     });

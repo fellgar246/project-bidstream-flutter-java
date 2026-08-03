@@ -1,4 +1,7 @@
+import 'package:bidstream/core/cache/app_database.dart';
+import 'package:bidstream/core/cache/lot_cache_service.dart';
 import 'package:bidstream/core/network/dio_client.dart';
+import 'package:drift/native.dart';
 import 'package:bidstream/features/lots/data/lot_dto.dart';
 import 'package:bidstream/features/lots/data/lot_filters.dart';
 import 'package:bidstream/features/lots/data/lots_api.dart';
@@ -8,9 +11,12 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('ca0311 rapid filter change keeps only the latest filter results', () async {
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
     final container = ProviderContainer(
       overrides: [
         lotsApiProvider.overrideWith((ref) => _DelayedLotsApi()),
+        lotCacheServiceProvider.overrideWithValue(LotCacheService(db)),
       ],
     );
     addTearDown(container.dispose);

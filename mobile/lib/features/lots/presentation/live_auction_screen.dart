@@ -77,7 +77,7 @@ class _LiveAuctionScreenState extends ConsumerState<LiveAuctionScreen> {
     return Scaffold(
       appBar: AppBar(
         title: lotAsync.maybeWhen(
-          data: (lot) => Text(lot.title),
+          data: (detail) => Text(detail.lot.title),
           orElse: () => Text(l10n.liveAuctionTitle),
         ),
         actions: [
