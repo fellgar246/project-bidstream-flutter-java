@@ -22,16 +22,19 @@ import org.springframework.stereotype.Repository;
 public class LotRepositoryAdapter implements LotRepository {
 
   private final LotJpaRepository lotJpaRepository;
+  private final LotImageJpaRepository lotImageJpaRepository;
   private final UserJpaRepository userJpaRepository;
   private final CategoryJpaRepository categoryJpaRepository;
   private final Clock clock;
 
   public LotRepositoryAdapter(
       LotJpaRepository lotJpaRepository,
+      LotImageJpaRepository lotImageJpaRepository,
       UserJpaRepository userJpaRepository,
       CategoryJpaRepository categoryJpaRepository,
       Clock clock) {
     this.lotJpaRepository = lotJpaRepository;
+    this.lotImageJpaRepository = lotImageJpaRepository;
     this.userJpaRepository = userJpaRepository;
     this.categoryJpaRepository = categoryJpaRepository;
     this.clock = clock;
@@ -107,8 +110,7 @@ public class LotRepositoryAdapter implements LotRepository {
 
   @Override
   public boolean hasReadyImages(long lotId) {
-    // TODO(SPEC-04): query lot_images when image module lands
-    return false;
+    return lotImageJpaRepository.existsByLot_IdAndStatus(lotId, "READY");
   }
 
   private Lot toDomain(LotEntity entity) {
