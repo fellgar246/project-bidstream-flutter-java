@@ -32,6 +32,16 @@ class HomeScreen extends StatelessWidget {
               onPressed: () => context.go('/categories'),
               child: const Text(AppStrings.viewCategories),
             ),
+            const SizedBox(height: 12),
+            FilledButton(
+              onPressed: () => context.go('/lots'),
+              child: const Text(AppStrings.viewLots),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton(
+              onPressed: () => context.go('/seller/lots'),
+              child: const Text(AppStrings.viewSellerLots),
+            ),
           ],
         ),
       ),

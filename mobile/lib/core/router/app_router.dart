@@ -9,6 +9,10 @@ import '../../features/auth/presentation/profile_screen.dart';
 import '../../features/auth/presentation/register_screen.dart';
 import '../../features/auth/presentation/splash_screen.dart';
 import '../../features/categories/presentation/categories_screen.dart';
+import '../../features/lots/presentation/lot_detail_screen.dart';
+import '../../features/lots/presentation/lot_form_screen.dart';
+import '../../features/lots/presentation/lots_list_screen.dart';
+import '../../features/lots/presentation/seller_lots_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -66,6 +70,25 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/categories',
         builder: (context, state) => const CategoriesScreen(),
+      ),
+      GoRoute(
+        path: '/lots',
+        builder: (context, state) => const LotsListScreen(),
+      ),
+      GoRoute(
+        path: '/lots/:id',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return LotDetailScreen(lotId: id);
+        },
+      ),
+      GoRoute(
+        path: '/seller/lots',
+        builder: (context, state) => const SellerLotsScreen(),
+      ),
+      GoRoute(
+        path: '/seller/lots/new',
+        builder: (context, state) => const LotFormScreen(),
       ),
       GoRoute(
         path: '/profile',
