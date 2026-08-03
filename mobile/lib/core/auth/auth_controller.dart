@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../push/push_service.dart';
 import '../../features/auth/data/auth_api.dart';
 import '../../features/auth/data/auth_dto.dart';
 import '../network/dio_provider.dart';
@@ -77,6 +78,7 @@ class AuthController extends AsyncNotifier<AuthState> {
         // Best effort — local session is cleared regardless.
       }
     }
+    await ref.read(pushServiceProvider).unregisterOnLogout();
     await ref.read(tokenStorageProvider).clear();
     state = const AsyncData(AuthState.unauthenticated());
   }
