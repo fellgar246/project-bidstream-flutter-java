@@ -2,30 +2,40 @@ package com.bidstream.application.lot;
 
 import com.bidstream.domain.lot.Lot;
 import com.bidstream.domain.money.Money;
-import org.springframework.security.access.prepost.PreAuthorize;
+import com.bidstream.domain.user.Role;
+import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class CreateLotUseCase {
+public class UpdateLotUseCase {
 
   private final LotService lotService;
 
-  public CreateLotUseCase(LotService lotService) {
+  public UpdateLotUseCase(LotService lotService) {
     this.lotService = lotService;
   }
 
   @Transactional
-  @PreAuthorize("hasRole('SELLER')")
   public Lot execute(
-      long sellerId,
+      long userId,
+      Set<Role> roles,
+      long lotId,
       String title,
       String description,
       long categoryId,
       Money startingPrice,
       Money minIncrement,
       Money reservePrice) {
-    return lotService.createLot(
-        sellerId, title, description, categoryId, startingPrice, minIncrement, reservePrice);
+    return lotService.updateLot(
+        userId,
+        roles,
+        lotId,
+        title,
+        description,
+        categoryId,
+        startingPrice,
+        minIncrement,
+        reservePrice);
   }
 }
