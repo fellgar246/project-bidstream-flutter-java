@@ -65,6 +65,13 @@ public class WatchRepositoryAdapter implements WatchRepository {
     return watchJpaRepository.countByUser_Id(userId);
   }
 
+  @Override
+  public List<Long> findUserIdsByLotId(long lotId) {
+    return watchJpaRepository.findByLot_Id(lotId).stream()
+        .map(entity -> entity.getUser().getId())
+        .toList();
+  }
+
   private Watch toDomain(WatchEntity entity) {
     return new Watch(
         entity.getId(), entity.getUser().getId(), entity.getLot().getId(), entity.getCreatedAt());

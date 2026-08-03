@@ -26,6 +26,7 @@ public class RabbitMqConfig {
   public static final String NOTIFICATIONS_QUEUE = "bidstream.notifications";
   public static final String INVOICING_QUEUE = "bidstream.invoicing";
   public static final String MAIL_QUEUE = "bidstream.mail";
+  public static final String PUSH_QUEUE = "bidstream.push";
 
   @Bean
   TopicExchange eventsExchange() {
@@ -62,6 +63,11 @@ public class RabbitMqConfig {
     return durableQueueWithDlq(MAIL_QUEUE);
   }
 
+  @Bean
+  Queue pushQueue() {
+    return durableQueueWithDlq(PUSH_QUEUE);
+  }
+
   private Queue durableQueueWithDlq(String name) {
     return QueueBuilder.durable(name)
         .withArgument("x-dead-letter-exchange", DLX_EXCHANGE)
@@ -92,6 +98,21 @@ public class RabbitMqConfig {
   @Bean
   Binding mailBinding() {
     return BindingBuilder.bind(mailQueue()).to(eventsExchange()).with("lot.closed.*");
+  }
+
+  @Bean
+  Binding pushBidPlacedBinding() {
+    return BindingBuilder.bind(pushQueue()).to(eventsExchange()).with("bid.placed");
+  }
+
+  @Bean
+  Binding pushLotStartedBinding() {
+    return BindingBuilder.bind(pushQueue()).to(eventsExchange()).with("lot.started");
+  }
+
+  @Bean
+  Binding pushLotClosedBinding() {
+    return BindingBuilder.bind(pushQueue()).to(eventsExchange()).with("lot.closed.*");
   }
 
   @Bean

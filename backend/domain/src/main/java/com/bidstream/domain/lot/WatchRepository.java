@@ -14,4 +14,6 @@ public interface WatchRepository {
   List<Watch> findByUserId(long userId, int page, int size);
 
   long countByUserId(long userId);
+
+  List<Long> findUserIdsByLotId(long lotId);
 }
