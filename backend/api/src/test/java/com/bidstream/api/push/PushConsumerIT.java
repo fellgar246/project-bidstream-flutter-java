@@ -89,7 +89,9 @@ class PushConsumerIT {
 
     assertThat(
             jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM device_tokens WHERE token = ?", Integer.class, "invalid-token"))
+                "SELECT COUNT(*) FROM device_tokens WHERE token = ?",
+                Integer.class,
+                "invalid-token"))
         .isZero();
   }
 

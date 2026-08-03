@@ -1,81 +1,106 @@
 # BidStream
 
-Plataforma de subastas en vivo — monorepo con backend Spring Boot (arquectura hexagonal)
-y app Flutter.
+Plataforma de **subastas en vivo** — monorepo con backend Spring Boot (arquitectura hexagonal) y app Flutter.
 
-## Requisitos
+![Demo en vivo](docs/demo/live-auction.gif)
 
-- Java 21+
-- Docker y Docker Compose
-- Flutter 3.2x / Dart 3
-- Gradle (wrapper incluido en `backend/`)
+> GIF: dos dispositivos pujando en tiempo real sobre un lote LIVE (generado tras `make seed`).
 
-## Infraestructura local
+## Stack
+
+| Capa | Tecnología |
+|------|------------|
+| Backend | Java 21, Spring Boot 3, PostgreSQL, Redis, RabbitMQ, MinIO |
+| Móvil | Flutter, Riverpod, Dio, STOMP |
+| Observabilidad | Micrometer, Prometheus, Grafana, logs JSON |
+| CI | GitHub Actions (backend, móvil, Docker) |
+
+## Arquitectura
+
+```mermaid
+flowchart TB
+  subgraph clients [Clientes]
+    Flutter[App Flutter]
+    WS[WebSocket STOMP]
+  end
+  subgraph api [API Spring Boot]
+    REST[REST /api/v1]
+    RT[Realtime broker]
+    OUT[Outbox relay]
+  end
+  subgraph infra [Infraestructura]
+    PG[(PostgreSQL)]
+    RD[(Redis)]
+    RMQ[RabbitMQ]
+    S3[MinIO]
+  end
+  Flutter --> REST
+  Flutter --> WS
+  WS --> RT
+  REST --> PG
+  REST --> RD
+  OUT --> RMQ
+  RMQ --> PG
+```
+
+Topología de colas: [docs/rabbitmq-topology.md](docs/rabbitmq-topology.md)
+
+## Levantar en un comando (producción local)
 
 ```bash
 cp .env.example .env
-docker compose up -d
+docker compose -f docker-compose.prod.yml up -d
+make seed
 ```
 
-Servicios:
+- API: http://localhost:8080
+- Grafana: http://localhost:3000 (admin / admin)
+- Prometheus: http://localhost:9090 (red interna; expuesto en compose para demo)
 
-| Servicio   | Puerto(s)     | UI / notas              |
-|------------|---------------|-------------------------|
-| PostgreSQL | 5433 (host; evita conflicto con Postgres local en 5432) | — |
-| Redis      | 6379          | —                       |
-| RabbitMQ   | 5672, 15672   | http://localhost:15672  |
-| MinIO      | 9000, 9001    | http://localhost:9001   |
-| MailHog    | 1025, 8025    | http://localhost:8025   |
+### Credenciales demo
 
-Verifica salud: `docker compose ps` (todos `healthy`). En MinIO debe existir el bucket `bidstream`.
+| Rol | Email | Password |
+|-----|-------|----------|
+| Comprador | `demo-buyer@bidstream.demo` | `demo1234` |
+| Vendedor | `demo-seller@bidstream.demo` | `demo1234` |
 
-## Backend
+Tras `make seed`: ~40 lotes (5 LIVE con cierre próximo), ~300 pujas, 8 categorías raíz.
+
+## Desarrollo local
 
 ```bash
-cd backend
-./gradlew bootRun
+cp .env.example .env
+docker compose up -d          # solo infra (Postgres 5433, Redis, RabbitMQ, MinIO)
+cd backend && ./gradlew bootRun
+cd mobile && flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8080/api/v1
 ```
 
-Endpoints:
+## Observabilidad
 
-- `GET http://localhost:8080/api/v1/health`
-- `GET http://localhost:8080/api/v1/categories`
+- Métricas de negocio: `GET /actuator/prometheus`
+- Health: `/actuator/health/liveness`, `/actuator/health/readiness`
+- Dashboard Grafana provisionado: `ops/grafana/dashboards/bidstream.json`
+- Prueba de carga: `k6 run ops/k6/bid-storm.js` — ver [docs/CARGA.md](docs/CARGA.md)
 
-## App móvil
+## Análisis y aprendizaje
 
-Emulador Android (API contra host):
-
-```bash
-cd mobile
-flutter pub get
-flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8080/api/v1
-```
-
-iOS simulator / dispositivo físico: usa la IP de tu máquina en lugar de `10.0.2.2`.
+- [docs/ANALISIS-CONCURRENCIA.md](docs/ANALISIS-CONCURRENCIA.md) — locks, versionado optimista, contención
+- [docs/ANALISIS-RENDIMIENTO.md](docs/ANALISIS-RENDIMIENTO.md) — cache, búsqueda
+- [docs/CARGA.md](docs/CARGA.md) — k6, umbrales, cuello de botella
+- [CONCEPTOS.md](CONCEPTOS.md) — fichas de conceptos SPEC-06 y SPEC-10
+- [APRENDIZAJES.md](APRENDIZAJES.md) — cierre del proyecto
 
 ## Calidad
 
 ```bash
-./scripts/check.sh
+make check    # Spotless, Checkstyle, tests backend + Flutter
 ```
-
-Ejecuta Spotless, Checkstyle, tests backend (con JaCoCo ≥ 80 % en `domain`/`application`)
-y tests Flutter.
 
 ## Estructura
 
 ```
-backend/   → domain, application, infrastructure, api
-mobile/    → Flutter (Riverpod, go_router, Dio)
-plans/     → specs y plan maestro
-scripts/   → check.sh
+backend/     domain · application · infrastructure · api
+mobile/      Flutter
+ops/         Prometheus, Grafana, k6
+scripts/     check.sh, seed.sh
 ```
-
-Documentación de aprendizaje: [`CONCEPTOS.md`](CONCEPTOS.md).
-
-## Tiempo real (SPEC-06)
-
-- WebSocket STOMP en `GET /ws?token=<accessToken>` (heartbeat 10 s).
-- Topics: `/topic/lots/{id}`, presencia en `/topic/lots/{id}/presence`.
-- Recuperación: `GET /api/v1/lots/{id}/events?afterEventId=...`
-- **Límite conocido:** broker STOMP en memoria ⇒ despliegue de una sola instancia del API para subastas en vivo.

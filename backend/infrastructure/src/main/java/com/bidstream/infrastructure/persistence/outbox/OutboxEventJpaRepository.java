@@ -20,4 +20,8 @@ public interface OutboxEventJpaRepository extends JpaRepository<OutboxEventEntit
 
   java.util.List<OutboxEventEntity> findByPublishedAtIsNullAndAttemptsGreaterThanEqual(
       int attempts);
+
+  long countByPublishedAtIsNull();
+
+  boolean existsByPublishedAtIsNullAndAttemptsGreaterThanEqual(int attempts);
 }

@@ -2,6 +2,7 @@ package com.bidstream.api.ratelimit;
 
 import com.bidstream.api.error.ErrorBody;
 import com.bidstream.api.error.ErrorResponse;
+import com.bidstream.application.tracing.TraceContext;
 import com.bidstream.domain.ratelimit.RateLimitExceededException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
@@ -10,7 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
-import java.util.UUID;
+import org.slf4j.MDC;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
@@ -47,7 +48,10 @@ public class RateLimitExceptionHandlingFilter extends OncePerRequestFilter {
     response.setStatus(429);
     response.setHeader("Retry-After", String.valueOf(retrySeconds));
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-    String traceId = UUID.randomUUID().toString();
+    String traceId = MDC.get(TraceContext.TRACE_ID_MDC);
+    if (traceId == null || traceId.isBlank()) {
+      traceId = java.util.UUID.randomUUID().toString();
+    }
     ErrorResponse body =
         new ErrorResponse(new ErrorBody("rate_limited", "Rate limit exceeded", Map.of()), traceId);
     response.getWriter().write(new ObjectMapper().writeValueAsString(body));

@@ -24,6 +24,18 @@ public final class RabbitMqTestContainer {
     return CONTAINER;
   }
 
+  public static void stop() {
+    if (CONTAINER.isRunning()) {
+      CONTAINER.stop();
+    }
+  }
+
+  public static void start() {
+    if (!CONTAINER.isRunning()) {
+      CONTAINER.start();
+    }
+  }
+
   public static class Initializer
       implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 

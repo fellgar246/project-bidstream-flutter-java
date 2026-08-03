@@ -12,6 +12,8 @@ public interface LotJpaRepository
 
   long countBySeller_Id(long sellerId);
 
+  long countByStatus(String status);
+
   java.util.List<LotEntity> findBySeller_IdOrderByCreatedAtDesc(long sellerId);
 
   @Lock(LockModeType.PESSIMISTIC_WRITE)

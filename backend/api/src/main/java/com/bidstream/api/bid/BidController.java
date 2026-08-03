@@ -5,6 +5,8 @@ import com.bidstream.application.bid.PlaceBidUseCase;
 import com.bidstream.domain.bid.BidPage;
 import com.bidstream.domain.money.Money;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/lots/{lotId}/bids")
 public class BidController {
+
+  private static final Logger log = LoggerFactory.getLogger(BidController.class);
 
   private final PlaceBidUseCase placeBidUseCase;
   private final ListLotBidsUseCase listLotBidsUseCase;
@@ -39,6 +43,7 @@ public class BidController {
       @PathVariable long lotId,
       @Valid @RequestBody PlaceBidRequest request) {
     long bidderId = (long) authentication.getPrincipal();
+    log.info("Placing bid on lotId={} amount={}", lotId, request.amount());
     var outcome =
         placeBidUseCase.execute(
             lotId, bidderId, Money.fromString(request.amount()), request.clientRequestId());

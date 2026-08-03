@@ -5,17 +5,23 @@ import com.bidstream.application.notification.Notification;
 import com.bidstream.application.notification.NotificationRepository;
 import com.bidstream.application.notification.UserNotificationPushPort;
 import com.bidstream.application.outbox.OutboxEvent;
+import com.bidstream.application.tracing.TraceContext;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 @Component
 public class NotificationConsumer {
+
+  private static final Logger log = LoggerFactory.getLogger(NotificationConsumer.class);
 
   public static final String CONSUMER_NAME = "notifications";
 
@@ -41,6 +47,11 @@ public class NotificationConsumer {
     if (processedEventPort.tryMarkProcessed(CONSUMER_NAME, message.eventId(), now)) {
       return;
     }
+    log.info(
+        "traceId={} processing notification eventId={} type={}",
+        MDC.get(TraceContext.TRACE_ID_MDC),
+        message.eventId(),
+        message.eventType());
     for (NotificationCandidate candidate : candidatesFor(message)) {
       Notification saved = notificationRepository.save(candidate.toNotification(now));
       pushPort.push(candidate.userId(), saved);

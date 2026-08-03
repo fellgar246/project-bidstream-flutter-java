@@ -82,6 +82,18 @@ public class OutboxRepositoryAdapter implements OutboxPort {
 
   @Override
   @Transactional(readOnly = true)
+  public long countPending() {
+    return jpaRepository.countByPublishedAtIsNull();
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public boolean hasStuckEvents() {
+    return jpaRepository.existsByPublishedAtIsNullAndAttemptsGreaterThanEqual(MAX_ATTEMPTS);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
   public Optional<OutboxEvent> findById(long id) {
     return jpaRepository.findById(id).map(this::toDomain);
   }

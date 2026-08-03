@@ -35,11 +35,15 @@ class DeviceTokenIT {
 
     assertThat(
             jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM device_tokens WHERE token = ?", Integer.class, "fcm-token-abc"))
+                "SELECT COUNT(*) FROM device_tokens WHERE token = ?",
+                Integer.class,
+                "fcm-token-abc"))
         .isEqualTo(1);
     assertThat(
             jdbcTemplate.queryForObject(
-                "SELECT platform FROM device_tokens WHERE token = ?", String.class, "fcm-token-abc"))
+                "SELECT platform FROM device_tokens WHERE token = ?",
+                String.class,
+                "fcm-token-abc"))
         .isEqualTo("ios");
   }
 

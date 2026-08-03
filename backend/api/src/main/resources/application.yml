@@ -58,7 +58,24 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,prometheus,demoSeed
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: always
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include: readinessState,db,redis,rabbit,minio,outbox
+  metrics:
+    tags:
+      application: bidstream
+  prometheus:
+    metrics:
+      export:
+        enabled: true
 
 bidstream:
   version: 0.1.0

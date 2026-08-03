@@ -22,5 +22,9 @@ public interface OutboxPort {
 
   List<OutboxEvent> findFailed();
 
+  long countPending();
+
+  boolean hasStuckEvents();
+
   Optional<OutboxEvent> findById(long id);
 }

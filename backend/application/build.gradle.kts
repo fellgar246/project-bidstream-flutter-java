@@ -29,6 +29,7 @@ dependencies {
     implementation("org.sejda.imageio:webp-imageio:0.1.6")
     implementation("org.springframework.security:spring-security-core")
     implementation("org.springframework.security:spring-security-config")
+    implementation("io.micrometer:micrometer-core")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.assertj:assertj-core")
     testImplementation("org.mockito:mockito-core")

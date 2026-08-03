@@ -1,6 +1,7 @@
 package com.bidstream.application.auction;
 
 import com.bidstream.application.cache.LotCacheInvalidator;
+import com.bidstream.application.metrics.BidstreamMetrics;
 import com.bidstream.application.outbox.OutboxWriter;
 import com.bidstream.application.realtime.DomainEventPublisher;
 import com.bidstream.application.realtime.LotRealtimeEvent;
@@ -27,6 +28,7 @@ public class CloseAuctionService {
   private final DomainEventPublisher domainEventPublisher;
   private final Clock clock;
   private final LotCacheInvalidator lotCacheInvalidator;
+  private final BidstreamMetrics metrics;
 
   public CloseAuctionService(
       LotRepository lotRepository,
@@ -34,13 +36,15 @@ public class CloseAuctionService {
       OutboxWriter outboxWriter,
       DomainEventPublisher domainEventPublisher,
       Clock clock,
-      LotCacheInvalidator lotCacheInvalidator) {
+      LotCacheInvalidator lotCacheInvalidator,
+      BidstreamMetrics metrics) {
     this.lotRepository = lotRepository;
     this.bidRepository = bidRepository;
     this.outboxWriter = outboxWriter;
     this.domainEventPublisher = domainEventPublisher;
     this.clock = clock;
     this.lotCacheInvalidator = lotCacheInvalidator;
+    this.metrics = metrics;
   }
 
   @Transactional
@@ -58,6 +62,7 @@ public class CloseAuctionService {
     if (lot.bidCount() == 0) {
       Lot closed = lotRepository.save(lot.closeNoSale(now));
       outboxWriter.writeLotClosedNoSale(closed, REASON_NO_BIDS, now);
+      metrics.recordAuctionClosed("no_sale");
       domainEventPublisher.publish(
           new LotRealtimeEvent.LotClosedEvent(
               lotId, closed, Optional.empty(), REASON_NO_BIDS, now));
@@ -68,6 +73,7 @@ public class CloseAuctionService {
     if (lot.hasReserve() && !lot.isReserveMet()) {
       Lot closed = lotRepository.save(lot.closeNoSale(now));
       outboxWriter.writeLotClosedNoSale(closed, REASON_RESERVE_NOT_MET, now);
+      metrics.recordAuctionClosed("no_sale");
       domainEventPublisher.publish(
           new LotRealtimeEvent.LotClosedEvent(
               lotId, closed, Optional.empty(), REASON_RESERVE_NOT_MET, now));
@@ -82,6 +88,7 @@ public class CloseAuctionService {
     Lot closed = lotRepository.save(lot.closeSold(winningBid.id(), now));
     outboxWriter.writeLotClosedSold(
         closed, winningBid.id(), winningBid.bidderId(), winningBid.amount().cents(), now);
+    metrics.recordAuctionClosed("sold");
     domainEventPublisher.publish(
         new LotRealtimeEvent.LotClosedEvent(
             lotId, closed, Optional.of(winningBid.bidderId()), null, now));

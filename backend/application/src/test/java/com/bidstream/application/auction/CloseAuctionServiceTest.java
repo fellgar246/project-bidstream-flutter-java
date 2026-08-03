@@ -33,6 +33,7 @@ class CloseAuctionServiceTest {
   @Mock private OutboxWriter outboxWriter;
   @Mock private DomainEventPublisher domainEventPublisher;
   @Mock private com.bidstream.application.cache.LotCacheInvalidator lotCacheInvalidator;
+  @Mock private com.bidstream.application.metrics.BidstreamMetrics metrics;
 
   private CloseAuctionService service;
   private Lot liveLot;
@@ -46,7 +47,8 @@ class CloseAuctionServiceTest {
             outboxWriter,
             domainEventPublisher,
             Clock.fixed(NOW, ZoneOffset.UTC),
-            lotCacheInvalidator);
+            lotCacheInvalidator,
+            metrics);
     liveLot = sampleLiveLot(0, Money.fromCents(0));
   }
 

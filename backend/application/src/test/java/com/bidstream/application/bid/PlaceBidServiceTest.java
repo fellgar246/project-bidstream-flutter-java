@@ -53,6 +53,7 @@ class PlaceBidServiceTest {
   @Mock private UserRepository userRepository;
 
   @Mock private com.bidstream.application.cache.LotCacheInvalidator lotCacheInvalidator;
+  @Mock private com.bidstream.application.metrics.BidstreamMetrics metrics;
 
   private PlaceBidService service;
   private Lot liveLot;
@@ -70,7 +71,8 @@ class PlaceBidServiceTest {
             outboxWriter,
             userRepository,
             Clock.fixed(NOW, ZoneOffset.UTC),
-            lotCacheInvalidator);
+            lotCacheInvalidator,
+            metrics);
 
     liveLot = liveLot(Money.fromCents(10000), 0);
 

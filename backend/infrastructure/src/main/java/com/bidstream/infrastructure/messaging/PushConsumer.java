@@ -80,11 +80,7 @@ public class PushConsumer {
           long lotId = ((Number) payload.get("lotId")).longValue();
           result.add(
               new PushTarget(
-                  leaderId.longValue(),
-                  "OUTBID",
-                  "Outbid",
-                  "You were outbid on a lot",
-                  lotId));
+                  leaderId.longValue(), "OUTBID", "Outbid", "You were outbid on a lot", lotId));
         }
       }
       case OutboxEvent.LOT_STARTED -> {
@@ -92,11 +88,7 @@ public class PushConsumer {
         for (long watcherId : watchRepository.findUserIdsByLotId(lotId)) {
           result.add(
               new PushTarget(
-                  watcherId,
-                  "LOT_STARTED",
-                  "Lot started",
-                  "A lot you watch is now live",
-                  lotId));
+                  watcherId, "LOT_STARTED", "Lot started", "A lot you watch is now live", lotId));
         }
       }
       case OutboxEvent.LOT_CLOSED_SOLD -> {
@@ -131,8 +123,7 @@ public class PushConsumer {
     return result;
   }
 
-  private record PushTarget(
-      long userId, String type, String title, String body, long lotId) {
+  private record PushTarget(long userId, String type, String title, String body, long lotId) {
 
     String deepLink() {
       return "bidstream://lots/" + lotId;

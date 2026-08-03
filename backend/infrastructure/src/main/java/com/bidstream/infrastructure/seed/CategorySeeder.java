@@ -26,6 +26,10 @@ public class CategorySeeder {
     catalog.put("collectibles", new String[] {"Coins", "Stamps", "Memorabilia"});
     catalog.put("electronics", new String[] {"Computers", "Phones", "Audio"});
     catalog.put("jewelry", new String[] {"Rings", "Necklaces", "Watches"});
+    catalog.put("furniture", new String[] {"Chairs", "Tables", "Lamps"});
+    catalog.put("books", new String[] {"First Editions", "Comics", "Manuscripts"});
+    catalog.put("sports", new String[] {"Memorabilia", "Equipment", "Cards"});
+    catalog.put("automotive", new String[] {"Classic Cars", "Parts", "Models"});
 
     for (Map.Entry<String, String[]> rootEntry : catalog.entrySet()) {
       String rootSlug = rootEntry.getKey();

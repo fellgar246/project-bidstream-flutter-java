@@ -1,0 +1,93 @@
+{
+  "uid": "bidstream-main",
+  "title": "BidStream — Operaciones",
+  "tags": ["bidstream"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5s",
+  "panels": [
+    {
+      "id": 1,
+      "title": "Pujas/seg por resultado",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+      "targets": [
+        {
+          "expr": "sum by (result) (rate(bidstream_bids_placed_total[1m]))",
+          "legendFormat": "{{result}}"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Latencia de puja p50 / p95 / p99",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+      "targets": [
+        {"expr": "histogram_quantile(0.50, sum(rate(bidstream_bid_latency_seconds_bucket[5m])) by (le))", "legendFormat": "p50"},
+        {"expr": "histogram_quantile(0.95, sum(rate(bidstream_bid_latency_seconds_bucket[5m])) by (le))", "legendFormat": "p95"},
+        {"expr": "histogram_quantile(0.99, sum(rate(bidstream_bid_latency_seconds_bucket[5m])) by (le))", "legendFormat": "p99"}
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Reintentos y conflictos",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+      "targets": [
+        {"expr": "rate(bidstream_bid_retries_sum[1m])", "legendFormat": "retries/s"},
+        {"expr": "rate(bidstream_bids_placed_total{result=\"conflict\"}[1m])", "legendFormat": "conflicts/s"}
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Espera del lock distribuido",
+      "type": "heatmap",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+      "targets": [
+        {"expr": "sum(rate(bidstream_lock_wait_seconds_bucket[5m])) by (le, acquired)", "legendFormat": "{{acquired}}"}
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Lotes LIVE y sesiones WebSocket",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+      "targets": [
+        {"expr": "bidstream_lots_live", "legendFormat": "lots live"},
+        {"expr": "bidstream_ws_sessions", "legendFormat": "ws sessions"}
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Backlog outbox y latencia de publicación",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
+      "targets": [
+        {"expr": "bidstream_outbox_pending", "legendFormat": "pending"},
+        {"expr": "histogram_quantile(0.95, sum(rate(bidstream_outbox_publish_latency_seconds_bucket[5m])) by (le))", "legendFormat": "publish p95"}
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Pool Hikari (activas / en espera)",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24},
+      "targets": [
+        {"expr": "hikaricp_connections_active{pool=\"HikariPool-1\"}", "legendFormat": "active"},
+        {"expr": "hikaricp_connections_pending{pool=\"HikariPool-1\"}", "legendFormat": "pending"}
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Errores HTTP 4xx / 5xx por URI",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24},
+      "targets": [
+        {"expr": "sum by (uri, status) (rate(http_server_requests_seconds_count{status=~\"4..\"}[1m]))", "legendFormat": "4xx {{uri}}"},
+        {"expr": "sum by (uri, status) (rate(http_server_requests_seconds_count{status=~\"5..\"}[1m]))", "legendFormat": "5xx {{uri}}"}
+      ]
+    }
+  ]
+}

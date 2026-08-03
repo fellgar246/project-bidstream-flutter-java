@@ -6,6 +6,7 @@ import com.bidstream.domain.lot.LotQuery;
 import com.bidstream.domain.lot.LotRepository;
 import com.bidstream.domain.lot.LotSearchFacets;
 import com.bidstream.domain.lot.LotSearchResult;
+import com.bidstream.domain.lot.LotStatus;
 import com.bidstream.infrastructure.persistence.category.CategoryEntity;
 import com.bidstream.infrastructure.persistence.category.CategoryJpaRepository;
 import com.bidstream.infrastructure.persistence.user.UserEntity;
@@ -145,6 +146,11 @@ public class LotRepositoryAdapter implements LotRepository {
   @Override
   public List<Long> findLiveIdsReadyToClose(Instant now, int limit) {
     return lotJpaRepository.findLiveIdsReadyToClose(now, PageRequest.of(0, limit));
+  }
+
+  @Override
+  public long countByStatus(LotStatus status) {
+    return lotJpaRepository.countByStatus(status.name());
   }
 
   private Lot toDomain(LotEntity entity) {

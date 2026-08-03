@@ -122,20 +122,26 @@ public class RabbitMqConfig {
 
   @Bean
   RabbitTemplate rabbitTemplate(
-      ConnectionFactory connectionFactory, Jackson2JsonMessageConverter converter) {
+      ConnectionFactory connectionFactory,
+      Jackson2JsonMessageConverter converter,
+      TraceIdMessagePostProcessor traceIdMessagePostProcessor) {
     RabbitTemplate template = new RabbitTemplate(connectionFactory);
     template.setMessageConverter(converter);
     template.setMandatory(true);
+    template.setBeforePublishPostProcessors(traceIdMessagePostProcessor);
     return template;
   }
 
   @Bean
   SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
-      ConnectionFactory connectionFactory, Jackson2JsonMessageConverter converter) {
+      ConnectionFactory connectionFactory,
+      Jackson2JsonMessageConverter converter,
+      TraceIdReceivePostProcessor traceIdReceivePostProcessor) {
     SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
     factory.setConnectionFactory(connectionFactory);
     factory.setMessageConverter(converter);
     factory.setDefaultRequeueRejected(false);
+    factory.setAfterReceivePostProcessors(traceIdReceivePostProcessor);
     ExponentialBackOff backOff = new ExponentialBackOff(1_000L, 5.0);
     backOff.setMaxElapsedTime(31_000L);
     factory.setRecoveryBackOff(backOff);

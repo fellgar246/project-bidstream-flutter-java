@@ -71,14 +71,14 @@ public class FcmPushAdapter implements PushPort {
 
   private FcmRequest buildPayload(PushMessage message, String token) {
     return new FcmRequest(
-        token,
-        new FcmNotification(message.title(), message.body()),
-        message.data(),
-        "high");
+        token, new FcmNotification(message.title(), message.body()), message.data(), "high");
   }
 
   record FcmRequest(
-      String to, FcmNotification notification, java.util.Map<String, String> data, String priority) {}
+      String to,
+      FcmNotification notification,
+      java.util.Map<String, String> data,
+      String priority) {}
 
   record FcmNotification(String title, String body) {}
 

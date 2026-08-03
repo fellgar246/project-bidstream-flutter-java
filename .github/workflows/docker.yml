@@ -1,0 +1,22 @@
+name: Docker CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - 'docker-compose.prod.yml'
+      - 'backend/Dockerfile'
+      - '.github/workflows/docker.yml'
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build backend image
+        run: docker build -f backend/Dockerfile -t bidstream-api:ci .
+
+      - name: Validate compose
+        run: docker compose -f docker-compose.prod.yml config

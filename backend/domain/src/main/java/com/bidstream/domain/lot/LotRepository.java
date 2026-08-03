@@ -27,4 +27,6 @@ public interface LotRepository {
   List<Lot> findScheduledReadyToStart(Instant now, int limit);
 
   List<Long> findLiveIdsReadyToClose(Instant now, int limit);
+
+  long countByStatus(LotStatus status);
 }
