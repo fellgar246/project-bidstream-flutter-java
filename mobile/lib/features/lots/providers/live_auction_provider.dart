@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/auth/token_storage.dart';
-import '../../../core/l10n/app_strings.dart';
 import '../../../core/realtime/bidstream_stomp_client.dart';
 import '../../../core/realtime/stomp_client.dart';
 import '../data/lot_events_api.dart';
@@ -129,15 +128,11 @@ class LiveAuctionNotifier extends FamilyNotifier<LiveAuctionState, int> {
       case 'LOT_CLOSED':
         final status = event.payload['status'] as String? ?? '';
         final reason = event.payload['reason'] as String?;
-        String? message;
-        if (status == 'CLOSED_SOLD') {
-          message = AppStrings.liveYouWon;
-        } else if (status == 'CLOSED_NO_SALE') {
-          message = AppStrings.liveClosedNoSale;
-        }
+        final resolvedStatus = status.isNotEmpty
+            ? status
+            : (reason != null ? 'CLOSED_NO_SALE' : '');
         state = state.copyWith(
-          lotStatus: status,
-          closedMessage: message ?? (reason != null ? AppStrings.liveClosedNoSale : null),
+          lotStatus: resolvedStatus.isEmpty ? null : resolvedStatus,
         );
       default:
         break;

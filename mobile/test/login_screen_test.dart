@@ -1,27 +1,32 @@
+import 'package:bidstream/core/auth/auth_controller.dart';
+import 'package:bidstream/core/auth/auth_state.dart';
+import 'package:bidstream/core/network/api_exception.dart';
+import 'package:bidstream/features/auth/presentation/login_screen.dart';
+import 'package:bidstream/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:bidstream/core/auth/auth_controller.dart';
-import 'package:bidstream/core/auth/auth_state.dart';
-import 'package:bidstream/core/l10n/app_strings.dart';
-import 'package:bidstream/core/network/api_exception.dart';
-import 'package:bidstream/features/auth/presentation/login_screen.dart';
+import 'l10n_test_helper.dart';
 
 void main() {
+  final en = lookupAppLocalizations(const Locale('en'));
+
   testWidgets('login screen maps field errors from ApiException details', (tester) async {
-    await tester.pumpWidget(
+    await pumpLocalized(
+      tester,
       ProviderScope(
         overrides: [
           authControllerProvider.overrideWith(_FailingLoginAuthController.new),
         ],
-        child: const MaterialApp(home: LoginScreen()),
+        child: const LoginScreen(),
       ),
+      locale: const Locale('en'),
     );
 
     await tester.enterText(find.byKey(const Key('login_email')), 'bad@example.com');
     await tester.enterText(find.byKey(const Key('login_password')), 'short');
-    await tester.tap(find.widgetWithText(FilledButton, AppStrings.loginAction));
+    await tester.tap(find.widgetWithText(FilledButton, en.loginAction));
     await tester.pumpAndSettle();
 
     expect(find.text('Invalid email format'), findsOneWidget);

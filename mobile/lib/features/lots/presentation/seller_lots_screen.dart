@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/l10n/app_strings.dart';
+import '../../../core/l10n/locale_provider.dart';
 import '../data/lot_dto.dart';
 import '../providers/lots_list_provider.dart';
 
@@ -19,7 +19,7 @@ class SellerLotsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(AppStrings.sellerLotsTitle),
+        title: Text(context.l10n.sellerLotsTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -33,11 +33,11 @@ class SellerLotsScreen extends ConsumerWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(AppStrings.lotsError),
+              Text(context.l10n.lotsError),
               const SizedBox(height: 12),
               FilledButton(
                 onPressed: () => ref.invalidate(sellerLotsProvider),
-                child: const Text(AppStrings.retry),
+                child: Text(context.l10n.retry),
               ),
             ],
           ),
@@ -47,7 +47,7 @@ class SellerLotsScreen extends ConsumerWidget {
             return Center(
               child: FilledButton(
                 onPressed: () => context.go('/seller/lots/new'),
-                child: const Text(AppStrings.lotCreateAction),
+                child: Text(context.l10n.lotCreateAction),
               ),
             );
           }

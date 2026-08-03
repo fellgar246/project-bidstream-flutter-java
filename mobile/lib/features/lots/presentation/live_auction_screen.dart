@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/l10n/app_strings.dart';
+import '../../../core/l10n/locale_provider.dart';
 import '../../../core/realtime/stomp_client.dart';
 import '../providers/live_auction_provider.dart';
 import '../providers/lot_detail_provider.dart';
@@ -56,6 +56,7 @@ class _LiveAuctionScreenState extends ConsumerState<LiveAuctionScreen> {
     final lotAsync = ref.watch(lotDetailProvider(widget.lotId));
     final live = ref.watch(liveAuctionProvider(widget.lotId));
     final connection = ref.watch(stompConnectionStateProvider);
+    final l10n = context.l10n;
 
     ref.listen(liveAuctionProvider(widget.lotId), (previous, next) {
       final parsed = double.tryParse(next.currentPrice.replaceAll(',', '')) ?? _displayPrice;
@@ -75,7 +76,10 @@ class _LiveAuctionScreenState extends ConsumerState<LiveAuctionScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: lotAsync.maybeWhen(data: (lot) => Text(lot.title), orElse: () => const Text(AppStrings.liveAuctionTitle)),
+        title: lotAsync.maybeWhen(
+          data: (lot) => Text(lot.title),
+          orElse: () => Text(l10n.liveAuctionTitle),
+        ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16),
@@ -85,7 +89,7 @@ class _LiveAuctionScreenState extends ConsumerState<LiveAuctionScreen> {
       ),
       body: lotAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, _) => Center(child: Text(AppStrings.lotsError)),
+        error: (_, _) => Center(child: Text(l10n.lotsError)),
         data: (_) => Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -94,7 +98,7 @@ class _LiveAuctionScreenState extends ConsumerState<LiveAuctionScreen> {
               Container(
                 color: Colors.amber.shade100,
                 padding: const EdgeInsets.all(12),
-                child: const Text('⏱ ${AppStrings.liveExtendedBanner}'),
+                child: Text('⏱ ${l10n.liveExtendedBanner}'),
               ),
             if (live.outbidMessage != null)
               Container(
@@ -102,11 +106,17 @@ class _LiveAuctionScreenState extends ConsumerState<LiveAuctionScreen> {
                 padding: const EdgeInsets.all(12),
                 child: Text(live.outbidMessage!),
               ),
-            if (live.closedMessage != null)
+            if (live.lotStatus == 'CLOSED_SOLD')
               Container(
                 color: Colors.green.shade50,
                 padding: const EdgeInsets.all(12),
-                child: Text(live.closedMessage!, style: const TextStyle(fontSize: 16)),
+                child: Text(l10n.liveYouWon, style: const TextStyle(fontSize: 16)),
+              )
+            else if (live.lotStatus == 'CLOSED_NO_SALE')
+              Container(
+                color: Colors.green.shade50,
+                padding: const EdgeInsets.all(12),
+                child: Text(l10n.liveClosedNoSale, style: const TextStyle(fontSize: 16)),
               ),
             Padding(
               padding: const EdgeInsets.all(24),
@@ -131,8 +141,8 @@ class _LiveAuctionScreenState extends ConsumerState<LiveAuctionScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text('${AppStrings.liveCountdown}: ${_formatDuration(_remaining)}'),
-                  Text('${AppStrings.lotCurrentPrice}: ${live.bidCount} ${AppStrings.liveBids}'),
+                  Text('${l10n.liveCountdown}: ${_formatDuration(_remaining)}'),
+                  Text('${l10n.lotCurrentPrice}: ${l10n.bidCount(live.bidCount)}'),
                 ],
               ),
             ),
@@ -177,17 +187,18 @@ class _ConnectionBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return switch (connection) {
       StompConnectionState.connected => const SizedBox.shrink(),
       StompConnectionState.connecting => Container(
           color: Colors.orange.shade100,
           padding: const EdgeInsets.all(8),
-          child: const Text(AppStrings.liveReconnecting),
+          child: Text(l10n.liveReconnecting),
         ),
       StompConnectionState.disconnected => Container(
           color: Colors.grey.shade300,
           padding: const EdgeInsets.all(8),
-          child: const Text(AppStrings.liveDisconnected),
+          child: Text(l10n.liveDisconnected),
         ),
     };
   }

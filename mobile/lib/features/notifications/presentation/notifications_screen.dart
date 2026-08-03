@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/l10n/app_strings.dart';
+import '../../../core/l10n/locale_provider.dart';
 import '../providers/notifications_provider.dart';
 
 class NotificationsScreen extends ConsumerWidget {
@@ -10,22 +10,24 @@ class NotificationsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(notificationsProvider);
+    final l10n = context.l10n;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text(AppStrings.notificationsTitle),
+        title: Text(l10n.notificationsTitle),
         actions: [
           TextButton(
             onPressed: state.unreadCount == 0
                 ? null
                 : () => ref.read(notificationsProvider.notifier).markAllRead(),
-            child: const Text(AppStrings.markAllRead),
+            child: Text(l10n.markAllRead),
           ),
         ],
       ),
       body: state.loading && state.items.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : state.items.isEmpty
-              ? const Center(child: Text(AppStrings.noNotifications))
+              ? Center(child: Text(l10n.noNotifications))
               : RefreshIndicator(
                   onRefresh: () => ref.read(notificationsProvider.notifier).refresh(),
                   child: ListView.separated(
@@ -40,7 +42,7 @@ class NotificationsScreen extends ConsumerWidget {
                           color: isUnread ? Theme.of(context).colorScheme.primary : null,
                         ),
                         title: Text(
-                          _labelForType(item.type),
+                          _labelForType(context, item.type),
                           style: isUnread ? const TextStyle(fontWeight: FontWeight.bold) : null,
                         ),
                         subtitle: Text(item.createdAt),
@@ -60,13 +62,14 @@ class NotificationsScreen extends ConsumerWidget {
     };
   }
 
-  String _labelForType(String type) {
+  String _labelForType(BuildContext context, String type) {
+    final l10n = context.l10n;
     return switch (type) {
-      'YOU_WON' => AppStrings.notificationYouWon,
-      'OUTBID' => AppStrings.notificationOutbid,
-      'LOT_SOLD' => AppStrings.notificationLotSold,
-      'LOT_NO_SALE' => AppStrings.notificationLotNoSale,
-      'LOT_STARTED' => AppStrings.notificationLotStarted,
+      'YOU_WON' => l10n.notificationYouWon,
+      'OUTBID' => l10n.notificationOutbid,
+      'LOT_SOLD' => l10n.notificationLotSold,
+      'LOT_NO_SALE' => l10n.notificationLotNoSale,
+      'LOT_STARTED' => l10n.notificationLotStarted,
       _ => type,
     };
   }

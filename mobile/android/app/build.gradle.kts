@@ -14,6 +14,24 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+    flavorDimensions += "environment"
+    productFlavors {
+        create("dev") {
+            dimension = "environment"
+            applicationIdSuffix = ".dev"
+            resValue("string", "app_name", "BidStream Dev")
+        }
+        create("staging") {
+            dimension = "environment"
+            applicationIdSuffix = ".staging"
+            resValue("string", "app_name", "BidStream Stg")
+        }
+        create("prod") {
+            dimension = "environment"
+            resValue("string", "app_name", "BidStream")
+        }
+    }
+
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.bidstream.bidstream"

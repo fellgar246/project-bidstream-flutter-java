@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/auth/auth_controller.dart';
-import '../../../core/l10n/app_strings.dart';
+import '../../../core/l10n/locale_provider.dart';
 import '../../../core/network/api_exception.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -26,7 +26,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     } on ApiException catch (error) {
       setState(() => _error = error.message);
     } catch (_) {
-      setState(() => _error = AppStrings.sellerApplicationError);
+      if (mounted) {
+        setState(() => _error = context.l10n.sellerApplicationError);
+      }
     } finally {
       if (mounted) {
         setState(() => _applyingSeller = false);
@@ -38,9 +40,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider).valueOrNull;
     final user = authState?.user;
+    final locale = ref.watch(localeProvider);
+    final l10n = context.l10n;
 
     return Scaffold(
-      appBar: AppBar(title: const Text(AppStrings.profileTitle)),
+      appBar: AppBar(title: Text(l10n.profileTitle)),
       body: user == null
           ? const Center(child: CircularProgressIndicator())
           : Padding(
@@ -52,7 +56,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   const SizedBox(height: 8),
                   Text(user.email),
                   const SizedBox(height: 8),
-                  Text('${AppStrings.rolesLabel}: ${user.roles.join(', ')}'),
+                  Text('${l10n.rolesLabel}: ${user.roles.join(', ')}'),
                   if (_error != null) ...[
                     const SizedBox(height: 16),
                     Text(
@@ -60,6 +64,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       style: TextStyle(color: Theme.of(context).colorScheme.error),
                     ),
                   ],
+                  const SizedBox(height: 24),
+                  Text(l10n.languageLabel, style: Theme.of(context).textTheme.titleSmall),
+                  const SizedBox(height: 8),
+                  DropdownButtonFormField<Locale?>(
+                    initialValue: locale,
+                    decoration: const InputDecoration(border: OutlineInputBorder()),
+                    items: [
+                      DropdownMenuItem(value: null, child: Text(l10n.languageSystem)),
+                      DropdownMenuItem(value: const Locale('es'), child: Text(l10n.languageSpanish)),
+                      DropdownMenuItem(value: const Locale('en'), child: Text(l10n.languageEnglish)),
+                    ],
+                    onChanged: (value) => ref.read(localeProvider.notifier).setLocale(value),
+                  ),
                   const SizedBox(height: 24),
                   if (!user.isSeller)
                     FilledButton(
@@ -70,13 +87,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               width: 20,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : const Text(AppStrings.becomeSeller),
+                          : Text(l10n.becomeSeller),
                     ),
                   const Spacer(),
                   OutlinedButton(
                     onPressed: () =>
                         ref.read(authControllerProvider.notifier).logout(),
-                    child: const Text(AppStrings.logoutAction),
+                    child: Text(l10n.logoutAction),
                   ),
                 ],
               ),

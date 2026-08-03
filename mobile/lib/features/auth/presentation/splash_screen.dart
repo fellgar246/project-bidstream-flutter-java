@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/l10n/app_strings.dart';
+import '../../../core/l10n/locale_provider.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 16),
-            Text(AppStrings.splashLoading),
+            const CircularProgressIndicator(),
+            const SizedBox(height: 16),
+            Text(context.l10n.splashLoading),
           ],
         ),
       ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/l10n/app_strings.dart';
+import '../../../core/l10n/locale_provider.dart';
 import '../data/category_dto.dart';
 import '../providers/categories_provider.dart';
 
@@ -13,15 +13,15 @@ class CategoriesScreen extends ConsumerWidget {
     final categoriesAsync = ref.watch(categoriesProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text(AppStrings.categoriesTitle)),
+      appBar: AppBar(title: Text(context.l10n.categoriesTitle)),
       body: categoriesAsync.when(
-        loading: () => const Center(
+        loading: () => Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text(AppStrings.categoriesLoading),
+              const CircularProgressIndicator(),
+              const SizedBox(height: 16),
+              Text(context.l10n.categoriesLoading),
             ],
           ),
         ),
@@ -34,7 +34,7 @@ class CategoriesScreen extends ConsumerWidget {
                 const Icon(Icons.error_outline, size: 48),
                 const SizedBox(height: 12),
                 Text(
-                  AppStrings.categoriesError,
+                  context.l10n.categoriesError,
                   style: Theme.of(context).textTheme.titleMedium,
                   textAlign: TextAlign.center,
                 ),
@@ -43,7 +43,7 @@ class CategoriesScreen extends ConsumerWidget {
                 const SizedBox(height: 16),
                 FilledButton(
                   onPressed: () => ref.read(categoriesProvider.notifier).reload(),
-                  child: const Text(AppStrings.retry),
+                  child: Text(context.l10n.retry),
                 ),
               ],
             ),
@@ -51,7 +51,7 @@ class CategoriesScreen extends ConsumerWidget {
         ),
         data: (categories) {
           if (categories.isEmpty) {
-            return const Center(child: Text(AppStrings.categoriesEmpty));
+            return Center(child: Text(context.l10n.categoriesEmpty));
           }
           return ListView.builder(
             padding: const EdgeInsets.all(16),

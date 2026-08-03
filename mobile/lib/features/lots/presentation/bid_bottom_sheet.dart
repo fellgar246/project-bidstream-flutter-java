@@ -2,7 +2,7 @@ import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/l10n/app_strings.dart';
+import '../../../core/l10n/locale_provider.dart';
 import '../data/lot_dto.dart';
 import '../providers/bid_provider.dart';
 
@@ -43,7 +43,7 @@ class _BidBottomSheetState extends ConsumerState<BidBottomSheet> {
   Future<void> _submit() async {
     final amount = _amountController.text.trim();
     if (!_isValidDecimal(amount)) {
-      ref.read(bidProvider(widget.lot.id).notifier).setValidationError(AppStrings.bidInvalidAmount);
+      ref.read(bidProvider(widget.lot.id).notifier).setValidationError(context.l10n.bidInvalidAmount);
       return;
     }
     final success = await ref.read(bidProvider(widget.lot.id).notifier).submitBid(amount);
@@ -65,6 +65,7 @@ class _BidBottomSheetState extends ConsumerState<BidBottomSheet> {
   Widget build(BuildContext context) {
     final bidState = ref.watch(bidProvider(widget.lot.id));
     final lot = widget.lot;
+    final l10n = context.l10n;
 
     return Padding(
       padding: EdgeInsets.only(
@@ -77,10 +78,10 @@ class _BidBottomSheetState extends ConsumerState<BidBottomSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(AppStrings.bidTitle, style: Theme.of(context).textTheme.titleLarge),
+          Text(l10n.bidTitle, style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 8),
-          Text('${AppStrings.lotCurrentPrice}: ${lot.currentPrice}'),
-          Text('${AppStrings.bidMinIncrement}: ${lot.minIncrement}'),
+          Text('${l10n.lotCurrentPrice}: ${lot.currentPrice}'),
+          Text('${l10n.bidMinIncrement}: ${lot.minIncrement}'),
           const SizedBox(height: 16),
           Wrap(
             spacing: 8,
@@ -99,7 +100,7 @@ class _BidBottomSheetState extends ConsumerState<BidBottomSheet> {
             controller: _amountController,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             decoration: InputDecoration(
-              labelText: AppStrings.bidAmountLabel,
+              labelText: l10n.bidAmountLabel,
               border: const OutlineInputBorder(),
             ),
             enabled: !bidState.isSubmitting,
@@ -120,7 +121,7 @@ class _BidBottomSheetState extends ConsumerState<BidBottomSheet> {
                     width: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Text(AppStrings.bidPlaceAction),
+                : Text(l10n.bidPlaceAction),
           ),
         ],
       ),

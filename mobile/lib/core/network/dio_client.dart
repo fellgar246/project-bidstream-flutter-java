@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 
+import '../config/app_config.dart';
 import 'api_exception.dart';
 
 class DioClient {
@@ -7,7 +8,7 @@ class DioClient {
       : _dio = dio ??
             Dio(
               BaseOptions(
-                baseUrl: baseUrl ?? _defaultBaseUrl,
+                baseUrl: baseUrl ?? AppConfig.apiBaseUrl,
                 connectTimeout: const Duration(seconds: 10),
                 receiveTimeout: const Duration(seconds: 10),
                 headers: const {'Accept': 'application/json'},
@@ -33,11 +34,6 @@ class DioClient {
       ),
     );
   }
-
-  static const _defaultBaseUrl = String.fromEnvironment(
-    'API_BASE_URL',
-    defaultValue: 'http://localhost:8080/api/v1',
-  );
 
   final Dio _dio;
 

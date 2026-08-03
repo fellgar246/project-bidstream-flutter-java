@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../../../core/l10n/app_strings.dart';
+import '../../../core/l10n/locale_provider.dart';
 import '../data/lot_dto.dart';
 import '../data/lot_image_dto.dart';
 import '../providers/image_upload_provider.dart';
@@ -31,25 +31,26 @@ class _LotEditScreenState extends ConsumerState<LotEditScreen> {
   Widget build(BuildContext context) {
     final lotAsync = ref.watch(lotDetailProvider(widget.lotId));
     final uploads = ref.watch(imageUploadProvider(widget.lotId));
+    final l10n = context.l10n;
 
     return Scaffold(
-      appBar: AppBar(title: const Text(AppStrings.lotEditTitle)),
+      appBar: AppBar(title: Text(l10n.lotEditTitle)),
       body: lotAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, _) => Center(child: Text(AppStrings.lotsError)),
+        error: (_, _) => Center(child: Text(l10n.lotsError)),
         data: (lot) => ListView(
           padding: const EdgeInsets.all(24),
           children: [
             Text(lot.title, style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 16),
-            Text(AppStrings.lotImagesTitle, style: Theme.of(context).textTheme.titleMedium),
+            Text(l10n.lotImagesTitle, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 12),
             if (_permissionDenied) ...[
-              Text(AppStrings.lotCameraPermissionDenied),
+              Text(l10n.lotCameraPermissionDenied),
               const SizedBox(height: 8),
               OutlinedButton(
                 onPressed: openAppSettings,
-                child: const Text(AppStrings.lotOpenSettings),
+                child: Text(l10n.lotOpenSettings),
               ),
               const SizedBox(height: 12),
             ],
@@ -64,7 +65,7 @@ class _LotEditScreenState extends ConsumerState<LotEditScreen> {
             ),
             if (lot.images.length > 1) ...[
               const SizedBox(height: 24),
-              Text(AppStrings.lotReorderHint),
+              Text(l10n.lotReorderHint),
               const SizedBox(height: 8),
               ReorderableListView.builder(
                 shrinkWrap: true,
@@ -77,7 +78,7 @@ class _LotEditScreenState extends ConsumerState<LotEditScreen> {
                   return ListTile(
                     key: ValueKey(image.id),
                     leading: const Icon(Icons.drag_handle),
-                    title: Text('${AppStrings.lotImagePosition} ${image.position + 1}'),
+                    title: Text('${l10n.lotImagePosition} ${image.position + 1}'),
                     subtitle: Text(image.contentType),
                   );
                 },
@@ -141,7 +142,7 @@ class _LotEditScreenState extends ConsumerState<LotEditScreen> {
       ref.read(lotDetailProvider(widget.lotId).notifier).applyOptimisticOrder(previous);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text(AppStrings.lotReorderFailed)),
+          SnackBar(content: Text(context.l10n.lotReorderFailed)),
         );
       }
     }
@@ -156,11 +157,12 @@ class _AddImageButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return PopupMenuButton<String>(
       onSelected: (value) => value == 'camera' ? onCamera() : onGallery(),
       itemBuilder: (context) => [
-        const PopupMenuItem(value: 'gallery', child: Text(AppStrings.lotPickGallery)),
-        const PopupMenuItem(value: 'camera', child: Text(AppStrings.lotPickCamera)),
+        PopupMenuItem(value: 'gallery', child: Text(l10n.lotPickGallery)),
+        PopupMenuItem(value: 'camera', child: Text(l10n.lotPickCamera)),
       ],
       child: Container(
         width: 96,
@@ -183,6 +185,7 @@ class _UploadTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
     return Container(
       width: 96,
       height: 96,
@@ -197,15 +200,15 @@ class _UploadTile extends ConsumerWidget {
             children: [
               CircularProgressIndicator(value: item.progress),
               const SizedBox(height: 4),
-              Text(AppStrings.lotUploading),
+              Text(l10n.lotUploading),
             ],
           ),
-        ImageUploadPhase.confirming => const Column(
+        ImageUploadPhase.confirming => Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 4),
-              Text(AppStrings.lotConfirming),
+              const CircularProgressIndicator(),
+              const SizedBox(height: 4),
+              Text(l10n.lotConfirming),
             ],
           ),
         ImageUploadPhase.error => Column(
@@ -214,7 +217,7 @@ class _UploadTile extends ConsumerWidget {
               const Icon(Icons.error_outline),
               TextButton(
                 onPressed: () => ref.read(imageUploadProvider(lotId).notifier).retry(item.localId),
-                child: const Text(AppStrings.retry),
+                child: Text(l10n.retry),
               ),
             ],
           ),

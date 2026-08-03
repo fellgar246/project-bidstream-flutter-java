@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/auth/auth_controller.dart';
-import '../../../core/l10n/app_strings.dart';
+import '../../../core/l10n/locale_provider.dart';
 import '../../../core/network/api_exception.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
@@ -64,7 +64,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             : null;
       });
     } catch (_) {
-      setState(() => _generalError = AppStrings.registerError);
+      if (mounted) {
+        setState(() => _generalError = context.l10n.registerError);
+      }
     } finally {
       if (mounted) {
         setState(() => _submitting = false);
@@ -74,8 +76,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
-      appBar: AppBar(title: const Text(AppStrings.registerTitle)),
+      appBar: AppBar(title: Text(l10n.registerTitle)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(
@@ -86,12 +90,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               TextFormField(
                 controller: _displayNameController,
                 decoration: InputDecoration(
-                  labelText: AppStrings.displayNameLabel,
+                  labelText: l10n.displayNameLabel,
                   errorText: _displayNameError,
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return AppStrings.displayNameRequired;
+                    return l10n.displayNameRequired;
                   }
                   return null;
                 },
@@ -100,13 +104,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(
-                  labelText: AppStrings.emailLabel,
+                  labelText: l10n.emailLabel,
                   errorText: _emailError,
                 ),
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return AppStrings.emailRequired;
+                    return l10n.emailRequired;
                   }
                   return null;
                 },
@@ -115,13 +119,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               TextFormField(
                 controller: _passwordController,
                 decoration: InputDecoration(
-                  labelText: AppStrings.passwordLabel,
+                  labelText: l10n.passwordLabel,
                   errorText: _passwordError,
                 ),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.length < 10) {
-                    return AppStrings.passwordMinLength;
+                    return l10n.passwordMinLength;
                   }
                   return null;
                 },
@@ -142,11 +146,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         width: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text(AppStrings.registerAction),
+                    : Text(l10n.registerAction),
               ),
               TextButton(
                 onPressed: () => context.go('/login'),
-                child: const Text(AppStrings.goToLogin),
+                child: Text(l10n.goToLogin),
               ),
             ],
           ),

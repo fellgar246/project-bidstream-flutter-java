@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/l10n/app_strings.dart';
+import '../../../core/l10n/locale_provider.dart';
 import '../providers/bid_provider.dart';
 import '../providers/lot_detail_provider.dart';
 import 'bid_bottom_sheet.dart';
@@ -15,20 +15,21 @@ class LotDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lotAsync = ref.watch(lotDetailProvider(lotId));
+    final l10n = context.l10n;
 
     return Scaffold(
-      appBar: AppBar(title: const Text(AppStrings.lotDetailTitle)),
+      appBar: AppBar(title: Text(l10n.lotDetailTitle)),
       body: lotAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(AppStrings.lotsError),
+              Text(l10n.lotsError),
               const SizedBox(height: 12),
               FilledButton(
                 onPressed: () => ref.read(lotDetailProvider(lotId).notifier).reload(),
-                child: const Text(AppStrings.retry),
+                child: Text(l10n.retry),
               ),
             ],
           ),
@@ -65,20 +66,20 @@ class LotDetailScreen extends ConsumerWidget {
             ],
             Text(lot.description),
             const SizedBox(height: 16),
-            Text('${AppStrings.lotCurrentPrice}: ${lot.currentPrice}'),
-            Text('${AppStrings.lotStatus}: ${lot.status}'),
-            Text('${AppStrings.lotSeller}: ${lot.seller.displayName}'),
+            Text('${l10n.lotCurrentPrice}: ${lot.currentPrice}'),
+            Text('${l10n.lotStatus}: ${lot.status}'),
+            Text('${l10n.lotSeller}: ${lot.seller.displayName}'),
             const SizedBox(height: 24),
             if (lot.canEdit)
               FilledButton(
                 onPressed: () => context.go('/seller/lots/${lot.id}/edit'),
-                child: const Text(AppStrings.lotEdit),
+                child: Text(l10n.lotEdit),
               ),
             if (lot.canBid) ...[
               const SizedBox(height: 12),
               FilledButton(
                 onPressed: () => context.go('/lots/${lot.id}/live'),
-                child: const Text(AppStrings.liveWatchAction),
+                child: Text(l10n.liveWatchAction),
               ),
               const SizedBox(height: 12),
               FilledButton(
@@ -90,7 +91,7 @@ class LotDetailScreen extends ConsumerWidget {
                     builder: (_) => BidBottomSheet(lot: lot),
                   );
                 },
-                child: const Text(AppStrings.bidPlaceAction),
+                child: Text(l10n.bidPlaceAction),
               ),
             ],
           ],

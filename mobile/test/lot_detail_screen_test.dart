@@ -1,36 +1,42 @@
-import 'package:bidstream/core/l10n/app_strings.dart';
 import 'package:bidstream/features/lots/data/lot_dto.dart';
 import 'package:bidstream/features/lots/presentation/lot_detail_screen.dart';
 import 'package:bidstream/features/lots/providers/lot_detail_provider.dart';
+import 'package:bidstream/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'l10n_test_helper.dart';
+
 void main() {
+  final en = lookupAppLocalizations(const Locale('en'));
+
   testWidgets('ca0312 edit button only appears when canEdit is true', (tester) async {
-    await tester.pumpWidget(
+    await pumpLocalized(
+      tester,
       ProviderScope(
         overrides: [
           lotDetailProvider.overrideWith(_EditableLotNotifier.new),
         ],
-        child: const MaterialApp(home: LotDetailScreen(lotId: 42)),
+        child: const LotDetailScreen(lotId: 42),
       ),
+      locale: const Locale('en'),
     );
-    await tester.pumpAndSettle();
-    expect(find.text(AppStrings.lotEdit), findsOneWidget);
+    expect(find.text(en.lotEdit), findsOneWidget);
   });
 
   testWidgets('ca0312 edit button hidden when canEdit is false', (tester) async {
-    await tester.pumpWidget(
+    await pumpLocalized(
+      tester,
       ProviderScope(
         overrides: [
           lotDetailProvider.overrideWith(_ReadOnlyLotNotifier.new),
         ],
-        child: const MaterialApp(home: LotDetailScreen(lotId: 42)),
+        child: const LotDetailScreen(lotId: 42),
       ),
+      locale: const Locale('en'),
     );
-    await tester.pumpAndSettle();
-    expect(find.text(AppStrings.lotEdit), findsNothing);
+    expect(find.text(en.lotEdit), findsNothing);
   });
 }
 
