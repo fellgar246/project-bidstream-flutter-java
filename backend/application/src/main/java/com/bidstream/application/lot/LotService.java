@@ -169,7 +169,13 @@ public class LotService {
     if (viewerUserId == null || lot.status() != LotStatus.LIVE) {
       return false;
     }
-    return lot.sellerId() != viewerUserId;
+    if (lot.sellerId() == viewerUserId) {
+      return false;
+    }
+    if (lot.scheduledEndAt() == null || !clock.instant().isBefore(lot.scheduledEndAt())) {
+      return false;
+    }
+    return true;
   }
 
   private Lot findLotOrThrow(long lotId) {
