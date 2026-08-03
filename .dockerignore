@@ -1,0 +1,10 @@
+**/.git
+**/.gradle
+**/build
+**/.idea
+**/*.iml
+mobile/
+plans/
+*.jar
+!backend/gradle/wrapper/gradle-wrapper.jar
+!backend/gradle/wrapper/gradle-wrapper.properties

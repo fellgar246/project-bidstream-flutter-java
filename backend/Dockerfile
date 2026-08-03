@@ -2,7 +2,8 @@
 
 FROM eclipse-temurin:21-jdk-alpine AS builder
 WORKDIR /workspace
-COPY backend/gradlew backend/gradle backend/settings.gradle.kts backend/build.gradle.kts backend/gradle.properties ./backend/
+COPY backend/gradlew backend/settings.gradle.kts backend/build.gradle.kts backend/gradle.properties ./backend/
+COPY backend/gradle/wrapper ./backend/gradle/wrapper/
 COPY backend/domain ./backend/domain
 COPY backend/application ./backend/application
 COPY backend/infrastructure ./backend/infrastructure
