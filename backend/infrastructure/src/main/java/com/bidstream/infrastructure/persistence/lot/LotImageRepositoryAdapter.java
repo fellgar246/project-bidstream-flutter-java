@@ -97,6 +97,7 @@ public class LotImageRepositoryAdapter implements LotImageRepository {
         .toList();
   }
 
+  @Override
   public int findMaxPosition(long lotId) {
     return lotImageJpaRepository.findMaxPositionByLotId(lotId);
   }

@@ -21,4 +21,6 @@ public interface LotImageRepository {
   void deleteById(long id);
 
   List<LotImage> findPendingOlderThan(Instant cutoff);
+
+  int findMaxPosition(long lotId);
 }
