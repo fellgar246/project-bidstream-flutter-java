@@ -108,8 +108,7 @@ class LotServiceTest {
     Instant start = NOW.plusSeconds(600);
     Instant end = start.plusSeconds(3600);
 
-    assertThatThrownBy(
-            () -> lotService.scheduleLot(10L, Set.of(Role.SELLER), 1L, start, end))
+    assertThatThrownBy(() -> lotService.scheduleLot(10L, Set.of(Role.SELLER), 1L, start, end))
         .isInstanceOf(ImageRequiredException.class);
 
     verify(lotRepository, never()).save(any());

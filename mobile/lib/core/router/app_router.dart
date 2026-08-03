@@ -10,6 +10,7 @@ import '../../features/auth/presentation/register_screen.dart';
 import '../../features/auth/presentation/splash_screen.dart';
 import '../../features/categories/presentation/categories_screen.dart';
 import '../../features/lots/presentation/lot_detail_screen.dart';
+import '../../features/lots/presentation/lot_edit_screen.dart';
 import '../../features/lots/presentation/lot_form_screen.dart';
 import '../../features/lots/presentation/lots_list_screen.dart';
 import '../../features/lots/presentation/seller_lots_screen.dart';
@@ -89,6 +90,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/seller/lots/new',
         builder: (context, state) => const LotFormScreen(),
+      ),
+      GoRoute(
+        path: '/seller/lots/:id/edit',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return LotEditScreen(lotId: id);
+        },
       ),
       GoRoute(
         path: '/profile',

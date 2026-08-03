@@ -1,6 +1,5 @@
 package com.bidstream.application.lot;
 
-import com.bidstream.domain.lot.LotImage;
 import com.bidstream.domain.user.Role;
 import java.util.Set;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,7 +18,12 @@ public class PresignImageUseCase {
   @Transactional
   @PreAuthorize("hasRole('SELLER')")
   public PresignService.PresignResult execute(
-      long userId, Set<Role> roles, long lotId, String fileName, String contentType, long sizeBytes) {
+      long userId,
+      Set<Role> roles,
+      long lotId,
+      String fileName,
+      String contentType,
+      long sizeBytes) {
     return presignService.presign(userId, roles, lotId, fileName, contentType, sizeBytes);
   }
 }

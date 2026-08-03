@@ -1,3 +1,5 @@
+import 'lot_image_dto.dart';
+
 class LotDto {
   const LotDto({
     required this.id,
@@ -15,6 +17,7 @@ class LotDto {
     this.scheduledStartAt,
     this.scheduledEndAt,
     this.actualEndAt,
+    this.images = const [],
     required this.watched,
     required this.canEdit,
     required this.canBid,
@@ -35,6 +38,7 @@ class LotDto {
   final String? scheduledStartAt;
   final String? scheduledEndAt;
   final String? actualEndAt;
+  final List<LotImageDto> images;
   final bool watched;
   final bool canEdit;
   final bool canBid;
@@ -56,9 +60,36 @@ class LotDto {
       scheduledStartAt: json['scheduledStartAt'] as String?,
       scheduledEndAt: json['scheduledEndAt'] as String?,
       actualEndAt: json['actualEndAt'] as String?,
+      images: (json['images'] as List<dynamic>? ?? [])
+          .map((item) => LotImageDto.fromJson(item as Map<String, dynamic>))
+          .toList(),
       watched: json['watched'] as bool? ?? false,
       canEdit: json['canEdit'] as bool? ?? false,
       canBid: json['canBid'] as bool? ?? false,
+    );
+  }
+
+  LotDto copyWith({List<LotImageDto>? images}) {
+    return LotDto(
+      id: id,
+      title: title,
+      description: description,
+      category: category,
+      seller: seller,
+      startingPrice: startingPrice,
+      minIncrement: minIncrement,
+      currentPrice: currentPrice,
+      bidCount: bidCount,
+      hasReserve: hasReserve,
+      reserveMet: reserveMet,
+      status: status,
+      scheduledStartAt: scheduledStartAt,
+      scheduledEndAt: scheduledEndAt,
+      actualEndAt: actualEndAt,
+      images: images ?? this.images,
+      watched: watched,
+      canEdit: canEdit,
+      canBid: canBid,
     );
   }
 }

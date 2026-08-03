@@ -49,15 +49,16 @@ public class ThumbnailService {
 
   void generate(long imageId) throws IOException {
     LotImage image =
-        lotImageRepository.findById(imageId).orElseThrow(() -> new NoSuchElementException("Image not found"));
+        lotImageRepository
+            .findById(imageId)
+            .orElseThrow(() -> new NoSuchElementException("Image not found"));
 
     byte[] originalBytes = objectStorage.getObject(image.storageKey());
     BufferedImage source = readImage(originalBytes, image.contentType());
     BufferedImage thumbnail = resize(source, MAX_THUMBNAIL_SIDE);
     byte[] webpBytes = writeWebp(thumbnail);
 
-    String thumbnailKey =
-        "lots/" + image.lotId() + "/" + UUID.randomUUID() + "_thumb.webp";
+    String thumbnailKey = "lots/" + image.lotId() + "/" + UUID.randomUUID() + "_thumb.webp";
     objectStorage.putObject(thumbnailKey, webpBytes, "image/webp");
 
     lotImageRepository.save(image.withThumbnail(thumbnailKey, clock.instant()));
@@ -85,7 +86,8 @@ public class ThumbnailService {
     BufferedImage resized =
         new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB);
     Graphics2D graphics = resized.createGraphics();
-    graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+    graphics.setRenderingHint(
+        RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
     graphics.drawImage(source, 0, 0, targetWidth, targetHeight, null);
     graphics.dispose();
     return resized;
