@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/l10n/app_strings.dart';
+import '../providers/bid_provider.dart';
 import '../providers/lot_detail_provider.dart';
+import 'bid_bottom_sheet.dart';
 
 class LotDetailScreen extends ConsumerWidget {
   const LotDetailScreen({super.key, required this.lotId});
@@ -72,6 +74,20 @@ class LotDetailScreen extends ConsumerWidget {
                 onPressed: () => context.go('/seller/lots/${lot.id}/edit'),
                 child: const Text(AppStrings.lotEdit),
               ),
+            if (lot.canBid) ...[
+              const SizedBox(height: 12),
+              FilledButton(
+                onPressed: () async {
+                  ref.read(bidProvider(lot.id).notifier).resetAttempt();
+                  await showModalBottomSheet<bool>(
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (_) => BidBottomSheet(lot: lot),
+                  );
+                },
+                child: const Text(AppStrings.bidPlaceAction),
+              ),
+            ],
           ],
         ),
       ),
