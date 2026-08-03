@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/cache/offline_banner.dart';
 import '../../../core/l10n/locale_provider.dart';
 import '../data/lot_dto.dart';
 import '../data/lot_filters.dart';
@@ -115,7 +116,13 @@ class _LotsListScreenState extends ConsumerState<LotsListScreen> {
           if (state.items.isEmpty) {
             return Center(child: Text(context.l10n.lotsEmpty));
           }
-          return _buildList(state.items, state.isLoadingMore);
+          return Column(
+            children: [
+              if (state.offline && state.cachedAt != null)
+                OfflineBanner(cachedAt: state.cachedAt!),
+              Expanded(child: _buildList(state.items, state.isLoadingMore)),
+            ],
+          );
         },
       ),
     );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/auth/auth_controller.dart';
+import '../../../core/cache/lot_cache_service.dart';
 import '../../../core/l10n/locale_provider.dart';
 import '../../../core/network/api_exception.dart';
 
@@ -90,6 +91,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           : Text(l10n.becomeSeller),
                     ),
                   const Spacer(),
+                  OutlinedButton(
+                    onPressed: () async {
+                      await ref.read(lotCacheServiceProvider).clearAll();
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(l10n.cacheCleared)),
+                        );
+                      }
+                    },
+                    child: Text(l10n.clearCache),
+                  ),
+                  const SizedBox(height: 12),
                   OutlinedButton(
                     onPressed: () =>
                         ref.read(authControllerProvider.notifier).logout(),

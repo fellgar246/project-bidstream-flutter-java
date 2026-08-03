@@ -42,12 +42,14 @@ void main() {
 
 class _EditableLotNotifier extends LotDetailNotifier {
   @override
-  Future<LotDto> build(int lotId) async => _sampleLot(canEdit: true);
+  Future<LotDetailState> build(int lotId) async =>
+      LotDetailState(lot: _sampleLot(canEdit: true));
 }
 
 class _ReadOnlyLotNotifier extends LotDetailNotifier {
   @override
-  Future<LotDto> build(int lotId) async => _sampleLot(canEdit: false);
+  Future<LotDetailState> build(int lotId) async =>
+      LotDetailState(lot: _sampleLot(canEdit: false));
 }
 
 LotDto _sampleLot({required bool canEdit}) {

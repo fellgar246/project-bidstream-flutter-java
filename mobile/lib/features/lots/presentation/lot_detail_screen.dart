@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/cache/offline_banner.dart';
 import '../../../core/l10n/locale_provider.dart';
 import '../providers/bid_provider.dart';
 import '../providers/lot_detail_provider.dart';
@@ -34,9 +35,17 @@ class LotDetailScreen extends ConsumerWidget {
             ],
           ),
         ),
-        data: (lot) => ListView(
+        data: (detail) {
+          final lot = detail.lot;
+          return ListView(
           padding: const EdgeInsets.all(24),
           children: [
+            if (detail.offline && detail.cachedAt != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: OfflineBanner(cachedAt: detail.cachedAt!),
+              ),
+            if (detail.stalePrice) const StalePriceBanner(),
             Text(lot.title, style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 8),
             if (lot.images.isNotEmpty) ...[
@@ -95,7 +104,8 @@ class LotDetailScreen extends ConsumerWidget {
               ),
             ],
           ],
-        ),
+        );
+        },
       ),
     );
   }

@@ -38,7 +38,9 @@ class _LotEditScreenState extends ConsumerState<LotEditScreen> {
       body: lotAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, _) => Center(child: Text(l10n.lotsError)),
-        data: (lot) => ListView(
+        data: (detail) {
+          final lot = detail.lot;
+          return ListView(
           padding: const EdgeInsets.all(24),
           children: [
             Text(lot.title, style: Theme.of(context).textTheme.titleLarge),
@@ -85,7 +87,8 @@ class _LotEditScreenState extends ConsumerState<LotEditScreen> {
               ),
             ],
           ],
-        ),
+          );
+        },
       ),
     );
   }
