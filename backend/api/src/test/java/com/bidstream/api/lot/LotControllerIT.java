@@ -153,19 +153,13 @@ class LotControllerIT {
 
     var page0 =
         fetchLotIds(
-            "/api/v1/lots?status=LIVE&sellerId="
-                + sellerId
-                + "&size=10&page=0&sort=endingSoon");
+            "/api/v1/lots?status=LIVE&sellerId=" + sellerId + "&size=10&page=0&sort=endingSoon");
     var page1 =
         fetchLotIds(
-            "/api/v1/lots?status=LIVE&sellerId="
-                + sellerId
-                + "&size=10&page=1&sort=endingSoon");
+            "/api/v1/lots?status=LIVE&sellerId=" + sellerId + "&size=10&page=1&sort=endingSoon");
     var page2 =
         fetchLotIds(
-            "/api/v1/lots?status=LIVE&sellerId="
-                + sellerId
-                + "&size=10&page=2&sort=endingSoon");
+            "/api/v1/lots?status=LIVE&sellerId=" + sellerId + "&size=10&page=2&sort=endingSoon");
 
     var all = new java.util.ArrayList<Long>();
     all.addAll(page0);

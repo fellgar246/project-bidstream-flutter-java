@@ -32,4 +32,27 @@ abstract final class AppStrings {
   static const becomeSeller = 'Become a seller';
   static const sellerApplicationError = 'Could not apply as seller';
   static const rolesLabel = 'Roles';
+
+  static const lotsTitle = 'Lots';
+  static const lotsError = 'Could not load lots';
+  static const lotsEmpty = 'No lots available';
+  static const lotsFiltersTitle = 'Filters';
+  static const lotsFilterStatus = 'Status';
+  static const lotsFilterSort = 'Sort';
+  static const lotsApplyFilters = 'Apply filters';
+  static const lotDetailTitle = 'Lot detail';
+  static const lotCurrentPrice = 'Current price';
+  static const lotStatus = 'Status';
+  static const lotSeller = 'Seller';
+  static const lotEdit = 'Edit lot';
+  static const lotFormTitle = 'New lot';
+  static const lotTitleLabel = 'Title';
+  static const lotDescriptionLabel = 'Description';
+  static const lotStartingPriceLabel = 'Starting price';
+  static const lotMinIncrementLabel = 'Minimum increment';
+  static const lotReservePriceLabel = 'Reserve price (optional)';
+  static const lotCreateAction = 'Create lot';
+  static const sellerLotsTitle = 'My lots';
+  static const viewLots = 'Browse lots';
+  static const viewSellerLots = 'My lots';
 }
