@@ -72,3 +72,10 @@ scripts/   → check.sh
 ```
 
 Documentación de aprendizaje: [`CONCEPTOS.md`](CONCEPTOS.md).
+
+## Tiempo real (SPEC-06)
+
+- WebSocket STOMP en `GET /ws?token=<accessToken>` (heartbeat 10 s).
+- Topics: `/topic/lots/{id}`, presencia en `/topic/lots/{id}/presence`.
+- Recuperación: `GET /api/v1/lots/{id}/events?afterEventId=...`
+- **Límite conocido:** broker STOMP en memoria ⇒ despliegue de una sola instancia del API para subastas en vivo.

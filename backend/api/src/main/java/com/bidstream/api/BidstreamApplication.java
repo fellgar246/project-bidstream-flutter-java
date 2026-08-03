@@ -7,9 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
 @SpringBootApplication(
-    exclude = {
-      org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration.class
-    })
+    exclude = {org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration.class})
 @Import({ApplicationConfig.class, InfrastructureConfig.class})
 public class BidstreamApplication {
 

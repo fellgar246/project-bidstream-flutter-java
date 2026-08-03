@@ -48,10 +48,7 @@ public class BidQueryService {
   }
 
   public String bidderDisplayName(long bidderId) {
-    return userRepository
-        .findById(bidderId)
-        .map(User::displayName)
-        .orElse("Bidder");
+    return userRepository.findById(bidderId).map(User::displayName).orElse("Bidder");
   }
 
   public record MyBidView(com.bidstream.domain.bid.Bid bid, Lot lot) {}

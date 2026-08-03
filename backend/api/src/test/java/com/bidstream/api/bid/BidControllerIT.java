@@ -22,10 +22,7 @@ import org.springframework.test.web.servlet.MvcResult;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ContextConfiguration(
-    initializers = {
-      PostgresTestContainer.Initializer.class,
-      RedisTestContainer.Initializer.class
-    })
+    initializers = {PostgresTestContainer.Initializer.class, RedisTestContainer.Initializer.class})
 class BidControllerIT {
 
   @Autowired private MockMvc mockMvc;
@@ -169,7 +166,10 @@ class BidControllerIT {
   }
 
   private void placeBid(
-      String token, long lotId, String amount, String clientRequestId,
+      String token,
+      long lotId,
+      String amount,
+      String clientRequestId,
       org.springframework.test.web.servlet.ResultMatcher expectedStatus)
       throws Exception {
     mockMvc
@@ -221,7 +221,10 @@ class BidControllerIT {
                             .formatted(email)))
             .andExpect(status().isOk())
             .andReturn();
-    return objectMapper.readTree(result.getResponse().getContentAsString()).get("accessToken").asText();
+    return objectMapper
+        .readTree(result.getResponse().getContentAsString())
+        .get("accessToken")
+        .asText();
   }
 
   private long createLot(String token) throws Exception {

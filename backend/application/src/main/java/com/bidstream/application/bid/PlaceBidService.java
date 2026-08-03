@@ -1,5 +1,7 @@
 package com.bidstream.application.bid;
 
+import com.bidstream.application.realtime.DomainEventPublisher;
+import com.bidstream.application.realtime.LotRealtimeEvent;
 import com.bidstream.domain.bid.Bid;
 import com.bidstream.domain.bid.BidConflictException;
 import com.bidstream.domain.bid.BidRepository;
@@ -7,6 +9,7 @@ import com.bidstream.domain.bid.LockTimeoutException;
 import com.bidstream.domain.lot.Lot;
 import com.bidstream.domain.lot.LotRepository;
 import com.bidstream.domain.money.Money;
+import com.bidstream.domain.user.UserRepository;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.NoSuchElementException;
@@ -27,6 +30,8 @@ public class PlaceBidService {
   private final BidValidator bidValidator;
   private final DistributedLockPort distributedLock;
   private final TransactionTemplate transactionTemplate;
+  private final DomainEventPublisher domainEventPublisher;
+  private final UserRepository userRepository;
   private final Clock clock;
 
   public PlaceBidService(
@@ -36,12 +41,16 @@ public class PlaceBidService {
       DistributedLockPort distributedLock,
       @org.springframework.beans.factory.annotation.Qualifier("requiresNewTransactionTemplate")
           TransactionTemplate transactionTemplate,
+      DomainEventPublisher domainEventPublisher,
+      UserRepository userRepository,
       Clock clock) {
     this.lotRepository = lotRepository;
     this.bidRepository = bidRepository;
     this.bidValidator = bidValidator;
     this.distributedLock = distributedLock;
     this.transactionTemplate = transactionTemplate;
+    this.domainEventPublisher = domainEventPublisher;
+    this.userRepository = userRepository;
     this.clock = clock;
   }
 
@@ -78,7 +87,10 @@ public class PlaceBidService {
   private PlaceBidOutcome attemptPlaceBid(
       long lotId, long bidderId, Money amount, String clientRequestId) {
     Instant now = clock.instant();
-    Lot lot = lotRepository.findById(lotId).orElseThrow(() -> new NoSuchElementException("Lot not found"));
+    Lot lot =
+        lotRepository
+            .findById(lotId)
+            .orElseThrow(() -> new NoSuchElementException("Lot not found"));
 
     Optional<Bid> existing =
         bidRepository.findByLotIdAndBidderIdAndClientRequestId(lotId, bidderId, clientRequestId);
@@ -88,14 +100,37 @@ public class PlaceBidService {
 
     bidValidator.validate(lot, bidderId, amount, now);
 
+    Optional<Bid> previousHighest =
+        lot.bidCount() > 0 ? bidRepository.findHighestBidByLotId(lotId) : Optional.empty();
+    Optional<Long> previousHighestBidderId =
+        previousHighest.filter(bid -> bid.bidderId() != bidderId).map(Bid::bidderId);
+    Optional<Money> previousHighestAmount = previousHighest.map(bid -> bid.amount());
+
     Bid bid = bidRepository.save(Bid.create(lotId, bidderId, amount, now, clientRequestId));
     Lot.BidAcceptanceResult acceptance = lot.acceptBid(amount, now);
     Lot savedLot = lotRepository.save(acceptance.lot());
 
+    String bidderDisplayName =
+        userRepository.findById(bidderId).map(user -> user.displayName()).orElse("Bidder");
+
+    domainEventPublisher.publish(
+        new LotRealtimeEvent.BidPlacedEvent(
+            lotId,
+            bid,
+            savedLot,
+            bidderDisplayName,
+            acceptance.extended(),
+            previousHighestBidderId,
+            previousHighestAmount,
+            now));
+    if (acceptance.extended()) {
+      domainEventPublisher.publish(
+          new LotRealtimeEvent.LotExtendedEvent(lotId, savedLot, bid.id(), now));
+    }
+
     // TODO(SPEC-07): write outbox event in same transaction (RB-09)
 
-    return PlaceBidOutcome.created(
-        bid, savedLot, acceptance.extended());
+    return PlaceBidOutcome.created(bid, savedLot, acceptance.extended());
   }
 
   private PlaceBidOutcome handleDuplicateBid(long lotId, long bidderId, String clientRequestId) {
@@ -115,8 +150,7 @@ public class PlaceBidService {
     }
 
     static PlaceBidOutcome replay(Bid bid, Lot lot) {
-      return new PlaceBidOutcome(
-          PlaceBidResult.of(bid, lot, bid.bidderId(), false, true), true);
+      return new PlaceBidOutcome(PlaceBidResult.of(bid, lot, bid.bidderId(), false, true), true);
     }
   }
 }

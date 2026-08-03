@@ -5,7 +5,6 @@ import com.bidstream.application.bid.PlaceBidResult;
 import com.bidstream.domain.bid.Bid;
 import com.bidstream.domain.lot.Lot;
 import com.bidstream.domain.user.UserRepository;
-import java.util.NoSuchElementException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -21,13 +20,9 @@ public class BidResponseMapper {
     Bid bid = result.bid();
     Lot lot = result.lot();
     String displayName =
-        userRepository
-            .findById(bid.bidderId())
-            .map(user -> user.displayName())
-            .orElse("Bidder");
+        userRepository.findById(bid.bidderId()).map(user -> user.displayName()).orElse("Bidder");
     return new PlaceBidResponse(
-        new BidSummary(
-            bid.id(), bid.amount().toString(), bid.placedAt().toString(), displayName),
+        new BidSummary(bid.id(), bid.amount().toString(), bid.placedAt().toString(), displayName),
         new PlaceBidLotSummary(
             lot.currentPrice().toString(),
             lot.bidCount(),
@@ -38,10 +33,7 @@ public class BidResponseMapper {
 
   public BidSummary toSummary(Bid bid) {
     String displayName =
-        userRepository
-            .findById(bid.bidderId())
-            .map(user -> user.displayName())
-            .orElse("Bidder");
+        userRepository.findById(bid.bidderId()).map(user -> user.displayName()).orElse("Bidder");
     return new BidSummary(
         bid.id(), bid.amount().toString(), bid.placedAt().toString(), displayName);
   }

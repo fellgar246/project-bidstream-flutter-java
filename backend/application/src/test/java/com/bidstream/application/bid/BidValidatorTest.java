@@ -32,28 +32,26 @@ class BidValidatorTest {
   @Test
   void rb04_pastScheduledEnd_rejects() {
     Lot lot = lot(Money.fromString("100.00"), 1, NOW.minusMillis(1));
-    assertThatThrownBy(
-            () -> validator.validate(lot, 2L, Money.fromString("110.00"), NOW))
+    assertThatThrownBy(() -> validator.validate(lot, 2L, Money.fromString("110.00"), NOW))
         .isInstanceOf(BidNotLiveException.class);
   }
 
   @Test
   void rb04_sellerBid_rejects() {
     Lot lot = lot(Money.fromString("100.00"), 0, NOW.plusSeconds(3600));
-    assertThatThrownBy(
-            () -> validator.validate(lot, 10L, Money.fromString("100.00"), NOW))
+    assertThatThrownBy(() -> validator.validate(lot, 10L, Money.fromString("100.00"), NOW))
         .isInstanceOf(BidSelfException.class);
   }
 
   @Test
   void rb04_tooLow_includesMinimum() {
     Lot lot = lot(Money.fromString("105.00"), 1, NOW.plusSeconds(3600));
-    assertThatThrownBy(
-            () -> validator.validate(lot, 2L, Money.fromString("106.00"), NOW))
+    assertThatThrownBy(() -> validator.validate(lot, 2L, Money.fromString("106.00"), NOW))
         .isInstanceOf(BidTooLowException.class)
         .satisfies(
-            ex -> assertThat(((BidTooLowException) ex).minimum())
-                .isEqualTo(Money.fromString("110.00")));
+            ex ->
+                assertThat(((BidTooLowException) ex).minimum())
+                    .isEqualTo(Money.fromString("110.00")));
   }
 
   private Lot lot(Money currentPrice, int bidCount, Instant end) {

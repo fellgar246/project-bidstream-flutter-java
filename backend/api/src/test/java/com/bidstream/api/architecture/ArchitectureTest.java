@@ -14,6 +14,22 @@ class ArchitectureTest {
           .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
           .importPackages("com.bidstream.domain");
 
+  private static final JavaClasses APPLICATION_BID_CLASSES =
+      new ClassFileImporter()
+          .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
+          .importPackages("com.bidstream.application.bid");
+
+  @Test
+  void application_bid_mustNotDependOnSpringMessaging() {
+    noClasses()
+        .that()
+        .resideInAPackage("com.bidstream.application.bid..")
+        .should()
+        .dependOnClassesThat()
+        .resideInAnyPackage("org.springframework.messaging..")
+        .check(APPLICATION_BID_CLASSES);
+  }
+
   @Test
   void domain_mustNotDependOnSpring() {
     noClasses()

@@ -73,4 +73,12 @@ abstract final class AppStrings {
   static const bidPlaceAction = 'Place bid';
   static const bidMinIncrement = 'Minimum increment';
   static const bidInvalidAmount = 'Enter a valid amount';
+
+  static const liveAuctionTitle = 'Live auction';
+  static const liveCountdown = 'Time left';
+  static const liveBids = 'bids';
+  static const liveExtendedBanner = 'Time extended';
+  static const liveReconnecting = 'Reconnecting…';
+  static const liveDisconnected = 'Connection lost';
+  static const liveWatchAction = 'Watch live';
 }

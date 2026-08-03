@@ -7,7 +7,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.bidstream.api.support.PostgresTestContainer;
 import com.bidstream.api.support.RedisTestContainer;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -30,10 +29,7 @@ import org.springframework.test.web.servlet.MvcResult;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ContextConfiguration(
-    initializers = {
-      PostgresTestContainer.Initializer.class,
-      RedisTestContainer.Initializer.class
-    })
+    initializers = {PostgresTestContainer.Initializer.class, RedisTestContainer.Initializer.class})
 class BidConcurrencyIT {
 
   @Autowired private MockMvc mockMvc;
@@ -81,13 +77,17 @@ class BidConcurrencyIT {
     }
     pool.shutdown();
 
-    long acceptedCount = attempts.stream().filter(a -> a.status() == 201 || a.status() == 200).count();
-    long bidRows = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM bids WHERE lot_id = ?", Long.class, lotId);
+    long acceptedCount =
+        attempts.stream().filter(a -> a.status() == 201 || a.status() == 200).count();
+    long bidRows =
+        jdbcTemplate.queryForObject(
+            "SELECT COUNT(*) FROM bids WHERE lot_id = ?", Long.class, lotId);
     long currentPrice =
         jdbcTemplate.queryForObject(
             "SELECT current_price_cents FROM lots WHERE id = ?", Long.class, lotId);
     int bidCount =
-        jdbcTemplate.queryForObject("SELECT bid_count FROM lots WHERE id = ?", Integer.class, lotId);
+        jdbcTemplate.queryForObject(
+            "SELECT bid_count FROM lots WHERE id = ?", Integer.class, lotId);
 
     assertThat(bidRows).isEqualTo(acceptedCount);
     assertThat(bidCount).isEqualTo((int) bidRows);
@@ -136,7 +136,10 @@ class BidConcurrencyIT {
 
     assertThat(List.of(statusA, statusB)).containsExactlyInAnyOrder(201, 409);
     long accepted =
-        jdbcTemplate.queryForObject("SELECT COUNT(*) FROM bids WHERE lot_id = ? AND amount_cents = 10500", Long.class, lotId);
+        jdbcTemplate.queryForObject(
+            "SELECT COUNT(*) FROM bids WHERE lot_id = ? AND amount_cents = 10500",
+            Long.class,
+            lotId);
     assertThat(accepted).isEqualTo(1);
   }
 
@@ -235,7 +238,10 @@ class BidConcurrencyIT {
   }
 
   private void placeBid(
-      String token, long lotId, String amount, String clientRequestId,
+      String token,
+      long lotId,
+      String amount,
+      String clientRequestId,
       org.springframework.test.web.servlet.ResultMatcher expectedStatus)
       throws Exception {
     mockMvc
@@ -302,7 +308,10 @@ class BidConcurrencyIT {
                             .formatted(email)))
             .andExpect(status().isOk())
             .andReturn();
-    return objectMapper.readTree(result.getResponse().getContentAsString()).get("accessToken").asText();
+    return objectMapper
+        .readTree(result.getResponse().getContentAsString())
+        .get("accessToken")
+        .asText();
   }
 
   private long createLot(String token) throws Exception {

@@ -18,7 +18,7 @@ class _LotFormScreenState extends ConsumerState<LotFormScreen> {
   final _startingPriceController = TextEditingController();
   final _minIncrementController = TextEditingController();
   final _reservePriceController = TextEditingController();
-  int _categoryId = 1;
+  final int _categoryId = 1;
 
   @override
   void dispose() {

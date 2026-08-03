@@ -3,7 +3,6 @@ package com.bidstream.api.bid;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.bidstream.api.support.PostgresTestContainer;
@@ -30,10 +29,7 @@ import org.springframework.test.web.servlet.MvcResult;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ContextConfiguration(
-    initializers = {
-      PostgresTestContainer.Initializer.class,
-      RedisTestContainer.Initializer.class
-    })
+    initializers = {PostgresTestContainer.Initializer.class, RedisTestContainer.Initializer.class})
 class BidIdempotencyIT {
 
   @Autowired private MockMvc mockMvc;
@@ -48,11 +44,13 @@ class BidIdempotencyIT {
 
     MvcResult first =
         placeBid(buyerToken, fixture.lotId(), "105.00", "client-req-1", status().isCreated());
-    long bidId = objectMapper.readTree(first.getResponse().getContentAsString()).at("/bid/id").asLong();
+    long bidId =
+        objectMapper.readTree(first.getResponse().getContentAsString()).at("/bid/id").asLong();
 
     MvcResult second =
         placeBid(buyerToken, fixture.lotId(), "105.00", "client-req-1", status().isOk());
-    long replayId = objectMapper.readTree(second.getResponse().getContentAsString()).at("/bid/id").asLong();
+    long replayId =
+        objectMapper.readTree(second.getResponse().getContentAsString()).at("/bid/id").asLong();
 
     assertThat(replayId).isEqualTo(bidId);
     assertThat(countBids(fixture.lotId())).isEqualTo(1);
@@ -96,7 +94,8 @@ class BidIdempotencyIT {
     pool.shutdown();
 
     long bidId =
-        jdbcTemplate.queryForObject("SELECT id FROM bids WHERE lot_id = ? LIMIT 1", Long.class, fixture.lotId());
+        jdbcTemplate.queryForObject(
+            "SELECT id FROM bids WHERE lot_id = ? LIMIT 1", Long.class, fixture.lotId());
     assertThat(bidId).isPositive();
     assertThat(countBids(fixture.lotId())).isEqualTo(1);
   }
@@ -104,8 +103,7 @@ class BidIdempotencyIT {
   private int placeBidWithRetry(String token, long lotId, String amount, String clientRequestId)
       throws Exception {
     for (int attempt = 0; attempt < 5; attempt++) {
-      int status =
-          placeBid(token, lotId, amount, clientRequestId, null).getResponse().getStatus();
+      int status = placeBid(token, lotId, amount, clientRequestId, null).getResponse().getStatus();
       if (status != 503) {
         return status;
       }
@@ -115,7 +113,10 @@ class BidIdempotencyIT {
   }
 
   private MvcResult placeBid(
-      String token, long lotId, String amount, String clientRequestId,
+      String token,
+      long lotId,
+      String amount,
+      String clientRequestId,
       org.springframework.test.web.servlet.ResultMatcher expectedStatus)
       throws Exception {
     var request =
@@ -149,7 +150,8 @@ class BidIdempotencyIT {
   }
 
   private long countBids(long lotId) {
-    return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM bids WHERE lot_id = ?", Long.class, lotId);
+    return jdbcTemplate.queryForObject(
+        "SELECT COUNT(*) FROM bids WHERE lot_id = ?", Long.class, lotId);
   }
 
   private long currentPriceCents(long lotId) {
@@ -158,7 +160,8 @@ class BidIdempotencyIT {
   }
 
   private int bidCount(long lotId) {
-    return jdbcTemplate.queryForObject("SELECT bid_count FROM lots WHERE id = ?", Integer.class, lotId);
+    return jdbcTemplate.queryForObject(
+        "SELECT bid_count FROM lots WHERE id = ?", Integer.class, lotId);
   }
 
   private String registerBuyer(String email) throws Exception {
@@ -197,7 +200,10 @@ class BidIdempotencyIT {
                             .formatted(email)))
             .andExpect(status().isOk())
             .andReturn();
-    return objectMapper.readTree(result.getResponse().getContentAsString()).get("accessToken").asText();
+    return objectMapper
+        .readTree(result.getResponse().getContentAsString())
+        .get("accessToken")
+        .asText();
   }
 
   private long createLot(String token) throws Exception {

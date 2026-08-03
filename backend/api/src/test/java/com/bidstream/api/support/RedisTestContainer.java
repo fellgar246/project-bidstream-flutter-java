@@ -1,9 +1,9 @@
 package com.bidstream.api.support;
 
+import com.redis.testcontainers.RedisContainer;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
-import com.redis.testcontainers.RedisContainer;
 
 public final class RedisTestContainer {
 

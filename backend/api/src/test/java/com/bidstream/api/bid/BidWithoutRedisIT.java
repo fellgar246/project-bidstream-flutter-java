@@ -28,10 +28,7 @@ import org.springframework.test.web.servlet.MvcResult;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ContextConfiguration(
-    initializers = {
-      PostgresTestContainer.Initializer.class,
-      RedisTestContainer.Initializer.class
-    })
+    initializers = {PostgresTestContainer.Initializer.class, RedisTestContainer.Initializer.class})
 class BidWithoutRedisIT {
 
   @Autowired private MockMvc mockMvc;
@@ -93,9 +90,12 @@ class BidWithoutRedisIT {
     }
     pool.shutdown();
 
-    long bidRows = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM bids WHERE lot_id = ?", Long.class, lotId);
+    long bidRows =
+        jdbcTemplate.queryForObject(
+            "SELECT COUNT(*) FROM bids WHERE lot_id = ?", Long.class, lotId);
     int bidCount =
-        jdbcTemplate.queryForObject("SELECT bid_count FROM lots WHERE id = ?", Integer.class, lotId);
+        jdbcTemplate.queryForObject(
+            "SELECT bid_count FROM lots WHERE id = ?", Integer.class, lotId);
     long currentPrice =
         jdbcTemplate.queryForObject(
             "SELECT current_price_cents FROM lots WHERE id = ?", Long.class, lotId);
@@ -160,7 +160,10 @@ class BidWithoutRedisIT {
                             .formatted(email)))
             .andExpect(status().isOk())
             .andReturn();
-    return objectMapper.readTree(result.getResponse().getContentAsString()).get("accessToken").asText();
+    return objectMapper
+        .readTree(result.getResponse().getContentAsString())
+        .get("accessToken")
+        .asText();
   }
 
   private long createLot(String token) throws Exception {

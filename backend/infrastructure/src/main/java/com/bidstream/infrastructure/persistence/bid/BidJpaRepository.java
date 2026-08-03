@@ -11,6 +11,11 @@ public interface BidJpaRepository extends JpaRepository<BidEntity, Long> {
 
   Page<BidEntity> findByLot_IdOrderByAmountCentsDescIdDesc(long lotId, Pageable pageable);
 
+  java.util.Optional<BidEntity> findFirstByLot_IdOrderByAmountCentsDescIdDesc(long lotId);
+
+  java.util.List<BidEntity> findByLot_IdAndIdGreaterThanOrderByIdAsc(
+      long lotId, long afterBidId, Pageable pageable);
+
   Page<BidEntity> findByBidder_IdOrderByPlacedAtDesc(long bidderId, Pageable pageable);
 
   long countByLot_Id(long lotId);

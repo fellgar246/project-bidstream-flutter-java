@@ -10,6 +10,7 @@ import com.bidstream.infrastructure.persistence.user.UserEntity;
 import com.bidstream.infrastructure.persistence.user.UserJpaRepository;
 import java.time.Clock;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -56,6 +57,22 @@ public class BidRepositoryAdapter implements BidRepository {
     return bidJpaRepository
         .findByLot_IdAndBidder_IdAndClientRequestId(lotId, bidderId, clientRequestId)
         .map(this::toDomain);
+  }
+
+  @Override
+  public Optional<Bid> findHighestBidByLotId(long lotId) {
+    return bidJpaRepository
+        .findFirstByLot_IdOrderByAmountCentsDescIdDesc(lotId)
+        .map(this::toDomain);
+  }
+
+  @Override
+  public List<Bid> findByLotIdAfterBidId(long lotId, long afterBidId, int limit) {
+    return bidJpaRepository
+        .findByLot_IdAndIdGreaterThanOrderByIdAsc(lotId, afterBidId, PageRequest.of(0, limit))
+        .stream()
+        .map(this::toDomain)
+        .toList();
   }
 
   @Override

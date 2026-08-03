@@ -33,10 +33,7 @@ import org.springframework.test.web.servlet.MvcResult;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ContextConfiguration(
-    initializers = {
-      PostgresTestContainer.Initializer.class,
-      RedisTestContainer.Initializer.class
-    })
+    initializers = {PostgresTestContainer.Initializer.class, RedisTestContainer.Initializer.class})
 @EnabledIfEnvironmentVariable(named = "RUN_BID_BENCHMARK", matches = "true")
 class BidContentionBenchmark {
 
@@ -104,7 +101,8 @@ class BidContentionBenchmark {
       pool.shutdown();
 
       long accepted =
-          jdbcTemplate.queryForObject("SELECT COUNT(*) FROM bids WHERE lot_id = ?", Long.class, lotId);
+          jdbcTemplate.queryForObject(
+              "SELECT COUNT(*) FROM bids WHERE lot_id = ?", Long.class, lotId);
       double throughput = accepted * 1000.0 / Math.max(elapsedMs, 1);
       System.out.printf(
           "| %5d | %7.1f | %16d | %13d |%n", threads, throughput, conflicts.get(), elapsedMs);
@@ -144,8 +142,7 @@ class BidContentionBenchmark {
     registerBuyer(email);
     String token = login(email);
     mockMvc
-        .perform(
-            post("/api/v1/me/seller-application").header("Authorization", "Bearer " + token))
+        .perform(post("/api/v1/me/seller-application").header("Authorization", "Bearer " + token))
         .andReturn();
     return login(email);
   }
@@ -162,7 +159,10 @@ class BidContentionBenchmark {
                         """
                             .formatted(email)))
             .andReturn();
-    return objectMapper.readTree(result.getResponse().getContentAsString()).get("accessToken").asText();
+    return objectMapper
+        .readTree(result.getResponse().getContentAsString())
+        .get("accessToken")
+        .asText();
   }
 
   private long createLot(String token) throws Exception {

@@ -42,8 +42,7 @@ public class RedisDistributedLockAdapter implements DistributedLockPort {
       String token = UUID.randomUUID().toString();
       long deadline = System.nanoTime() + maxWait.toNanos();
       while (System.nanoTime() < deadline) {
-        Boolean acquired =
-            redisTemplate.opsForValue().setIfAbsent(key, token, ttl);
+        Boolean acquired = redisTemplate.opsForValue().setIfAbsent(key, token, ttl);
         if (Boolean.TRUE.equals(acquired)) {
           return Optional.of(new LockToken(key, token));
         }

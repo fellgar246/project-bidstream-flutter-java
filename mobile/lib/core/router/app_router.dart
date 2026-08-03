@@ -9,6 +9,7 @@ import '../../features/auth/presentation/profile_screen.dart';
 import '../../features/auth/presentation/register_screen.dart';
 import '../../features/auth/presentation/splash_screen.dart';
 import '../../features/categories/presentation/categories_screen.dart';
+import '../../features/lots/presentation/live_auction_screen.dart';
 import '../../features/lots/presentation/lot_detail_screen.dart';
 import '../../features/lots/presentation/lot_edit_screen.dart';
 import '../../features/lots/presentation/lot_form_screen.dart';
@@ -75,6 +76,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/lots',
         builder: (context, state) => const LotsListScreen(),
+      ),
+      GoRoute(
+        path: '/lots/:id/live',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return LiveAuctionScreen(lotId: id);
+        },
       ),
       GoRoute(
         path: '/lots/:id',

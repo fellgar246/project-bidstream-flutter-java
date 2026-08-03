@@ -8,12 +8,10 @@ typedef RefreshTokensCallback = Future<AuthTokensDto> Function(String refreshTok
 class AuthInterceptor extends Interceptor {
   AuthInterceptor({
     required this.dio,
-    required TokenStorage tokenStorage,
-    required RefreshTokensCallback refreshTokens,
-    required void Function() onSessionExpired,
-  })  : _tokenStorage = tokenStorage,
-        _refreshTokens = refreshTokens,
-        _onSessionExpired = onSessionExpired;
+    required this._tokenStorage,
+    required this._refreshTokens,
+    required this._onSessionExpired,
+  });
 
   static const _retriedExtraKey = 'auth_retried';
 

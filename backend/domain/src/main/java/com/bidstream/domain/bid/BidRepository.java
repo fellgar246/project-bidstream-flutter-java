@@ -1,5 +1,6 @@
 package com.bidstream.domain.bid;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface BidRepository {
@@ -8,6 +9,10 @@ public interface BidRepository {
 
   Optional<Bid> findByLotIdAndBidderIdAndClientRequestId(
       long lotId, long bidderId, String clientRequestId);
+
+  Optional<Bid> findHighestBidByLotId(long lotId);
+
+  List<Bid> findByLotIdAfterBidId(long lotId, long afterBidId, int limit);
 
   BidPage findByLotId(long lotId, int page, int size);
 

@@ -2,6 +2,8 @@ package com.bidstream.api.bid;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.bidstream.api.support.PostgresTestContainer;
+import com.bidstream.api.support.RedisTestContainer;
 import com.bidstream.application.bid.DistributedLockPort;
 import com.bidstream.infrastructure.lock.RedisDistributedLockAdapter;
 import java.time.Duration;
@@ -11,15 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.ContextConfiguration;
-import com.bidstream.api.support.PostgresTestContainer;
-import com.bidstream.api.support.RedisTestContainer;
 
 @SpringBootTest
 @ContextConfiguration(
-    initializers = {
-      PostgresTestContainer.Initializer.class,
-      RedisTestContainer.Initializer.class
-    })
+    initializers = {PostgresTestContainer.Initializer.class, RedisTestContainer.Initializer.class})
 class RedisLockTest {
 
   @Autowired private RedisDistributedLockAdapter lockAdapter;

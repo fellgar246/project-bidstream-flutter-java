@@ -77,6 +77,11 @@ class LotDetailScreen extends ConsumerWidget {
             if (lot.canBid) ...[
               const SizedBox(height: 12),
               FilledButton(
+                onPressed: () => context.go('/lots/${lot.id}/live'),
+                child: const Text(AppStrings.liveWatchAction),
+              ),
+              const SizedBox(height: 12),
+              FilledButton(
                 onPressed: () async {
                   ref.read(bidProvider(lot.id).notifier).resetAttempt();
                   await showModalBottomSheet<bool>(

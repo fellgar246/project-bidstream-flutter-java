@@ -8,6 +8,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.bidstream.application.realtime.DomainEventPublisher;
+import com.bidstream.application.realtime.LotRealtimeEvent;
 import com.bidstream.domain.bid.Bid;
 import com.bidstream.domain.bid.BidConflictException;
 import com.bidstream.domain.bid.BidNotLiveException;
@@ -18,6 +20,9 @@ import com.bidstream.domain.lot.Lot;
 import com.bidstream.domain.lot.LotRepository;
 import com.bidstream.domain.lot.LotStatus;
 import com.bidstream.domain.money.Money;
+import com.bidstream.domain.user.Role;
+import com.bidstream.domain.user.User;
+import com.bidstream.domain.user.UserRepository;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -43,6 +48,8 @@ class PlaceBidServiceTest {
   @Mock private BidValidator bidValidator;
   @Mock private DistributedLockPort distributedLock;
   @Mock private TransactionTemplate transactionTemplate;
+  @Mock private DomainEventPublisher domainEventPublisher;
+  @Mock private UserRepository userRepository;
 
   private PlaceBidService service;
   private Lot liveLot;
@@ -56,6 +63,8 @@ class PlaceBidServiceTest {
             bidValidator,
             distributedLock,
             transactionTemplate,
+            domainEventPublisher,
+            userRepository,
             Clock.fixed(NOW, ZoneOffset.UTC));
 
     liveLot = liveLot(Money.fromCents(10000), 0);
@@ -79,10 +88,11 @@ class PlaceBidServiceTest {
     when(lotRepository.findById(1L)).thenReturn(Optional.of(liveLot));
     when(bidRepository.findByLotIdAndBidderIdAndClientRequestId(1L, 10L, "req-1"))
         .thenReturn(Optional.empty());
-    doThrow(new BidSelfException()).when(bidValidator).validate(liveLot, 10L, Money.fromString("105.00"), NOW);
+    doThrow(new BidSelfException())
+        .when(bidValidator)
+        .validate(liveLot, 10L, Money.fromString("105.00"), NOW);
 
-    assertThatThrownBy(
-            () -> service.placeBid(1L, 10L, Money.fromString("105.00"), "req-1"))
+    assertThatThrownBy(() -> service.placeBid(1L, 10L, Money.fromString("105.00"), "req-1"))
         .isInstanceOf(BidSelfException.class);
     verify(bidRepository, never()).save(any());
   }
@@ -94,10 +104,11 @@ class PlaceBidServiceTest {
     when(lotRepository.findById(1L)).thenReturn(Optional.of(scheduled));
     when(bidRepository.findByLotIdAndBidderIdAndClientRequestId(1L, 2L, "req-1"))
         .thenReturn(Optional.empty());
-    doThrow(new BidNotLiveException()).when(bidValidator).validate(scheduled, 2L, Money.fromString("100.00"), NOW);
+    doThrow(new BidNotLiveException())
+        .when(bidValidator)
+        .validate(scheduled, 2L, Money.fromString("100.00"), NOW);
 
-    assertThatThrownBy(
-            () -> service.placeBid(1L, 2L, Money.fromString("100.00"), "req-1"))
+    assertThatThrownBy(() -> service.placeBid(1L, 2L, Money.fromString("100.00"), "req-1"))
         .isInstanceOf(BidNotLiveException.class);
   }
 
@@ -126,6 +137,7 @@ class PlaceBidServiceTest {
         .thenReturn(Optional.empty());
     when(bidRepository.save(any())).thenReturn(saved);
     when(lotRepository.save(any())).thenReturn(updated);
+    when(userRepository.findById(2L)).thenReturn(Optional.of(user(2L)));
 
     var outcome = service.placeBid(1L, 2L, Money.fromString("100.00"), "req-1");
 
@@ -133,6 +145,82 @@ class PlaceBidServiceTest {
     assertThat(outcome.result().bid().id()).isEqualTo(1L);
     assertThat(outcome.result().lot().currentPrice()).isEqualTo(Money.fromString("100.00"));
     assertThat(outcome.result().lot().bidCount()).isEqualTo(1);
+    verify(domainEventPublisher).publish(any(LotRealtimeEvent.BidPlacedEvent.class));
+  }
+
+  @Test
+  void antiSniping_publishesLotExtendedEvent() {
+    stubSuccessfulTransaction();
+    Instant end = NOW.plusSeconds(10);
+    Lot snipeLot =
+        new Lot(
+            1L,
+            10L,
+            "Title",
+            "Desc",
+            1L,
+            Money.fromString("100.00"),
+            Money.fromString("5.00"),
+            null,
+            LotStatus.LIVE,
+            NOW.minusSeconds(3600),
+            end,
+            null,
+            Money.fromCents(0),
+            0,
+            null,
+            0,
+            0L,
+            NOW,
+            NOW);
+    Bid saved = Bid.create(1L, 2L, Money.fromString("100.00"), NOW, "req-snipe").withId(1L);
+    Lot updated = snipeLot.acceptBid(Money.fromString("100.00"), NOW).lot();
+
+    when(lotRepository.findById(1L)).thenReturn(Optional.of(snipeLot));
+    when(bidRepository.findByLotIdAndBidderIdAndClientRequestId(1L, 2L, "req-snipe"))
+        .thenReturn(Optional.empty());
+    when(bidRepository.save(any())).thenReturn(saved);
+    when(lotRepository.save(any())).thenReturn(updated);
+    when(userRepository.findById(2L)).thenReturn(Optional.of(user(2L)));
+
+    service.placeBid(1L, 2L, Money.fromString("100.00"), "req-snipe");
+
+    verify(domainEventPublisher).publish(any(LotRealtimeEvent.BidPlacedEvent.class));
+    verify(domainEventPublisher).publish(any(LotRealtimeEvent.LotExtendedEvent.class));
+  }
+
+  @Test
+  void secondBid_publishesWithPreviousHighestBidder() {
+    stubSuccessfulTransaction();
+    Lot withOneBid = liveLot(Money.fromString("100.00"), 1);
+    Bid previous = Bid.create(1L, 3L, Money.fromString("100.00"), NOW, "req-prev").withId(9L);
+    Bid saved = Bid.create(1L, 2L, Money.fromString("105.00"), NOW, "req-2").withId(10L);
+    Lot updated = withOneBid.acceptBid(Money.fromString("105.00"), NOW).lot();
+
+    when(lotRepository.findById(1L)).thenReturn(Optional.of(withOneBid));
+    when(bidRepository.findByLotIdAndBidderIdAndClientRequestId(1L, 2L, "req-2"))
+        .thenReturn(Optional.empty());
+    when(bidRepository.findHighestBidByLotId(1L)).thenReturn(Optional.of(previous));
+    when(bidRepository.save(any())).thenReturn(saved);
+    when(lotRepository.save(any())).thenReturn(updated);
+    when(userRepository.findById(2L)).thenReturn(Optional.of(user(2L)));
+
+    service.placeBid(1L, 2L, Money.fromString("105.00"), "req-2");
+
+    verify(domainEventPublisher).publish(any(LotRealtimeEvent.BidPlacedEvent.class));
+  }
+
+  @Test
+  void idempotentReplay_doesNotPublishEvents() {
+    stubSuccessfulTransaction();
+    Bid existing = Bid.create(1L, 2L, Money.fromString("100.00"), NOW, "req-1").withId(5L);
+    when(lotRepository.findById(1L)).thenReturn(Optional.of(liveLot));
+    when(bidRepository.findByLotIdAndBidderIdAndClientRequestId(1L, 2L, "req-1"))
+        .thenReturn(Optional.of(existing));
+
+    service.placeBid(1L, 2L, Money.fromString("100.00"), "req-1");
+
+    verify(domainEventPublisher, never()).publish(any());
   }
 
   @Test
@@ -200,5 +288,9 @@ class PlaceBidServiceTest {
         0L,
         NOW,
         NOW);
+  }
+
+  private static User user(long id) {
+    return new User(id, "u@test.com", "Bidder", java.util.Set.of(Role.BUYER), true);
   }
 }

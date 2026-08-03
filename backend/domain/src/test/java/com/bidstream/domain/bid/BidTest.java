@@ -23,15 +23,13 @@ class BidTest {
 
   @Test
   void rejectsBlankClientRequestId() {
-    assertThatThrownBy(
-            () -> Bid.create(1L, 2L, Money.fromString("10.00"), Instant.now(), "  "))
+    assertThatThrownBy(() -> Bid.create(1L, 2L, Money.fromString("10.00"), Instant.now(), "  "))
         .isInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
   void rejectsNonPositiveAmount() {
-    assertThatThrownBy(
-            () -> Bid.create(1L, 2L, Money.fromCents(0), Instant.now(), "req-1"))
+    assertThatThrownBy(() -> Bid.create(1L, 2L, Money.fromCents(0), Instant.now(), "req-1"))
         .isInstanceOf(IllegalArgumentException.class);
   }
 
