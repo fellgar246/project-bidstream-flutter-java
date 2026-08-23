@@ -77,8 +77,9 @@ class AuthApi {
 
   Future<AuthTokensDto> applySeller() async {
     try {
-      final response =
-          await _dio.post<Map<String, dynamic>>('/me/seller-application');
+      final response = await _dio.post<Map<String, dynamic>>(
+        '/me/seller-application',
+      );
       return AuthTokensDto.fromJson(response.data!);
     } on DioException catch (error) {
       throw _unwrap(error);

@@ -120,12 +120,14 @@ class LotCacheService {
       'scheduledEndAt': lot.scheduledEndAt,
       'actualEndAt': lot.actualEndAt,
       'images': lot.images
-          .map((image) => {
-                'id': image.id,
-                'url': image.url,
-                'thumbnailUrl': image.thumbnailUrl,
-                'position': image.position,
-              })
+          .map(
+            (image) => {
+              'id': image.id,
+              'url': image.url,
+              'thumbnailUrl': image.thumbnailUrl,
+              'position': image.position,
+            },
+          )
           .toList(),
       'watched': lot.watched,
       'canEdit': lot.canEdit,

@@ -7,14 +7,22 @@ import 'package:bidstream/core/router/deferred_route.dart';
 
 void main() {
   test('bidstream scheme resolves to lot path', () {
-    final router = GoRouter(routes: [GoRoute(path: '/', builder: (_, _) => const SizedBox.shrink())]);
+    final router = GoRouter(
+      routes: [GoRoute(path: '/', builder: (_, _) => const SizedBox.shrink())],
+    );
     handleDeepLink(router, 'bidstream://lots/42', isAuthenticated: true);
     expect(router.routeInformationProvider.value.uri.path, '/lots/42');
   });
 
   test('https app link resolves to lot path', () {
-    final router = GoRouter(routes: [GoRoute(path: '/', builder: (_, _) => const SizedBox.shrink())]);
-    handleDeepLink(router, 'https://bidstream.app/lots/42', isAuthenticated: true);
+    final router = GoRouter(
+      routes: [GoRoute(path: '/', builder: (_, _) => const SizedBox.shrink())],
+    );
+    handleDeepLink(
+      router,
+      'https://bidstream.app/lots/42',
+      isAuthenticated: true,
+    );
     expect(router.routeInformationProvider.value.uri.path, '/lots/42');
   });
 

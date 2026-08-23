@@ -53,10 +53,16 @@ class _LotsListScreenState extends ConsumerState<LotsListScreen> {
   void _syncUrl(LotFilters filters) {
     final params = <String, String>{};
     if ((filters.query ?? '').isNotEmpty) params['q'] = filters.query!;
-    if (filters.categoryId != null) params['categoryId'] = '${filters.categoryId}';
-    if (filters.minPriceCents != null) params['minPriceCents'] = '${filters.minPriceCents}';
-    if (filters.maxPriceCents != null) params['maxPriceCents'] = '${filters.maxPriceCents}';
-    final uri = Uri(path: '/lots', queryParameters: params.isEmpty ? null : params);
+    if (filters.categoryId != null)
+      params['categoryId'] = '${filters.categoryId}';
+    if (filters.minPriceCents != null)
+      params['minPriceCents'] = '${filters.minPriceCents}';
+    if (filters.maxPriceCents != null)
+      params['maxPriceCents'] = '${filters.maxPriceCents}';
+    final uri = Uri(
+      path: '/lots',
+      queryParameters: params.isEmpty ? null : params,
+    );
     context.go(uri.toString());
   }
 
@@ -72,7 +78,9 @@ class _LotsListScreenState extends ConsumerState<LotsListScreen> {
   void _applyCategoryFacet(int categoryId) {
     setState(() => _filters = _filters.copyWith(categoryId: categoryId));
     _syncUrl(_filters);
-    ref.read(searchProvider(_filters).notifier).updateQuery(_filters.query ?? '');
+    ref
+        .read(searchProvider(_filters).notifier)
+        .updateQuery(_filters.query ?? '');
   }
 
   void _clearFilters() {
@@ -106,7 +114,8 @@ class _LotsListScreenState extends ConsumerState<LotsListScreen> {
               Text(context.l10n.lotsError),
               const SizedBox(height: 12),
               FilledButton(
-                onPressed: () => ref.read(lotsListProvider(_filters).notifier).reload(),
+                onPressed: () =>
+                    ref.read(lotsListProvider(_filters).notifier).reload(),
                 child: Text(context.l10n.retry),
               ),
             ],
@@ -161,7 +170,11 @@ class _LotsListScreenState extends ConsumerState<LotsListScreen> {
       ),
       body: Column(
         children: [
-          if (facets != null) _FacetChips(facets: facets, onCategorySelected: _applyCategoryFacet),
+          if (facets != null)
+            _FacetChips(
+              facets: facets,
+              onCategorySelected: _applyCategoryFacet,
+            ),
           Expanded(child: body),
         ],
       ),
@@ -182,7 +195,10 @@ class _LotsListScreenState extends ConsumerState<LotsListScreen> {
           children: [
             Text(context.l10n.lotsSearchEmpty(searchState.query)),
             const SizedBox(height: 12),
-            FilledButton(onPressed: _clearFilters, child: Text(context.l10n.lotsClearFilters)),
+            FilledButton(
+              onPressed: _clearFilters,
+              child: Text(context.l10n.lotsClearFilters),
+            ),
           ],
         ),
       );
@@ -311,7 +327,10 @@ class _FiltersSheetState extends State<_FiltersSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(l10n.lotsFiltersTitle, style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            l10n.lotsFiltersTitle,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
             initialValue: _status,

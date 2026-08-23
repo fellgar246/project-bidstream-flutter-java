@@ -49,10 +49,9 @@ class PushService {
   Future<void> _registerToken(String token) async {
     _currentToken = token;
     try {
-      await _ref.read(devicesApiProvider).register(
-            token: token,
-            platform: Platform.isIOS ? 'ios' : 'android',
-          );
+      await _ref
+          .read(devicesApiProvider)
+          .register(token: token, platform: Platform.isIOS ? 'ios' : 'android');
     } catch (_) {}
   }
 
@@ -103,7 +102,11 @@ class PushService {
 
 final rootScaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
-void handleDeepLink(GoRouter router, String link, {required bool isAuthenticated}) {
+void handleDeepLink(
+  GoRouter router,
+  String link, {
+  required bool isAuthenticated,
+}) {
   final uri = Uri.parse(link);
   final path = _pathFromUri(uri);
   if (path == null) {

@@ -31,9 +31,9 @@ final notificationsStompProvider = Provider<void>((ref) {
                 return;
               }
               final json = Map<String, dynamic>.from(jsonDecode(body) as Map);
-              ref.read(notificationsProvider.notifier).applyPush(
-                    NotificationItem.fromJson(json),
-                  );
+              ref
+                  .read(notificationsProvider.notifier)
+                  .applyPush(NotificationItem.fromJson(json));
             },
           );
         },

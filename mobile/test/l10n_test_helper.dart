@@ -21,7 +21,11 @@ Widget buildLocalized(Widget child, {Locale locale = const Locale('es')}) {
   );
 }
 
-Future<void> pumpLocalized(WidgetTester tester, Widget child, {Locale locale = const Locale('es')}) async {
+Future<void> pumpLocalized(
+  WidgetTester tester,
+  Widget child, {
+  Locale locale = const Locale('es'),
+}) async {
   await tester.pumpWidget(buildLocalized(child, locale: locale));
   await tester.pumpAndSettle();
 }

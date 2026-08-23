@@ -8,8 +8,8 @@ import 'lot_images_api_provider.dart';
 
 final imageUploadProvider =
     NotifierProvider.family<ImageUploadNotifier, List<ImageUploadItem>, int>(
-  ImageUploadNotifier.new,
-);
+      ImageUploadNotifier.new,
+    );
 
 class ImageUploadNotifier extends FamilyNotifier<List<ImageUploadItem>, int> {
   @override
@@ -42,12 +42,19 @@ class ImageUploadNotifier extends FamilyNotifier<List<ImageUploadItem>, int> {
     }
     _update(
       localId,
-      item.copyWith(phase: ImageUploadPhase.selected, clearError: true, progress: 0),
+      item.copyWith(
+        phase: ImageUploadPhase.selected,
+        clearError: true,
+        progress: 0,
+      ),
     );
     await _startUpload(localId, reuseExistingPresign: item.imageId != null);
   }
 
-  Future<void> _startUpload(String localId, {required bool reuseExistingPresign}) async {
+  Future<void> _startUpload(
+    String localId, {
+    required bool reuseExistingPresign,
+  }) async {
     final item = _find(localId);
     if (item == null) {
       return;
@@ -85,9 +92,15 @@ class ImageUploadNotifier extends FamilyNotifier<List<ImageUploadItem>, int> {
       if (uploading == null) {
         return;
       }
-      _update(localId, uploading.copyWith(phase: ImageUploadPhase.confirming, progress: 1));
+      _update(
+        localId,
+        uploading.copyWith(phase: ImageUploadPhase.confirming, progress: 1),
+      );
 
-      final confirmed = await _api.confirm(lotId: arg, imageId: presign.imageId);
+      final confirmed = await _api.confirm(
+        lotId: arg,
+        imageId: presign.imageId,
+      );
       final confirming = _find(localId);
       if (confirming == null) {
         return;
@@ -120,7 +133,9 @@ class ImageUploadNotifier extends FamilyNotifier<List<ImageUploadItem>, int> {
     ImageUploadItem item,
     bool reuseExistingPresign,
   ) async {
-    if (reuseExistingPresign && item.imageId != null && item.uploadUrl != null) {
+    if (reuseExistingPresign &&
+        item.imageId != null &&
+        item.uploadUrl != null) {
       return (imageId: item.imageId!, uploadUrl: item.uploadUrl!);
     }
     final presign = await _api.presign(

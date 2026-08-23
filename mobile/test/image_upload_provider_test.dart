@@ -18,7 +18,10 @@ void main() {
     addTearDown(container.dispose);
 
     final notifier = container.read(imageUploadProvider(1).notifier);
-    notifier.addSelected(localId: 'local-1', bytes: Uint8List.fromList([1, 2, 3]));
+    notifier.addSelected(
+      localId: 'local-1',
+      bytes: Uint8List.fromList([1, 2, 3]),
+    );
 
     await _pumpUntil(
       container,

@@ -47,7 +47,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
     setState(() => _submitting = true);
     try {
-      await ref.read(authControllerProvider.notifier).register(
+      await ref
+          .read(authControllerProvider.notifier)
+          .register(
             email: _emailController.text.trim(),
             password: _passwordController.text,
             displayName: _displayNameController.text.trim(),
@@ -57,7 +59,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         _emailError = error.details['email'];
         _passwordError = error.details['password'];
         _displayNameError = error.details['displayName'];
-        _generalError = _emailError == null &&
+        _generalError =
+            _emailError == null &&
                 _passwordError == null &&
                 _displayNameError == null
             ? error.message

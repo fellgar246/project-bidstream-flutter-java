@@ -48,13 +48,19 @@ void main() {
 
   group('currency formatting', () {
     test('formats USD in en locale', () {
-      final formatted = formatMoney(Decimal.parse('1250.00'), const Locale('en', 'US'));
+      final formatted = formatMoney(
+        Decimal.parse('1250.00'),
+        const Locale('en', 'US'),
+      );
       expect(formatted, contains('1,250.00'));
       expect(formatted, contains(r'$'));
     });
 
     test('formats in es locale', () {
-      final formatted = formatMoney(Decimal.parse('1250.00'), const Locale('es', 'ES'));
+      final formatted = formatMoney(
+        Decimal.parse('1250.00'),
+        const Locale('es', 'ES'),
+      );
       expect(formatted, contains('1.250,00'));
       expect(formatted, contains('€'));
     });

@@ -10,8 +10,8 @@ final categoriesApiProvider = Provider<CategoriesApi>((ref) {
 
 final categoriesProvider =
     AsyncNotifierProvider<CategoriesNotifier, List<CategoryDto>>(
-  CategoriesNotifier.new,
-);
+      CategoriesNotifier.new,
+    );
 
 class CategoriesNotifier extends AsyncNotifier<List<CategoryDto>> {
   @override

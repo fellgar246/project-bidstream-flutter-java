@@ -5,9 +5,17 @@ import 'package:intl/intl.dart';
 String formatMoney(Decimal amount, Locale locale) {
   final major = amount.toDouble();
   if (locale.languageCode == 'es') {
-    return NumberFormat.currency(locale: 'es_ES', symbol: '€', decimalDigits: 2).format(major);
+    return NumberFormat.currency(
+      locale: 'es_ES',
+      symbol: '€',
+      decimalDigits: 2,
+    ).format(major);
   }
-  return NumberFormat.currency(locale: 'en_US', symbol: r'$', decimalDigits: 2).format(major);
+  return NumberFormat.currency(
+    locale: 'en_US',
+    symbol: r'$',
+    decimalDigits: 2,
+  ).format(major);
 }
 
 String _currencyName(Locale locale) {
@@ -31,8 +39,12 @@ String formatRelativeAge(Duration age, Locale locale) {
   return '${age.inSeconds} s';
 }
 
-String formatCountdown(Duration remaining, Locale locale, String Function(int h, int m) hoursFn,
-    String Function(int m, int s) minutesFn) {
+String formatCountdown(
+  Duration remaining,
+  Locale locale,
+  String Function(int h, int m) hoursFn,
+  String Function(int m, int s) minutesFn,
+) {
   final hours = remaining.inHours;
   final minutes = remaining.inMinutes.remainder(60);
   final seconds = remaining.inSeconds.remainder(60);

@@ -31,7 +31,9 @@ class _LotFormScreenState extends ConsumerState<LotFormScreen> {
   }
 
   Future<void> _submit() async {
-    final lot = await ref.read(lotFormProvider.notifier).submit(
+    final lot = await ref
+        .read(lotFormProvider.notifier)
+        .submit(
           title: _titleController.text.trim(),
           description: _descriptionController.text.trim(),
           categoryId: _categoryId,

@@ -7,7 +7,9 @@ import '../data/bid_dto.dart';
 import 'bids_api_provider.dart';
 import 'lot_detail_provider.dart';
 
-final bidProvider = NotifierProvider.family<BidNotifier, BidState, int>(BidNotifier.new);
+final bidProvider = NotifierProvider.family<BidNotifier, BidState, int>(
+  BidNotifier.new,
+);
 
 class BidState {
   const BidState({
@@ -73,11 +75,21 @@ class BidNotifier extends FamilyNotifier<BidState, int> {
 
   Future<bool> submitBid(String amount) async {
     final clientRequestId = state.clientRequestId ?? _newClientRequestId();
-    state = state.copyWith(isSubmitting: true, clientRequestId: clientRequestId, clearError: true);
+    state = state.copyWith(
+      isSubmitting: true,
+      clientRequestId: clientRequestId,
+      clearError: true,
+    );
 
     try {
-      final response = await ref.read(bidsApiProvider).placeBid(arg, amount, clientRequestId);
-      state = state.copyWith(isSubmitting: false, lastResponse: response, clearError: true);
+      final response = await ref
+          .read(bidsApiProvider)
+          .placeBid(arg, amount, clientRequestId);
+      state = state.copyWith(
+        isSubmitting: false,
+        lastResponse: response,
+        clearError: true,
+      );
       await ref.read(lotDetailProvider(arg).notifier).reload();
       return true;
     } on ApiException catch (error) {

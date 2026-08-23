@@ -48,7 +48,9 @@ class LotDto {
       id: json['id'] as int,
       title: json['title'] as String,
       description: json['description'] as String,
-      category: LotCategoryDto.fromJson(json['category'] as Map<String, dynamic>),
+      category: LotCategoryDto.fromJson(
+        json['category'] as Map<String, dynamic>,
+      ),
       seller: LotSellerDto.fromJson(json['seller'] as Map<String, dynamic>),
       startingPrice: json['startingPrice'] as String,
       minIncrement: json['minIncrement'] as String,
@@ -101,10 +103,7 @@ class LotCategoryDto {
   final String name;
 
   factory LotCategoryDto.fromJson(Map<String, dynamic> json) {
-    return LotCategoryDto(
-      id: json['id'] as int,
-      name: json['name'] as String,
-    );
+    return LotCategoryDto(id: json['id'] as int, name: json['name'] as String);
   }
 }
 
@@ -152,17 +151,25 @@ class LotFacetsDto {
   factory LotFacetsDto.fromJson(Map<String, dynamic> json) {
     return LotFacetsDto(
       categories: (json['categories'] as List<dynamic>? ?? [])
-          .map((item) => CategoryFacetDto.fromJson(item as Map<String, dynamic>))
+          .map(
+            (item) => CategoryFacetDto.fromJson(item as Map<String, dynamic>),
+          )
           .toList(),
       priceRanges: (json['priceRanges'] as List<dynamic>? ?? [])
-          .map((item) => PriceRangeFacetDto.fromJson(item as Map<String, dynamic>))
+          .map(
+            (item) => PriceRangeFacetDto.fromJson(item as Map<String, dynamic>),
+          )
           .toList(),
     );
   }
 }
 
 class CategoryFacetDto {
-  const CategoryFacetDto({required this.id, required this.name, required this.count});
+  const CategoryFacetDto({
+    required this.id,
+    required this.name,
+    required this.count,
+  });
 
   final int id;
   final String name;

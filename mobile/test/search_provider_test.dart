@@ -10,13 +10,13 @@ import 'package:bidstream/features/lots/providers/search_provider.dart';
 void main() {
   test('debounce keeps only the latest search response', () async {
     final container = ProviderContainer(
-      overrides: [
-        lotsApiProvider.overrideWith((ref) => _FakeLotsApi()),
-      ],
+      overrides: [lotsApiProvider.overrideWith((ref) => _FakeLotsApi())],
     );
     addTearDown(container.dispose);
 
-    final notifier = container.read(searchProvider(const LotFilters()).notifier);
+    final notifier = container.read(
+      searchProvider(const LotFilters()).notifier,
+    );
     notifier.updateQuery('reloj');
     notifier.updateQuery('reloj suizo');
 
@@ -30,7 +30,11 @@ void main() {
 
 class _FakeLotsApi implements LotsApi {
   @override
-  Future<LotPageDto> fetchLots(LotFilters filters, int page, {bool facets = false}) async {
+  Future<LotPageDto> fetchLots(
+    LotFilters filters,
+    int page, {
+    bool facets = false,
+  }) async {
     final query = filters.query ?? '';
     if (query.contains('suizo')) {
       return const LotPageDto(
@@ -53,12 +57,22 @@ class _FakeLotsApi implements LotsApi {
             canBid: false,
           ),
         ],
-        page: LotPageMetadata(number: 0, size: 20, totalElements: 1, totalPages: 1),
+        page: LotPageMetadata(
+          number: 0,
+          size: 20,
+          totalElements: 1,
+          totalPages: 1,
+        ),
       );
     }
     return const LotPageDto(
       content: [],
-      page: LotPageMetadata(number: 0, size: 20, totalElements: 0, totalPages: 0),
+      page: LotPageMetadata(
+        number: 0,
+        size: 20,
+        totalElements: 0,
+        totalPages: 0,
+      ),
     );
   }
 

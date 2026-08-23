@@ -26,7 +26,9 @@ class BidHistoryChart extends StatelessWidget {
         if (points.isEmpty) {
           return const SizedBox.shrink();
         }
-        final maxAmount = points.map((p) => p.amount).reduce((a, b) => a > b ? a : b);
+        final maxAmount = points
+            .map((p) => p.amount)
+            .reduce((a, b) => a > b ? a : b);
         return SizedBox(
           height: 120,
           child: CustomPaint(

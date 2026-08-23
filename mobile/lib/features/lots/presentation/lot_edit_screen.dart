@@ -41,52 +41,62 @@ class _LotEditScreenState extends ConsumerState<LotEditScreen> {
         data: (detail) {
           final lot = detail.lot;
           return ListView(
-          padding: const EdgeInsets.all(24),
-          children: [
-            Text(lot.title, style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 16),
-            Text(l10n.lotImagesTitle, style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 12),
-            if (_permissionDenied) ...[
-              Text(l10n.lotCameraPermissionDenied),
-              const SizedBox(height: 8),
-              OutlinedButton(
-                onPressed: openAppSettings,
-                child: Text(l10n.lotOpenSettings),
+            padding: const EdgeInsets.all(24),
+            children: [
+              Text(lot.title, style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 16),
+              Text(
+                l10n.lotImagesTitle,
+                style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 12),
-            ],
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                for (final image in lot.images) _ExistingImageTile(image: image, lotId: widget.lotId),
-                for (final upload in uploads) _UploadTile(lotId: widget.lotId, item: upload),
-                _AddImageButton(onGallery: () => _pick(ImageSource.gallery), onCamera: () => _pick(ImageSource.camera)),
+              if (_permissionDenied) ...[
+                Text(l10n.lotCameraPermissionDenied),
+                const SizedBox(height: 8),
+                OutlinedButton(
+                  onPressed: openAppSettings,
+                  child: Text(l10n.lotOpenSettings),
+                ),
+                const SizedBox(height: 12),
               ],
-            ),
-            if (lot.images.length > 1) ...[
-              const SizedBox(height: 24),
-              Text(l10n.lotReorderHint),
-              const SizedBox(height: 8),
-              ReorderableListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: lot.images.length,
-                onReorderItem: (oldIndex, newIndex) =>
-                    _reorderImages(context, lot, oldIndex, newIndex),
-                itemBuilder: (context, index) {
-                  final image = lot.images[index];
-                  return ListTile(
-                    key: ValueKey(image.id),
-                    leading: const Icon(Icons.drag_handle),
-                    title: Text('${l10n.lotImagePosition} ${image.position + 1}'),
-                    subtitle: Text(image.contentType),
-                  );
-                },
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final image in lot.images)
+                    _ExistingImageTile(image: image, lotId: widget.lotId),
+                  for (final upload in uploads)
+                    _UploadTile(lotId: widget.lotId, item: upload),
+                  _AddImageButton(
+                    onGallery: () => _pick(ImageSource.gallery),
+                    onCamera: () => _pick(ImageSource.camera),
+                  ),
+                ],
               ),
+              if (lot.images.length > 1) ...[
+                const SizedBox(height: 24),
+                Text(l10n.lotReorderHint),
+                const SizedBox(height: 8),
+                ReorderableListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: lot.images.length,
+                  onReorderItem: (oldIndex, newIndex) =>
+                      _reorderImages(context, lot, oldIndex, newIndex),
+                  itemBuilder: (context, index) {
+                    final image = lot.images[index];
+                    return ListTile(
+                      key: ValueKey(image.id),
+                      leading: const Icon(Icons.drag_handle),
+                      title: Text(
+                        '${l10n.lotImagePosition} ${image.position + 1}',
+                      ),
+                      subtitle: Text(image.contentType),
+                    );
+                  },
+                ),
+              ],
             ],
-          ],
           );
         },
       ),
@@ -116,7 +126,9 @@ class _LotEditScreenState extends ConsumerState<LotEditScreen> {
       format: CompressFormat.jpeg,
     );
     final bytes = Uint8List.fromList(compressed ?? await picked.readAsBytes());
-    ref.read(imageUploadProvider(widget.lotId).notifier).addSelected(
+    ref
+        .read(imageUploadProvider(widget.lotId).notifier)
+        .addSelected(
           localId: picked.path,
           bytes: bytes,
           fileName: picked.name,
@@ -136,17 +148,23 @@ class _LotEditScreenState extends ConsumerState<LotEditScreen> {
     final previous = lot.images.map((image) => image.id).toList();
     final optimistic = images.map((image) => image.id).toList();
 
-    ref.read(lotDetailProvider(widget.lotId).notifier).applyOptimisticImages(images);
+    ref
+        .read(lotDetailProvider(widget.lotId).notifier)
+        .applyOptimisticImages(images);
 
     try {
-      await ref.read(lotImagesApiProvider).reorder(lotId: widget.lotId, order: optimistic);
+      await ref
+          .read(lotImagesApiProvider)
+          .reorder(lotId: widget.lotId, order: optimistic);
       await ref.read(lotDetailProvider(widget.lotId).notifier).reload();
     } catch (_) {
-      ref.read(lotDetailProvider(widget.lotId).notifier).applyOptimisticOrder(previous);
+      ref
+          .read(lotDetailProvider(widget.lotId).notifier)
+          .applyOptimisticOrder(previous);
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.lotReorderFailed)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(context.l10n.lotReorderFailed)));
       }
     }
   }
@@ -199,31 +217,33 @@ class _UploadTile extends ConsumerWidget {
       ),
       child: switch (item.phase) {
         ImageUploadPhase.uploading => Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(value: item.progress),
-              const SizedBox(height: 4),
-              Text(l10n.lotUploading),
-            ],
-          ),
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(value: item.progress),
+            const SizedBox(height: 4),
+            Text(l10n.lotUploading),
+          ],
+        ),
         ImageUploadPhase.confirming => Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const CircularProgressIndicator(),
-              const SizedBox(height: 4),
-              Text(l10n.lotConfirming),
-            ],
-          ),
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const CircularProgressIndicator(),
+            const SizedBox(height: 4),
+            Text(l10n.lotConfirming),
+          ],
+        ),
         ImageUploadPhase.error => Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.error_outline),
-              TextButton(
-                onPressed: () => ref.read(imageUploadProvider(lotId).notifier).retry(item.localId),
-                child: Text(l10n.retry),
-              ),
-            ],
-          ),
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline),
+            TextButton(
+              onPressed: () => ref
+                  .read(imageUploadProvider(lotId).notifier)
+                  .retry(item.localId),
+              child: Text(l10n.retry),
+            ),
+          ],
+        ),
         ImageUploadPhase.ready => const Icon(Icons.check_circle_outline),
         ImageUploadPhase.selected => const CircularProgressIndicator(),
       },
@@ -258,7 +278,9 @@ class _ExistingImageTile extends ConsumerWidget {
             iconSize: 18,
             visualDensity: VisualDensity.compact,
             onPressed: () async {
-              await ref.read(lotImagesApiProvider).deleteImage(lotId: lotId, imageId: image.id);
+              await ref
+                  .read(lotImagesApiProvider)
+                  .deleteImage(lotId: lotId, imageId: image.id);
               await ref.read(lotDetailProvider(lotId).notifier).reload();
             },
             icon: const Icon(Icons.close),

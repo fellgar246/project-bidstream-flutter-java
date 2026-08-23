@@ -53,7 +53,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(user.displayName, style: Theme.of(context).textTheme.headlineSmall),
+                  Text(
+                    user.displayName,
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
                   const SizedBox(height: 8),
                   Text(user.email),
                   const SizedBox(height: 8),
@@ -62,21 +65,38 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     const SizedBox(height: 16),
                     Text(
                       _error!,
-                      style: TextStyle(color: Theme.of(context).colorScheme.error),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
                     ),
                   ],
                   const SizedBox(height: 24),
-                  Text(l10n.languageLabel, style: Theme.of(context).textTheme.titleSmall),
+                  Text(
+                    l10n.languageLabel,
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
                   const SizedBox(height: 8),
                   DropdownButtonFormField<Locale?>(
                     initialValue: locale,
-                    decoration: const InputDecoration(border: OutlineInputBorder()),
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                    ),
                     items: [
-                      DropdownMenuItem(value: null, child: Text(l10n.languageSystem)),
-                      DropdownMenuItem(value: const Locale('es'), child: Text(l10n.languageSpanish)),
-                      DropdownMenuItem(value: const Locale('en'), child: Text(l10n.languageEnglish)),
+                      DropdownMenuItem(
+                        value: null,
+                        child: Text(l10n.languageSystem),
+                      ),
+                      DropdownMenuItem(
+                        value: const Locale('es'),
+                        child: Text(l10n.languageSpanish),
+                      ),
+                      DropdownMenuItem(
+                        value: const Locale('en'),
+                        child: Text(l10n.languageEnglish),
+                      ),
                     ],
-                    onChanged: (value) => ref.read(localeProvider.notifier).setLocale(value),
+                    onChanged: (value) =>
+                        ref.read(localeProvider.notifier).setLocale(value),
                   ),
                   const SizedBox(height: 24),
                   if (!user.isSeller)

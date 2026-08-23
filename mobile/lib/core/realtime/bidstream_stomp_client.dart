@@ -6,7 +6,10 @@ import 'package:stomp_dart_client/stomp_dart_client.dart';
 import 'stomp_client.dart';
 
 String wsBaseUrl() {
-  const apiBase = String.fromEnvironment('API_BASE_URL', defaultValue: 'http://localhost:8080/api/v1');
+  const apiBase = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: 'http://localhost:8080/api/v1',
+  );
   final uri = Uri.parse(apiBase);
   final scheme = uri.scheme == 'https' ? 'wss' : 'ws';
   return '$scheme://${uri.host}:${uri.port}/ws';
@@ -28,7 +31,8 @@ class BidstreamStompClient {
   final void Function(LotEventMessage event) onLotEvent;
   final void Function(int watching) onPresence;
   final void Function(Map<String, dynamic> payload) onOutbid;
-  final Future<List<LotEventMessage>> Function(int lotId, int afterEventId) fetchMissedEvents;
+  final Future<List<LotEventMessage>> Function(int lotId, int afterEventId)
+  fetchMissedEvents;
   final Future<void> Function(int lotId) refetchLot;
 
   StompClient? _client;
@@ -126,7 +130,9 @@ class BidstreamStompClient {
     if (body == null) {
       return;
     }
-    final event = LotEventMessage.fromJson(Map<String, dynamic>.from(jsonDecode(body) as Map));
+    final event = LotEventMessage.fromJson(
+      Map<String, dynamic>.from(jsonDecode(body) as Map),
+    );
     for (final applied in _cursor.ingest(event)) {
       _dispatch(applied);
     }

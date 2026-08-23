@@ -64,9 +64,13 @@ class _StatusCodeAdapter implements HttpClientAdapter {
   ) async {
     final authorization = '${options.headers['Authorization']}';
     final statusCode = authorization.contains('expired-access') ? 401 : 200;
-    return ResponseBody.fromString('{"ok":true}', statusCode, headers: {
-      Headers.contentTypeHeader: [Headers.jsonContentType],
-    });
+    return ResponseBody.fromString(
+      '{"ok":true}',
+      statusCode,
+      headers: {
+        Headers.contentTypeHeader: [Headers.jsonContentType],
+      },
+    );
   }
 
   @override

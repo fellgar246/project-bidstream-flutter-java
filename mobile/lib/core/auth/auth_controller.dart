@@ -29,7 +29,9 @@ class AuthController extends AsyncNotifier<AuthState> {
       return AuthState.authenticated(_toSnapshot(user));
     } catch (_) {
       try {
-        final tokens = await ref.read(authApiProvider).refresh(refreshToken: refreshToken);
+        final tokens = await ref
+            .read(authApiProvider)
+            .refresh(refreshToken: refreshToken);
         await storage.saveTokens(
           accessToken: tokens.accessToken,
           refreshToken: tokens.refreshToken,
@@ -45,7 +47,9 @@ class AuthController extends AsyncNotifier<AuthState> {
   Future<void> login({required String email, required String password}) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
-      final tokens = await ref.read(authApiProvider).login(email: email, password: password);
+      final tokens = await ref
+          .read(authApiProvider)
+          .login(email: email, password: password);
       await _persist(tokens);
       return AuthState.authenticated(_toSnapshot(tokens.user));
     });
@@ -58,19 +62,21 @@ class AuthController extends AsyncNotifier<AuthState> {
   }) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
-      await ref.read(authApiProvider).register(
-            email: email,
-            password: password,
-            displayName: displayName,
-          );
-      final tokens = await ref.read(authApiProvider).login(email: email, password: password);
+      await ref
+          .read(authApiProvider)
+          .register(email: email, password: password, displayName: displayName);
+      final tokens = await ref
+          .read(authApiProvider)
+          .login(email: email, password: password);
       await _persist(tokens);
       return AuthState.authenticated(_toSnapshot(tokens.user));
     });
   }
 
   Future<void> logout() async {
-    final refreshToken = await ref.read(tokenStorageProvider).readRefreshToken();
+    final refreshToken = await ref
+        .read(tokenStorageProvider)
+        .readRefreshToken();
     if (refreshToken != null) {
       try {
         await ref.read(authApiProvider).logout(refreshToken: refreshToken);
@@ -107,7 +113,9 @@ class AuthController extends AsyncNotifier<AuthState> {
   }
 
   Future<void> _persist(AuthTokensDto tokens) async {
-    await ref.read(tokenStorageProvider).saveTokens(
+    await ref
+        .read(tokenStorageProvider)
+        .saveTokens(
           accessToken: tokens.accessToken,
           refreshToken: tokens.refreshToken,
         );
@@ -123,5 +131,6 @@ class AuthController extends AsyncNotifier<AuthState> {
   }
 }
 
-final authControllerProvider =
-    AsyncNotifierProvider<AuthController, AuthState>(AuthController.new);
+final authControllerProvider = AsyncNotifierProvider<AuthController, AuthState>(
+  AuthController.new,
+);

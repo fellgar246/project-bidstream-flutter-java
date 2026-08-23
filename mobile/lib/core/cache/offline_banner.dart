@@ -15,7 +15,13 @@ class OfflineBanner extends StatelessWidget {
     return MaterialBanner(
       content: Text(context.l10n.offlineBanner(formatRelativeAge(age, locale))),
       leading: const Icon(Icons.cloud_off),
-      actions: [TextButton(onPressed: () => ScaffoldMessenger.of(context).hideCurrentMaterialBanner(), child: Text(context.l10n.retry))],
+      actions: [
+        TextButton(
+          onPressed: () =>
+              ScaffoldMessenger.of(context).hideCurrentMaterialBanner(),
+          child: Text(context.l10n.retry),
+        ),
+      ],
     );
   }
 }

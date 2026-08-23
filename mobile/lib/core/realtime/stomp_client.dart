@@ -18,7 +18,8 @@ class ReconnectBackoff {
 
   Duration nextDelay() {
     final exponent = min(_attempt, 10);
-    final baseMs = initialDelay.inMilliseconds * pow(multiplier, exponent).toInt();
+    final baseMs =
+        initialDelay.inMilliseconds * pow(multiplier, exponent).toInt();
     final cappedMs = min(baseMs, maxDelay.inMilliseconds);
     final jitterMs = _random.nextInt(max(1, cappedMs ~/ 4));
     _attempt++;

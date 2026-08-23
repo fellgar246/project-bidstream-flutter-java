@@ -11,13 +11,13 @@ import 'l10n_test_helper.dart';
 void main() {
   final en = lookupAppLocalizations(const Locale('en'));
 
-  testWidgets('ca0312 edit button only appears when canEdit is true', (tester) async {
+  testWidgets('ca0312 edit button only appears when canEdit is true', (
+    tester,
+  ) async {
     await pumpLocalized(
       tester,
       ProviderScope(
-        overrides: [
-          lotDetailProvider.overrideWith(_EditableLotNotifier.new),
-        ],
+        overrides: [lotDetailProvider.overrideWith(_EditableLotNotifier.new)],
         child: const LotDetailScreen(lotId: 42),
       ),
       locale: const Locale('en'),
@@ -25,13 +25,13 @@ void main() {
     expect(find.text(en.lotEdit), findsOneWidget);
   });
 
-  testWidgets('ca0312 edit button hidden when canEdit is false', (tester) async {
+  testWidgets('ca0312 edit button hidden when canEdit is false', (
+    tester,
+  ) async {
     await pumpLocalized(
       tester,
       ProviderScope(
-        overrides: [
-          lotDetailProvider.overrideWith(_ReadOnlyLotNotifier.new),
-        ],
+        overrides: [lotDetailProvider.overrideWith(_ReadOnlyLotNotifier.new)],
         child: const LotDetailScreen(lotId: 42),
       ),
       locale: const Locale('en'),

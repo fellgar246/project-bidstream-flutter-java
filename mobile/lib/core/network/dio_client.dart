@@ -5,15 +5,16 @@ import 'api_exception.dart';
 
 class DioClient {
   DioClient({Dio? dio, String? baseUrl})
-      : _dio = dio ??
-            Dio(
-              BaseOptions(
-                baseUrl: baseUrl ?? AppConfig.apiBaseUrl,
-                connectTimeout: const Duration(seconds: 10),
-                receiveTimeout: const Duration(seconds: 10),
-                headers: const {'Accept': 'application/json'},
-              ),
-            ) {
+    : _dio =
+          dio ??
+          Dio(
+            BaseOptions(
+              baseUrl: baseUrl ?? AppConfig.apiBaseUrl,
+              connectTimeout: const Duration(seconds: 10),
+              receiveTimeout: const Duration(seconds: 10),
+              headers: const {'Accept': 'application/json'},
+            ),
+          ) {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onError: (error, handler) {

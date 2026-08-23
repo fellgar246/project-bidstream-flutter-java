@@ -6,7 +6,7 @@ class AuthState {
   const AuthState.unknown() : this._(AuthStatus.unknown, null);
 
   const AuthState.authenticated(UserSnapshot user)
-      : this._(AuthStatus.authenticated, user);
+    : this._(AuthStatus.authenticated, user);
 
   const AuthState.unauthenticated() : this._(AuthStatus.unauthenticated, null);
 

@@ -42,7 +42,8 @@ class CategoriesScreen extends ConsumerWidget {
                 Text('$error', textAlign: TextAlign.center),
                 const SizedBox(height: 16),
                 FilledButton(
-                  onPressed: () => ref.read(categoriesProvider.notifier).reload(),
+                  onPressed: () =>
+                      ref.read(categoriesProvider.notifier).reload(),
                   child: Text(context.l10n.retry),
                 ),
               ],
@@ -79,10 +80,8 @@ class _CategoryTile extends StatelessWidget {
         subtitle: Text(category.slug),
         children: category.children
             .map(
-              (child) => ListTile(
-                title: Text(child.name),
-                subtitle: Text(child.slug),
-              ),
+              (child) =>
+                  ListTile(title: Text(child.name), subtitle: Text(child.slug)),
             )
             .toList(),
       ),

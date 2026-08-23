@@ -11,7 +11,9 @@ void main() {
 
     expect(container.read(unreadNotificationsCountProvider), 0);
 
-    container.read(notificationsProvider.notifier).applyPush(
+    container
+        .read(notificationsProvider.notifier)
+        .applyPush(
           const NotificationItem(
             id: 1,
             type: 'OUTBID',

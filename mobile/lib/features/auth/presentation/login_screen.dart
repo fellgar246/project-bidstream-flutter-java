@@ -43,7 +43,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     setState(() => _submitting = true);
     try {
-      await ref.read(authControllerProvider.notifier).login(
+      await ref
+          .read(authControllerProvider.notifier)
+          .login(
             email: _emailController.text.trim(),
             password: _passwordController.text,
           );
@@ -51,8 +53,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       setState(() {
         _emailError = error.details['email'];
         _passwordError = error.details['password'];
-        _generalError =
-            _emailError == null && _passwordError == null ? error.message : null;
+        _generalError = _emailError == null && _passwordError == null
+            ? error.message
+            : null;
       });
     } catch (_) {
       if (mounted) {

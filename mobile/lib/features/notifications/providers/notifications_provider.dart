@@ -27,7 +27,9 @@ class NotificationsState {
 }
 
 final notificationsProvider =
-    NotifierProvider<NotificationsNotifier, NotificationsState>(NotificationsNotifier.new);
+    NotifierProvider<NotificationsNotifier, NotificationsState>(
+      NotificationsNotifier.new,
+    );
 
 class NotificationsNotifier extends Notifier<NotificationsState> {
   @override
@@ -40,7 +42,10 @@ class NotificationsNotifier extends Notifier<NotificationsState> {
     state = state.copyWith(loading: true);
     try {
       final result = await ref.read(notificationsApiProvider).fetch();
-      state = NotificationsState(items: result.items, unreadCount: result.unreadCount);
+      state = NotificationsState(
+        items: result.items,
+        unreadCount: result.unreadCount,
+      );
     } finally {
       state = state.copyWith(loading: false);
     }

@@ -47,9 +47,10 @@ class LotsPageState {
   }
 }
 
-final lotsListProvider = AsyncNotifierProvider.family<LotsListNotifier, LotsPageState, LotFilters>(
-  LotsListNotifier.new,
-);
+final lotsListProvider =
+    AsyncNotifierProvider.family<LotsListNotifier, LotsPageState, LotFilters>(
+      LotsListNotifier.new,
+    );
 
 class LotsListNotifier extends FamilyAsyncNotifier<LotsPageState, LotFilters> {
   int _requestGeneration = 0;
@@ -66,7 +67,10 @@ class LotsListNotifier extends FamilyAsyncNotifier<LotsPageState, LotFilters> {
 
   Future<void> loadMore() async {
     final current = state.valueOrNull;
-    if (current == null || !current.hasMore || current.isLoadingMore || current.offline) {
+    if (current == null ||
+        !current.hasMore ||
+        current.isLoadingMore ||
+        current.offline) {
       return;
     }
 
@@ -74,7 +78,9 @@ class LotsListNotifier extends FamilyAsyncNotifier<LotsPageState, LotFilters> {
     final generation = _requestGeneration;
 
     try {
-      final page = await ref.read(lotsApiProvider).fetchLots(arg, current.page + 1);
+      final page = await ref
+          .read(lotsApiProvider)
+          .fetchLots(arg, current.page + 1);
       if (generation != _requestGeneration) {
         return;
       }
@@ -101,8 +107,9 @@ class LotsListNotifier extends FamilyAsyncNotifier<LotsPageState, LotFilters> {
     final cached = await _cache.readLotsList();
 
     if (cached != null) {
-      final filtered =
-          cached.data.where((lot) => CachedLotFilters.matches(lot, filters)).toList();
+      final filtered = cached.data
+          .where((lot) => CachedLotFilters.matches(lot, filters))
+          .toList();
       final initial = LotsPageState(
         items: filtered,
         page: 0,
@@ -128,8 +135,9 @@ class LotsListNotifier extends FamilyAsyncNotifier<LotsPageState, LotFilters> {
       );
     } on DioException {
       if (cached != null) {
-        final filtered =
-            cached.data.where((lot) => CachedLotFilters.matches(lot, filters)).toList();
+        final filtered = cached.data
+            .where((lot) => CachedLotFilters.matches(lot, filters))
+            .toList();
         return LotsPageState(
           items: filtered,
           page: 0,

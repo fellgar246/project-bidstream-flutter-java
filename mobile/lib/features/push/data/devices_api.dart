@@ -12,7 +12,10 @@ class DevicesApi {
 
   final Dio _dio;
 
-  Future<void> register({required String token, required String platform}) async {
+  Future<void> register({
+    required String token,
+    required String platform,
+  }) async {
     await _dio.post<void>(
       '/me/devices',
       data: {'token': token, 'platform': platform},

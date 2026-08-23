@@ -47,10 +47,7 @@ class LotImagesApi {
     }
   }
 
-  Future<void> deleteImage({
-    required int lotId,
-    required int imageId,
-  }) async {
+  Future<void> deleteImage({required int lotId, required int imageId}) async {
     try {
       await _client.dio.delete<void>('/lots/$lotId/images/$imageId');
     } on DioException catch (error) {

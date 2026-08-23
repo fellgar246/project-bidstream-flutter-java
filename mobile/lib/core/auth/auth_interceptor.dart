@@ -3,7 +3,8 @@ import 'package:dio/dio.dart';
 import '../../features/auth/data/auth_dto.dart';
 import 'token_storage.dart';
 
-typedef RefreshTokensCallback = Future<AuthTokensDto> Function(String refreshToken);
+typedef RefreshTokensCallback =
+    Future<AuthTokensDto> Function(String refreshToken);
 
 class AuthInterceptor extends Interceptor {
   AuthInterceptor({
@@ -22,30 +23,26 @@ class AuthInterceptor extends Interceptor {
 
   Future<AuthTokensDto>? _refreshFuture;
 
-  static const _authPaths = [
-    '/auth/login',
-    '/auth/register',
-    '/auth/refresh',
-  ];
+  static const _authPaths = ['/auth/login', '/auth/register', '/auth/refresh'];
 
   @override
-  void onRequest(
-    RequestOptions options,
-    RequestInterceptorHandler handler,
-  ) {
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     if (options.extra[_retriedExtraKey] == true || _isAuthPath(options.path)) {
       handler.next(options);
       return;
     }
 
-    _tokenStorage.readAccessToken().then((accessToken) {
-      if (accessToken != null && accessToken.isNotEmpty) {
-        options.headers['Authorization'] = 'Bearer $accessToken';
-      }
-      handler.next(options);
-    }).catchError((_) {
-      handler.next(options);
-    });
+    _tokenStorage
+        .readAccessToken()
+        .then((accessToken) {
+          if (accessToken != null && accessToken.isNotEmpty) {
+            options.headers['Authorization'] = 'Bearer $accessToken';
+          }
+          handler.next(options);
+        })
+        .catchError((_) {
+          handler.next(options);
+        });
   }
 
   @override
@@ -55,7 +52,8 @@ class AuthInterceptor extends Interceptor {
       return;
     }
 
-    if (err.response?.statusCode != 401 || _isAuthPath(err.requestOptions.path)) {
+    if (err.response?.statusCode != 401 ||
+        _isAuthPath(err.requestOptions.path)) {
       handler.next(err);
       return;
     }

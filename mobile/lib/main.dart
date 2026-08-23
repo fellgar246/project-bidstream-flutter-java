@@ -47,7 +47,9 @@ class _BidstreamAppState extends ConsumerState<BidstreamApp> {
     super.initState();
     Future.microtask(() {
       final router = ref.read(routerProvider);
-      ref.read(pushServiceProvider).initialize(
+      ref
+          .read(pushServiceProvider)
+          .initialize(
             onTap: (deepLink) {
               final auth = ref.read(authControllerProvider).valueOrNull;
               handleDeepLink(

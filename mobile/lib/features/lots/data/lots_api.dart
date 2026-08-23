@@ -10,7 +10,11 @@ class LotsApi {
 
   final DioClient _client;
 
-  Future<LotPageDto> fetchLots(LotFilters filters, int page, {bool facets = false}) async {
+  Future<LotPageDto> fetchLots(
+    LotFilters filters,
+    int page, {
+    bool facets = false,
+  }) async {
     try {
       final response = await _client.dio.get<Map<String, dynamic>>(
         '/lots',
@@ -44,7 +48,10 @@ class LotsApi {
 
   Future<LotDto> createLot(Map<String, dynamic> body) async {
     try {
-      final response = await _client.dio.post<Map<String, dynamic>>('/lots', data: body);
+      final response = await _client.dio.post<Map<String, dynamic>>(
+        '/lots',
+        data: body,
+      );
       return LotDto.fromJson(response.data ?? {});
     } on DioException catch (error) {
       throw _mapError(error);
@@ -53,8 +60,10 @@ class LotsApi {
 
   Future<LotDto> updateLot(int id, Map<String, dynamic> body) async {
     try {
-      final response =
-          await _client.dio.patch<Map<String, dynamic>>('/lots/$id', data: body);
+      final response = await _client.dio.patch<Map<String, dynamic>>(
+        '/lots/$id',
+        data: body,
+      );
       return LotDto.fromJson(response.data ?? {});
     } on DioException catch (error) {
       throw _mapError(error);

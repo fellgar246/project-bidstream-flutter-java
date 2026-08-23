@@ -19,7 +19,8 @@ class LiveAuctionScreen extends ConsumerStatefulWidget {
 }
 
 class _LiveAuctionScreenState extends ConsumerState<LiveAuctionScreen> {
-  final GlobalKey<AnimatedListState> _bidListKey = GlobalKey<AnimatedListState>();
+  final GlobalKey<AnimatedListState> _bidListKey =
+      GlobalKey<AnimatedListState>();
   Timer? _ticker;
   Duration _remaining = Duration.zero;
   double _displayPrice = 0;
@@ -29,9 +30,14 @@ class _LiveAuctionScreenState extends ConsumerState<LiveAuctionScreen> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      ref.read(bidstreamStompClientProvider(widget.lotId)).connectToLot(widget.lotId);
+      ref
+          .read(bidstreamStompClientProvider(widget.lotId))
+          .connectToLot(widget.lotId);
     });
-    _ticker = Timer.periodic(const Duration(seconds: 1), (_) => _recalculateCountdown());
+    _ticker = Timer.periodic(
+      const Duration(seconds: 1),
+      (_) => _recalculateCountdown(),
+    );
   }
 
   @override
@@ -60,7 +66,9 @@ class _LiveAuctionScreenState extends ConsumerState<LiveAuctionScreen> {
     final l10n = context.l10n;
 
     ref.listen(liveAuctionProvider(widget.lotId), (previous, next) {
-      final parsed = double.tryParse(next.currentPrice.replaceAll(',', '')) ?? _displayPrice;
+      final parsed =
+          double.tryParse(next.currentPrice.replaceAll(',', '')) ??
+          _displayPrice;
       if (parsed != _displayPrice) {
         setState(() {
           _displayPrice = parsed;
@@ -111,13 +119,19 @@ class _LiveAuctionScreenState extends ConsumerState<LiveAuctionScreen> {
               Container(
                 color: Colors.green.shade50,
                 padding: const EdgeInsets.all(12),
-                child: Text(l10n.liveYouWon, style: const TextStyle(fontSize: 16)),
+                child: Text(
+                  l10n.liveYouWon,
+                  style: const TextStyle(fontSize: 16),
+                ),
               )
             else if (live.lotStatus == 'CLOSED_NO_SALE')
               Container(
                 color: Colors.green.shade50,
                 padding: const EdgeInsets.all(12),
-                child: Text(l10n.liveClosedNoSale, style: const TextStyle(fontSize: 16)),
+                child: Text(
+                  l10n.liveClosedNoSale,
+                  style: const TextStyle(fontSize: 16),
+                ),
               ),
             Padding(
               padding: const EdgeInsets.all(24),
@@ -126,14 +140,20 @@ class _LiveAuctionScreenState extends ConsumerState<LiveAuctionScreen> {
                   AnimatedContainer(
                     duration: const Duration(milliseconds: 300),
                     decoration: BoxDecoration(
-                      color: _priceFlash ? Colors.green.shade100 : Colors.transparent,
+                      color: _priceFlash
+                          ? Colors.green.shade100
+                          : Colors.transparent,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     padding: const EdgeInsets.all(12),
                     child: TweenAnimationBuilder<double>(
                       tween: Tween<double>(
                         begin: _displayPrice,
-                        end: double.tryParse(live.currentPrice.replaceAll(',', '')) ?? _displayPrice,
+                        end:
+                            double.tryParse(
+                              live.currentPrice.replaceAll(',', ''),
+                            ) ??
+                            _displayPrice,
                       ),
                       duration: const Duration(milliseconds: 400),
                       builder: (context, value, _) {
@@ -200,15 +220,15 @@ class _ConnectionBanner extends StatelessWidget {
     return switch (connection) {
       StompConnectionState.connected => const SizedBox.shrink(),
       StompConnectionState.connecting => Container(
-          color: Colors.orange.shade100,
-          padding: const EdgeInsets.all(8),
-          child: Text(l10n.liveReconnecting),
-        ),
+        color: Colors.orange.shade100,
+        padding: const EdgeInsets.all(8),
+        child: Text(l10n.liveReconnecting),
+      ),
       StompConnectionState.disconnected => Container(
-          color: Colors.grey.shade300,
-          padding: const EdgeInsets.all(8),
-          child: Text(l10n.liveDisconnected),
-        ),
+        color: Colors.grey.shade300,
+        padding: const EdgeInsets.all(8),
+        child: Text(l10n.liveDisconnected),
+      ),
     };
   }
 }

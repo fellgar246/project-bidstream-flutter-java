@@ -28,7 +28,9 @@ class LotFormState {
   }
 }
 
-final lotFormProvider = NotifierProvider<LotFormNotifier, LotFormState>(LotFormNotifier.new);
+final lotFormProvider = NotifierProvider<LotFormNotifier, LotFormState>(
+  LotFormNotifier.new,
+);
 
 class LotFormNotifier extends Notifier<LotFormState> {
   @override

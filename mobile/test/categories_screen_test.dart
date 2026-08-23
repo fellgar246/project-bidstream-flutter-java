@@ -97,7 +97,12 @@ class _DataCategoriesNotifier extends CategoriesNotifier {
         slug: 'art',
         name: 'Art',
         children: [
-          CategoryDto(id: 2, slug: 'art-paintings', name: 'Paintings', children: []),
+          CategoryDto(
+            id: 2,
+            slug: 'art-paintings',
+            name: 'Paintings',
+            children: [],
+          ),
         ],
       ),
     ];

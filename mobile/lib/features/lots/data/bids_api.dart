@@ -17,10 +17,7 @@ class BidsApi {
     try {
       final response = await _client.dio.post<Map<String, dynamic>>(
         '/lots/$lotId/bids',
-        data: {
-          'amount': amount,
-          'clientRequestId': clientRequestId,
-        },
+        data: {'amount': amount, 'clientRequestId': clientRequestId},
       );
       return PlaceBidResponseDto.fromJson(response.data ?? {});
     } on DioException catch (error) {

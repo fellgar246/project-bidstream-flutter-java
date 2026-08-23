@@ -12,14 +12,14 @@ class LotEventsApi {
   Future<List<LotEventMessage>> fetchAfter(int lotId, int afterEventId) async {
     final response = await _dio.dio.get<List<dynamic>>(
       '/lots/$lotId/events',
-      queryParameters: {
-        'afterEventId': afterEventId,
-        'limit': 100,
-      },
+      queryParameters: {'afterEventId': afterEventId, 'limit': 100},
     );
     final data = response.data ?? [];
     return data
-        .map((item) => LotEventMessage.fromJson(Map<String, dynamic>.from(item as Map)))
+        .map(
+          (item) =>
+              LotEventMessage.fromJson(Map<String, dynamic>.from(item as Map)),
+        )
         .toList();
   }
 }

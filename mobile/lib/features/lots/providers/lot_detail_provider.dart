@@ -22,8 +22,8 @@ class LotDetailState {
 
 final lotDetailProvider =
     AsyncNotifierProvider.family<LotDetailNotifier, LotDetailState, int>(
-  LotDetailNotifier.new,
-);
+      LotDetailNotifier.new,
+    );
 
 class LotDetailNotifier extends FamilyAsyncNotifier<LotDetailState, int> {
   LotCacheService get _cache => ref.read(lotCacheServiceProvider);
@@ -71,7 +71,9 @@ class LotDetailNotifier extends FamilyAsyncNotifier<LotDetailState, int> {
     if (current == null) {
       return;
     }
-    state = AsyncData(current.copyWith(lot: current.lot.copyWith(images: images)));
+    state = AsyncData(
+      current.copyWith(lot: current.lot.copyWith(images: images)),
+    );
   }
 
   void applyOptimisticOrder(List<int> orderIds) {
@@ -80,13 +82,21 @@ class LotDetailNotifier extends FamilyAsyncNotifier<LotDetailState, int> {
       return;
     }
     final byId = {for (final image in current.lot.images) image.id: image};
-    final reordered = orderIds.map((id) => byId[id]).whereType<LotImageDto>().toList();
+    final reordered = orderIds
+        .map((id) => byId[id])
+        .whereType<LotImageDto>()
+        .toList();
     applyOptimisticImages(reordered);
   }
 }
 
 extension on LotDetailState {
-  LotDetailState copyWith({LotDto? lot, bool? offline, DateTime? cachedAt, bool? stalePrice}) {
+  LotDetailState copyWith({
+    LotDto? lot,
+    bool? offline,
+    DateTime? cachedAt,
+    bool? stalePrice,
+  }) {
     return LotDetailState(
       lot: lot ?? this.lot,
       offline: offline ?? this.offline,

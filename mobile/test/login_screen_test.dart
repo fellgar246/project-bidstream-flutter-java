@@ -12,7 +12,9 @@ import 'l10n_test_helper.dart';
 void main() {
   final en = lookupAppLocalizations(const Locale('en'));
 
-  testWidgets('login screen maps field errors from ApiException details', (tester) async {
+  testWidgets('login screen maps field errors from ApiException details', (
+    tester,
+  ) async {
     await pumpLocalized(
       tester,
       ProviderScope(
@@ -24,13 +26,19 @@ void main() {
       locale: const Locale('en'),
     );
 
-    await tester.enterText(find.byKey(const Key('login_email')), 'bad@example.com');
+    await tester.enterText(
+      find.byKey(const Key('login_email')),
+      'bad@example.com',
+    );
     await tester.enterText(find.byKey(const Key('login_password')), 'short');
     await tester.tap(find.widgetWithText(FilledButton, en.loginAction));
     await tester.pumpAndSettle();
 
     expect(find.text('Invalid email format'), findsOneWidget);
-    expect(find.text('Password must be at least 10 characters'), findsOneWidget);
+    expect(
+      find.text('Password must be at least 10 characters'),
+      findsOneWidget,
+    );
   });
 }
 

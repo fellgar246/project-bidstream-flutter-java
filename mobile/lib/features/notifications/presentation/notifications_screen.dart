@@ -27,29 +27,34 @@ class NotificationsScreen extends ConsumerWidget {
       body: state.loading && state.items.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : state.items.isEmpty
-              ? Center(child: Text(l10n.noNotifications))
-              : RefreshIndicator(
-                  onRefresh: () => ref.read(notificationsProvider.notifier).refresh(),
-                  child: ListView.separated(
-                    itemCount: state.items.length,
-                    separatorBuilder: (_, __) => const Divider(height: 1),
-                    itemBuilder: (context, index) {
-                      final item = state.items[index];
-                      final isUnread = item.readAt == null;
-                      return ListTile(
-                        leading: Icon(
-                          _iconForType(item.type),
-                          color: isUnread ? Theme.of(context).colorScheme.primary : null,
-                        ),
-                        title: Text(
-                          _labelForType(context, item.type),
-                          style: isUnread ? const TextStyle(fontWeight: FontWeight.bold) : null,
-                        ),
-                        subtitle: Text(item.createdAt),
-                      );
-                    },
-                  ),
-                ),
+          ? Center(child: Text(l10n.noNotifications))
+          : RefreshIndicator(
+              onRefresh: () =>
+                  ref.read(notificationsProvider.notifier).refresh(),
+              child: ListView.separated(
+                itemCount: state.items.length,
+                separatorBuilder: (_, __) => const Divider(height: 1),
+                itemBuilder: (context, index) {
+                  final item = state.items[index];
+                  final isUnread = item.readAt == null;
+                  return ListTile(
+                    leading: Icon(
+                      _iconForType(item.type),
+                      color: isUnread
+                          ? Theme.of(context).colorScheme.primary
+                          : null,
+                    ),
+                    title: Text(
+                      _labelForType(context, item.type),
+                      style: isUnread
+                          ? const TextStyle(fontWeight: FontWeight.bold)
+                          : null,
+                    ),
+                    subtitle: Text(item.createdAt),
+                  );
+                },
+              ),
+            ),
     );
   }
 

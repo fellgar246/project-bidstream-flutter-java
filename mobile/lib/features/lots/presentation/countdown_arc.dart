@@ -16,7 +16,9 @@ class CountdownArc extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final progress = total.inSeconds == 0 ? 0.0 : remaining.inSeconds / total.inSeconds;
+    final progress = total.inSeconds == 0
+        ? 0.0
+        : remaining.inSeconds / total.inSeconds;
     final urgent = remaining.inSeconds <= 30;
     return SizedBox(
       width: 120,
@@ -26,9 +28,16 @@ class CountdownArc extends StatelessWidget {
         children: [
           CustomPaint(
             size: const Size(120, 120),
-            painter: _ArcPainter(progress: progress.clamp(0.0, 1.0), urgent: urgent),
+            painter: _ArcPainter(
+              progress: progress.clamp(0.0, 1.0),
+              urgent: urgent,
+            ),
           ),
-          Text(label, textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
         ],
       ),
     );

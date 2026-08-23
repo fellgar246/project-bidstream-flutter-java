@@ -39,7 +39,9 @@ class SearchState {
 }
 
 final searchProvider =
-    NotifierProvider.family<SearchNotifier, SearchState, LotFilters>(SearchNotifier.new);
+    NotifierProvider.family<SearchNotifier, SearchState, LotFilters>(
+      SearchNotifier.new,
+    );
 
 class SearchNotifier extends FamilyNotifier<SearchState, LotFilters> {
   Timer? _debounce;
@@ -71,7 +73,9 @@ class SearchNotifier extends FamilyNotifier<SearchState, LotFilters> {
         : arg.copyWith(query: trimmed);
 
     try {
-      final page = await ref.read(lotsApiProvider).fetchLots(filters, 0, facets: true);
+      final page = await ref
+          .read(lotsApiProvider)
+          .fetchLots(filters, 0, facets: true);
       if (generation != _generation) {
         return;
       }

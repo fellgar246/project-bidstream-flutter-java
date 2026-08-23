@@ -43,7 +43,9 @@ class NotificationsApi {
     );
     final data = response.data!;
     final items = (data['items'] as List)
-        .map((e) => NotificationItem.fromJson(Map<String, dynamic>.from(e as Map)))
+        .map(
+          (e) => NotificationItem.fromJson(Map<String, dynamic>.from(e as Map)),
+        )
         .toList();
     return (items: items, unreadCount: data['unreadCount'] as int);
   }

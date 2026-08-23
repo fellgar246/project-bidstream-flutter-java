@@ -21,7 +21,9 @@ class _BidBottomSheetState extends ConsumerState<BidBottomSheet> {
   @override
   void initState() {
     super.initState();
-    _amountController = TextEditingController(text: _suggestedAmount(widget.lot, 1));
+    _amountController = TextEditingController(
+      text: _suggestedAmount(widget.lot, 1),
+    );
   }
 
   @override
@@ -33,20 +35,26 @@ class _BidBottomSheetState extends ConsumerState<BidBottomSheet> {
   String _suggestedAmount(LotDto lot, int multiplier) {
     final increment = Decimal.parse(lot.minIncrement);
     if (lot.bidCount == 0) {
-      return (Decimal.parse(lot.startingPrice) + increment * Decimal.fromInt(multiplier))
+      return (Decimal.parse(lot.startingPrice) +
+              increment * Decimal.fromInt(multiplier))
           .toStringAsFixed(2);
     }
-    return (Decimal.parse(lot.currentPrice) + increment * Decimal.fromInt(multiplier))
+    return (Decimal.parse(lot.currentPrice) +
+            increment * Decimal.fromInt(multiplier))
         .toStringAsFixed(2);
   }
 
   Future<void> _submit() async {
     final amount = _amountController.text.trim();
     if (!_isValidDecimal(amount)) {
-      ref.read(bidProvider(widget.lot.id).notifier).setValidationError(context.l10n.bidInvalidAmount);
+      ref
+          .read(bidProvider(widget.lot.id).notifier)
+          .setValidationError(context.l10n.bidInvalidAmount);
       return;
     }
-    final success = await ref.read(bidProvider(widget.lot.id).notifier).submitBid(amount);
+    final success = await ref
+        .read(bidProvider(widget.lot.id).notifier)
+        .submitBid(amount);
     if (success && mounted) {
       Navigator.of(context).pop(true);
     }
@@ -91,7 +99,10 @@ class _BidBottomSheetState extends ConsumerState<BidBottomSheet> {
                   label: Text('+${multiplier}x'),
                   onPressed: bidState.isSubmitting
                       ? null
-                      : () => _amountController.text = _suggestedAmount(lot, multiplier),
+                      : () => _amountController.text = _suggestedAmount(
+                          lot,
+                          multiplier,
+                        ),
                 ),
             ],
           ),

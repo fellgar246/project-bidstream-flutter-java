@@ -68,26 +68,35 @@ class LiveAuctionState {
   }
 }
 
-final stompConnectionStateProvider =
-    StateProvider<StompConnectionState>((ref) => StompConnectionState.disconnected);
+final stompConnectionStateProvider = StateProvider<StompConnectionState>(
+  (ref) => StompConnectionState.disconnected,
+);
 
 final liveAuctionProvider =
-    NotifierProvider.family<LiveAuctionNotifier, LiveAuctionState, int>(LiveAuctionNotifier.new);
+    NotifierProvider.family<LiveAuctionNotifier, LiveAuctionState, int>(
+      LiveAuctionNotifier.new,
+    );
 
-final bidstreamStompClientProvider = Provider.family<BidstreamStompClient, int>((ref, lotId) {
-  final client = BidstreamStompClient(
-    readAccessToken: () => ref.read(tokenStorageProvider).readAccessToken(),
-    onStateChanged: (state) => ref.read(stompConnectionStateProvider.notifier).state = state,
-    onLotEvent: (event) => ref.read(liveAuctionProvider(lotId).notifier).applyEvent(event),
-    onPresence: (watching) => ref.read(liveAuctionProvider(lotId).notifier).setWatching(watching),
-    onOutbid: (payload) => ref.read(liveAuctionProvider(lotId).notifier).notifyOutbid(payload),
-    fetchMissedEvents: (id, afterEventId) =>
-        ref.read(lotEventsApiProvider).fetchAfter(id, afterEventId),
-    refetchLot: (id) => ref.read(lotDetailProvider(id).notifier).reload(),
-  );
-  ref.onDispose(client.disconnect);
-  return client;
-});
+final bidstreamStompClientProvider = Provider.family<BidstreamStompClient, int>(
+  (ref, lotId) {
+    final client = BidstreamStompClient(
+      readAccessToken: () => ref.read(tokenStorageProvider).readAccessToken(),
+      onStateChanged: (state) =>
+          ref.read(stompConnectionStateProvider.notifier).state = state,
+      onLotEvent: (event) =>
+          ref.read(liveAuctionProvider(lotId).notifier).applyEvent(event),
+      onPresence: (watching) =>
+          ref.read(liveAuctionProvider(lotId).notifier).setWatching(watching),
+      onOutbid: (payload) =>
+          ref.read(liveAuctionProvider(lotId).notifier).notifyOutbid(payload),
+      fetchMissedEvents: (id, afterEventId) =>
+          ref.read(lotEventsApiProvider).fetchAfter(id, afterEventId),
+      refetchLot: (id) => ref.read(lotDetailProvider(id).notifier).reload(),
+    );
+    ref.onDispose(client.disconnect);
+    return client;
+  },
+);
 
 class LiveAuctionNotifier extends FamilyNotifier<LiveAuctionState, int> {
   @override
@@ -114,15 +123,22 @@ class LiveAuctionNotifier extends FamilyNotifier<LiveAuctionState, int> {
           placedAt: event.occurredAt,
         );
         state = state.copyWith(
-          currentPrice: event.payload['currentPrice'] as String? ?? state.currentPrice,
+          currentPrice:
+              event.payload['currentPrice'] as String? ?? state.currentPrice,
           bidCount: event.payload['bidCount'] as int? ?? state.bidCount,
-          scheduledEndAt: event.payload['scheduledEndAt'] as String? ?? state.scheduledEndAt,
+          scheduledEndAt:
+              event.payload['scheduledEndAt'] as String? ??
+              state.scheduledEndAt,
           bids: [entry, ...state.bids].take(20).toList(),
-          showExtendedBanner: event.payload['extended'] == true ? true : state.showExtendedBanner,
+          showExtendedBanner: event.payload['extended'] == true
+              ? true
+              : state.showExtendedBanner,
         );
       case 'LOT_EXTENDED':
         state = state.copyWith(
-          scheduledEndAt: event.payload['scheduledEndAt'] as String? ?? state.scheduledEndAt,
+          scheduledEndAt:
+              event.payload['scheduledEndAt'] as String? ??
+              state.scheduledEndAt,
           showExtendedBanner: true,
         );
       case 'LOT_CLOSED':

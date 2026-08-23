@@ -75,13 +75,13 @@ class LotFilters {
 
   @override
   int get hashCode => Object.hash(
-        status,
-        categoryId,
-        minPriceCents,
-        maxPriceCents,
-        sellerId,
-        query,
-        sort,
-        size,
-      );
+    status,
+    categoryId,
+    minPriceCents,
+    maxPriceCents,
+    sellerId,
+    query,
+    sort,
+    size,
+  );
 }
