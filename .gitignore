@@ -17,6 +17,7 @@ backend/**/out/
 # Java
 *.class
 *.jar
+!**/gradle-wrapper.jar
 *.war
 hs_err_pid*
 
