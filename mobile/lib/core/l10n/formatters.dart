@@ -18,13 +18,6 @@ String formatMoney(Decimal amount, Locale locale) {
   ).format(major);
 }
 
-String _currencyName(Locale locale) {
-  return switch (locale.languageCode) {
-    'es' => 'EUR',
-    _ => 'USD',
-  };
-}
-
 String formatMoneyFromString(String amount, Locale locale) {
   return formatMoney(Decimal.parse(amount), locale);
 }

@@ -52,13 +52,18 @@ class _LotsListScreenState extends ConsumerState<LotsListScreen> {
 
   void _syncUrl(LotFilters filters) {
     final params = <String, String>{};
-    if ((filters.query ?? '').isNotEmpty) params['q'] = filters.query!;
-    if (filters.categoryId != null)
+    if ((filters.query ?? '').isNotEmpty) {
+      params['q'] = filters.query!;
+    }
+    if (filters.categoryId != null) {
       params['categoryId'] = '${filters.categoryId}';
-    if (filters.minPriceCents != null)
+    }
+    if (filters.minPriceCents != null) {
       params['minPriceCents'] = '${filters.minPriceCents}';
-    if (filters.maxPriceCents != null)
+    }
+    if (filters.maxPriceCents != null) {
       params['maxPriceCents'] = '${filters.maxPriceCents}';
+    }
     final uri = Uri(
       path: '/lots',
       queryParameters: params.isEmpty ? null : params,
